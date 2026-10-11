@@ -86,6 +86,8 @@ h1{font-family:var(--f-title);font-weight:400;font-size:30px;margin:0;letter-spa
 .tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
 .drawer{flex:1;min-height:0;overflow-y:auto;display:flex;flex-wrap:wrap;gap:9px 7px;align-content:flex-start;padding:12px 10px;touch-action:pan-y}
 .drawer .mag{position:relative;touch-action:pan-y}
+.glabel{flex-basis:100%;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-top:6px}
+.glabel:first-child{margin-top:0}
 .drawer .mag.drag{position:fixed}
 .bar{flex:none;display:flex;gap:6px;padding:8px;border-top:1px solid var(--line)}
 .btn{flex:1;font:inherit;font-size:14px;padding:8px 6px;min-height:42px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;white-space:nowrap}
@@ -98,33 +100,26 @@ h1{font-family:var(--f-title);font-weight:400;font-size:30px;margin:0;letter-spa
   h1{font-size:36px}
 }
 
-/* ----- carnet : on le feuillette, un poème par page ----- */
+/* ----- carnet : les textes à la suite, le plus récent en haut ----- */
 .page{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;animation:fade .22s ease-out}
-.page header{padding:calc(10px + var(--safe-t)) 12px 6px;max-width:720px;width:100%;margin:0 auto;flex:none}
+.page header{padding:calc(10px + var(--safe-t)) 16px 8px;max-width:680px;width:100%;margin:0 auto;flex:none}
 .page h2{font-family:var(--f-title);font-weight:400;font-size:28px;margin:0}
-.page .hbtns .icon[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
-.reader{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;max-width:720px;width:100%;margin:0 auto;padding:6px 14px calc(14px + var(--safe-b))}
-.sheet{flex:1;min-height:0;overflow-y:auto;background:var(--surface);border-radius:6px 14px 14px 6px;border:1px solid var(--line);
-  box-shadow:inset 6px 0 0 var(--accent-soft),0 6px 18px rgba(20,40,35,.08);padding:26px 22px 22px 30px;display:flex;flex-direction:column;gap:16px;touch-action:pan-y}
-.sheet.in-left{animation:inL .22s ease-out}.sheet.in-right{animation:inR .22s ease-out}
-@keyframes inL{from{opacity:0;transform:translateX(-24px)}}@keyframes inR{from{opacity:0;transform:translateX(24px)}}
-.sheet .defi{font-family:var(--f-magnet);font-style:italic;font-size:14px;line-height:1.35;color:var(--accent)}
-.sheet .defi::before{content:"Défi";display:block;font-family:var(--f-ui);font-style:normal;font-weight:700;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
-.sheet pre{margin:auto 0;font-family:var(--f-magnet);font-size:clamp(20px,5.6vw,26px);line-height:1.55;white-space:pre-wrap;word-break:break-word;color:var(--ink)}
-.sheet .date{color:var(--muted);font-size:13px;margin-top:auto}
-.nav{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.nav .arrow{width:52px;height:46px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:22px;cursor:pointer}
-.nav .arrow:disabled{opacity:.35;cursor:default}
-.nav .count{color:var(--muted);font-size:14px}
-.pageacts{flex:none;display:flex;gap:8px}
-.pageacts .btn{flex:1}
-.pageacts .btn.danger{flex:none;min-width:56px}
-.pageacts .btn.danger.sure{background:#b3473a;border-color:#b3473a;color:#fff;font-weight:700}
-.list{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;max-width:720px;width:100%;margin:0 auto;padding:6px 14px calc(14px + var(--safe-b));touch-action:pan-y}
-.list button{display:flex;justify-content:space-between;align-items:baseline;gap:12px;text-align:left;width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}
-.list .first{font-family:var(--f-magnet);font-size:16px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.list .d{color:var(--muted);font-size:12px;flex:none}
-.list .star{color:var(--accent);margin-right:6px;font-size:12px}
+.search{flex:none;max-width:680px;width:100%;margin:0 auto;padding:0 16px 8px;display:flex;align-items:center;gap:10px}
+.search input{flex:1;min-width:0;font:inherit;font-size:16px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none}
+.search input:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.search .found{color:var(--muted);font-size:13px;flex:none}
+.page .scroll{flex:1;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+.poems{max-width:680px;margin:0 auto;padding:0 16px calc(24px + var(--safe-b))}
+.entry{padding:18px 0 14px;border-top:1px solid var(--line)}
+.entry:first-child{border-top:none}
+.entry .defi{font-family:var(--f-magnet);font-style:italic;font-size:13.5px;line-height:1.35;color:var(--accent);margin-bottom:8px}
+.entry .defi::before{content:"Défi · ";font-family:var(--f-ui);font-style:normal;font-weight:700;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase}
+.entry pre{margin:0;font-family:var(--f-magnet);font-size:19px;line-height:1.55;white-space:pre-wrap;word-break:break-word;color:var(--ink);-webkit-user-select:text;user-select:text}
+.entry mark{background:var(--accent-soft);color:inherit;border-radius:3px;padding:0 1px}
+.entry .meta{display:flex;align-items:center;gap:4px;margin-top:8px;color:var(--muted);font-size:12.5px}
+.entry .meta .d{flex:1}
+.entry .meta button{border:none;background:none;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;padding:6px 8px;border-radius:8px}
+.entry .meta button.del.sure{background:#b3473a;color:#fff;font-weight:700}
 .blank{color:var(--muted);text-align:center;padding:60px 20px;font-family:var(--f-magnet);font-style:italic}
 
 /* ----- après « Garder » : un petit mot doux sur le frigo ----- */
@@ -195,24 +190,13 @@ h1{font-family:var(--f-title);font-weight:400;font-size:30px;margin:0;letter-spa
 <section class="page" id="carnetPage" hidden aria-label="Mon carnet">
   <header>
     <h2>Carnet</h2>
-    <div class="hbtns">
-      <button class="icon" id="listBtn" type="button" aria-pressed="false">☰ Tous</button>
-      <button class="icon" id="carnetBack" type="button">← Frigo</button>
-    </div>
+    <button class="icon" id="carnetBack" type="button">← Frigo</button>
   </header>
-  <div class="reader" id="reader">
-    <article class="sheet" id="sheet"></article>
-    <div class="nav">
-      <button class="arrow" id="prevP" type="button" aria-label="Poème plus récent">‹</button>
-      <span class="count" id="countP"></span>
-      <button class="arrow" id="nextP" type="button" aria-label="Poème plus ancien">›</button>
-    </div>
-    <div class="pageacts">
-      <button class="btn" id="reopenP" type="button">↩ Remettre sur le frigo</button>
-      <button class="btn danger" id="delP" type="button">🗑</button>
-    </div>
+  <div class="search">
+    <input id="q" type="search" placeholder="Chercher un mot…" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Chercher dans mes poèmes">
+    <span class="found" id="found"></span>
   </div>
-  <div class="list" id="list" hidden></div>
+  <div class="scroll"><div class="poems" id="poems"></div></div>
 </section>
 
 <div class="menu" id="menu" hidden>
@@ -220,6 +204,7 @@ h1{font-family:var(--f-title);font-weight:400;font-size:30px;margin:0;letter-spa
     <h2 id="menuTitle">Qu'est-ce qui te tente ?</h2>
     <p class="sub" id="menuSub"></p>
     <button class="choice" id="pickFree" type="button"><span class="em">✍️</span><span><b>Écrire librement</b><span class="d">Juste toi et les mots, sans consigne.</span></span></button>
+    <button class="choice" id="pickStart" type="button"><span class="em">🌱</span><span><b>Une phrase pour commencer</b><span class="d">Quelques mots déjà posés, à toi de continuer.</span></span></button>
     <button class="choice" id="pickDefi" type="button"><span class="em">🎲</span><span><b>Relever un défi</b><span class="d">On t'en propose un, tu pioches jusqu'à ce qu'il te plaise.</span></span></button>
     <button class="stay" id="menuStay" type="button"></button>
   </div>
@@ -229,35 +214,44 @@ h1{font-family:var(--f-title);font-weight:400;font-size:30px;margin:0;letter-spa
 <script>
 /* ================= les mots ================= */
 const uniq = a => [...new Set(a)];
-const LIENS = ["le","la","les","l'","un","une","des","de","du","d'","et","ou","mais","car","mon","ma","mes","ton","ta","tes","son","sa","ses","je","j'","tu","il","elle","nous","vous","on","ils","elles","me","te","se","moi","toi","ne","n'","pas","plus","encore","jamais","toujours","si","que","qui","où","sous","sur","dans","avec","sans","pour","vers","contre","comme","quand","puis","très","trop","doucement","ailleurs","peut-être","ici","déjà","à","au","en"];
-const PONCT = [",","?","!","…"];
-const COMMON_VERBS = ["être","avoir","aller","faire","voir","aimer","écrire"];
+/* l'onglet Liens, rangé en petits groupes */
+const LIEN_GROUPS = [
+  ["Pour commencer", "le la les l' un une des de du d' au aux ce cet cette ces mon ma mes ton ta tes son sa ses notre nos votre leur"],
+  ["Où, avec quoi ?", "à en sous sur dans avec sans pour vers contre entre derrière devant chez par parmi près loin depuis après avant jusqu' comme"],
+  ["Qui ?", "je j' tu il elle nous vous on ils elles me m' te t' se s' moi toi lui eux"],
+  ["Pour relier", "et ou mais car donc puis alors quand si que qu' qui où parce lorsque"],
+  ["Petits mots", "ne n' pas plus rien jamais encore toujours déjà très trop aussi tout y fois deux trois doucement ailleurs ici là peut-être enfin presque hier demain aujourd'hui maintenant"],
+].map(([name, w]) => [name, w.split(" ")]);
+const LIENS = LIEN_GROUPS.flatMap(g => g[1]);
+const PONCT = [",","?","!","…","."];
+LIEN_GROUPS.push(["Ponctuation", PONCT]);
+const COMMON_VERBS = ["être","avoir","aller","faire","voir","aimer","écrire","dire","savoir","pouvoir","vouloir","prendre","venir","sentir","vivre","mettre","devenir","tenir","lire","rester","penser","regarder","parler","donner","chercher","trouver"];
 const L = (n, v, a) => ({n:n.split(" "), v:v.split(" "), a:a.split(" ")});
 const LEX = {
-  doux: L("fil soie coton velours dentelle ruban plume nuage plaid thé câlin caresse coussin laine pétale miel lait berceuse bobine aiguille ourlet bouton tissu",
-          "coudre broder caresser bercer chuchoter respirer flotter envelopper dormir",
-          "doux tendre léger tiède moelleux fin rose calme"),
-  melanco: L("pluie brume souvenir absence silence quai gare lettre adieu fenêtre ombre larme novembre flaque écho banc rue pavé métro lampadaire toit reprise",
-          "attendre pleurer oublier partir tomber rêver disparaître regretter glisser croiser",
-          "gris lointain mouillé seul vide fragile lent froissé perdu"),
-  joyeux: L("soleil rire fête terrasse café vélo confetti ballon danse chanson musique matin dimanche glace pique-nique bulle guirlande ami foule néon kiosque",
-          "danser chanter rire sourire courir sauter briller voler jouer marcher",
-          "joyeux heureux vif pétillant sucré jaune éclatant fou bruyant allumé"),
-  myst: L("secret minuit lune étoile clé porte miroir labyrinthe forêt chouette masque énigme songe ombre brouillard lanterne phare horizon murmure",
-          "murmurer cacher chercher disparaître trouver ouvrir deviner rêver veiller",
-          "secret mystérieux sombre étrange invisible profond ancien silencieux noir"),
-  printemps: L("fleur bourgeon jardin pétale cerisier herbe oiseau nid averse avril abeille lilas pluie matin graine papillon",
-          "fleurir pousser chanter grandir germer butiner ouvrir respirer",
-          "vert frais neuf tendre rose léger timide nouveau"),
-  ete: L("mer vague sel sable plage soleil écume galet mouette île bateau voile coquillage glace sieste juillet cigale horizon embrun marée houle rivage port",
-          "nager dériver rouler bronzer briller flotter plonger partir voyager",
-          "bleu salé chaud doré lumineux brûlant lointain large"),
-  automne: L("feuille châtaigne brume plaid bougie écharpe champignon cannelle fumée soir novembre vent frisson pomme citrouille flaque forêt thé",
-          "tomber craquer glisser cueillir frissonner rentrer ramasser rougir",
-          "roux doré mouillé lent tiède rouge orangé"),
-  hiver: L("neige flocon givre cheminée chocolat bonnet moufle décembre nuit étoile silence feu laine traîneau sapin buée gel",
-          "geler fondre souffler briller dormir attendre glisser blanchir",
-          "blanc froid glacé endormi immense silencieux pâle"),
+  doux: L("fil soie coton velours dentelle ruban plume nuage plaid thé câlin caresse coussin laine pétale miel lait berceuse bobine aiguille ourlet bouton tissu cœur lumière chaussette tricot nid sourire baiser main joue peau épaule oreiller couverture bougie lin mousse duvet chat tasse gâteau confiture brioche",
+          "coudre broder caresser bercer chuchoter respirer flotter envelopper dormir écouter tricoter câliner fondre sourire embrasser garder consoler réchauffer toucher rêver",
+          "doux tendre léger tiède moelleux fin rose calme chaud soyeux paisible délicat sucré lent petit mignon rond clair"),
+  melanco: L("pluie brume souvenir absence silence quai gare lettre adieu fenêtre ombre larme novembre flaque écho banc rue pavé métro lampadaire toit reprise ville valise photo mémoire regret frontière train départ nostalgie cendre vitre parapluie chaise attente distance",
+          "attendre pleurer oublier partir tomber rêver disparaître regretter glisser croiser arriver manquer perdre revenir quitter effacer soupirer pâlir vieillir",
+          "gris lointain mouillé seul vide fragile lent froissé perdu pâle triste vieux usé fané éteint muet lourd las ancien"),
+  joyeux: L("soleil rire fête terrasse café vélo confetti ballon danse chanson musique matin dimanche glace pique-nique bulle guirlande ami foule néon kiosque jour manège bonbon cadeau gâteau étincelle piscine plage pirouette tambour trompette balançoire",
+          "danser chanter rire sourire courir sauter briller voler jouer marcher fêter crier applaudir tourner pétiller rigoler grimper siffler partager",
+          "joyeux heureux vif pétillant sucré jaune éclatant fou bruyant allumé gai drôle léger rapide fier libre radieux orange génial"),
+  myst: L("secret minuit lune étoile clé porte miroir labyrinthe forêt chouette masque énigme songe ombre brouillard lanterne phare horizon murmure lumière cœur grotte trésor carte boussole fantôme sorcière potion serrure grenier couloir escalier reflet cape loup corbeau légende",
+          "murmurer cacher chercher disparaître trouver ouvrir deviner rêver veiller fouiller dissimuler suivre apparaître briller fermer glisser frissonner",
+          "secret mystérieux sombre étrange invisible profond ancien silencieux noir caché oublié magique bizarre lunaire étoilé interdit obscur nocturne"),
+  printemps: L("fleur bourgeon jardin pétale cerisier herbe oiseau nid averse avril abeille lilas pluie matin graine papillon mai tulipe muguet coccinelle rosée prairie arrosoir pommier source ruisseau colline brin",
+          "fleurir pousser chanter grandir germer butiner ouvrir respirer arroser planter cueillir bourgeonner verdir réveiller courir",
+          "vert frais neuf tendre rose léger timide nouveau fleuri doux vivant parfumé humide pâle"),
+  ete: L("mer vague sel sable plage soleil écume galet mouette île bateau voile coquillage glace sieste juillet cigale horizon embrun marée houle rivage port août chapeau maillot serviette pastèque lavande crème dune falaise baignade palmier vacances chaleur",
+          "nager dériver rouler bronzer briller flotter plonger partir voyager naviguer ramer pêcher marcher dormir respirer brûler",
+          "bleu salé chaud doré lumineux brûlant lointain large immense turquoise bronzé ensoleillé paresseux sec nu"),
+  automne: L("feuille châtaigne brume plaid bougie écharpe champignon cannelle fumée soir novembre vent frisson pomme citrouille flaque forêt thé octobre marron noisette écureuil gland parapluie cheminée soupe botte écorce mousse",
+          "tomber craquer glisser cueillir frissonner rentrer ramasser rougir souffler tourbillonner ralentir jaunir pleuvoir emmitoufler",
+          "roux doré mouillé lent tiède rouge orangé brun humide fané croustillant cuivré frileux venteux"),
+  hiver: L("neige flocon givre cheminée chocolat bonnet moufle décembre nuit étoile silence feu laine traîneau sapin buée gel janvier glaçon patin luge écharpe pull bûche guirlande lanterne hibou pingouin aurore vapeur",
+          "geler fondre souffler briller dormir attendre glisser blanchir patiner grelotter scintiller hiberner allumer réchauffer craquer",
+          "blanc froid glacé endormi immense silencieux pâle gelé enneigé cotonneux scintillant gris bleu clair"),
 };
 const POOL_NAMES = {tout:"Tout", doux:"Doux", melanco:"Mélancolique", joyeux:"Joyeux", myst:"Mystérieux",
   printemps:"Printemps", ete:"Été", automne:"Automne", hiver:"Hiver",
@@ -287,8 +281,25 @@ const IRR = {
   "ouvrir":["ouvrir","ouvre","ouvres","ouvre","ouvrons","ouvrez","ouvrent","ouvrait","ouvert","ouvrira"],
   "fondre":["fondre","fonds","fonds","fond","fondons","fondez","fondent","fondait","fondu","fondra"],
   "geler":["geler","gèle","gèles","gèle","gelons","gelez","gèlent","gelait","gelé","gèlera"],
+  "dire":["dire","dis","dis","dit","disons","dites","disent","disait","dit","dira"],
+  "savoir":["savoir","sais","sais","sait","savons","savez","savent","savait","su","saura"],
+  "pouvoir":["pouvoir","peux","peux","peut","pouvons","pouvez","peuvent","pouvait","pu","pourra"],
+  "vouloir":["vouloir","veux","veux","veut","voulons","voulez","veulent","voulait","voulu","voudra"],
+  "prendre":["prendre","prends","prends","prend","prenons","prenez","prennent","prenait","pris","prendra"],
+  "venir":["venir","viens","viens","vient","venons","venez","viennent","venait","venu","viendra"],
+  "revenir":["revenir","reviens","reviens","revient","revenons","revenez","reviennent","revenait","revenu","reviendra"],
+  "devenir":["devenir","deviens","deviens","devient","devenons","devenez","deviennent","devenait","devenu","deviendra"],
+  "tenir":["tenir","tiens","tiens","tient","tenons","tenez","tiennent","tenait","tenu","tiendra"],
+  "sentir":["sentir","sens","sens","sent","sentons","sentez","sentent","sentait","senti","sentira"],
+  "vivre":["vivre","vis","vis","vit","vivons","vivez","vivent","vivait","vécu","vivra"],
+  "mettre":["mettre","mets","mets","met","mettons","mettez","mettent","mettait","mis","mettra"],
+  "lire":["lire","lis","lis","lit","lisons","lisez","lisent","lisait","lu","lira"],
+  "perdre":["perdre","perds","perds","perd","perdons","perdez","perdent","perdait","perdu","perdra"],
+  "suivre":["suivre","suis","suis","suit","suivons","suivez","suivent","suivait","suivi","suivra"],
+  "apparaître":["apparaître","apparais","apparais","apparaît","apparaissons","apparaissez","apparaissent","apparaissait","apparu","apparaîtra"],
+  "pleuvoir":["pleuvoir","pleut","pleut","pleut","pleut","pleut","pleuvent","pleuvait","plu","pleuvra"],
 };
-const SECOND = ["fleurir","grandir","rougir","blanchir"];
+const SECOND = ["fleurir","grandir","rougir","blanchir","applaudir","pâlir","vieillir","verdir","ralentir","jaunir","finir","choisir"];
 function verbForms(inf){
   let f = IRR[inf];
   if (!f && SECOND.includes(inf)){ const st = inf.slice(0, -2); f = [inf, st+"is", st+"is", st+"it", st+"issons", st+"issez", st+"issent", st+"issait", st+"i", inf+"a"]; }
@@ -303,6 +314,8 @@ const AIRR = {
   "doux":["doux","douce","doux","douces"], "roux":["roux","rousse","roux","rousses"], "blanc":["blanc","blanche","blancs","blanches"],
   "secret":["secret","secrète","secrets","secrètes"], "frais":["frais","fraîche","frais","fraîches"],
   "nouveau":["nouveau","nouvelle","nouveaux","nouvelles"], "fou":["fou","folle","fous","folles"],
+  "vieux":["vieux","vieille","vieux","vieilles"], "muet":["muet","muette","muets","muettes"], "las":["las","lasse","las","lasses"],
+  "mignon":["mignon","mignonne","mignons","mignonnes"], "génial":["génial","géniale","géniaux","géniales"], "sec":["sec","sèche","secs","sèches"],
 };
 function adjForms(a){
   let f = AIRR[a];
@@ -318,7 +331,7 @@ function adjForms(a){
   return merge(f, ["masculin","féminin","masc. pluriel","fém. pluriel"]);
 }
 function nounForms(n){
-  const pl = /[sxz]$/.test(n) ? n : /(eau|au|eu)$/.test(n) ? n + "x" : n + "s";
+  const pl = /[sxz]$/.test(n) ? n : /(eau|au|eu)$/.test(n) || ["bijou","caillou","chou","genou","hibou","joujou","pou"].includes(n) ? n + "x" : n + "s";
   return merge([n, pl], ["singulier","pluriel"]);
 }
 function merge(words, labels){
@@ -350,23 +363,53 @@ function freshDrawer(){
   const onBoard = words.filter(m => m.on);
   const t = poolLists(pool);
   words = [...onBoard,
-    ...shuffle(pick(t.noms, 18)).map(w => mk(w, "nom")),
-    ...shuffle(uniq([...pick(t.verbes, 8), ...pick(COMMON_VERBS, 3)])).map(w => mk(w, "verbe")),
-    ...shuffle(pick(t.adjs, 10)).map(w => mk(w, "adj")),
+    ...shuffle(pick(t.noms, 24)).map(w => mk(w, "nom")),
+    ...shuffle(uniq([...pick(t.verbes, 10), ...pick(COMMON_VERBS, 4)])).map(w => mk(w, "verbe")),
+    ...shuffle(pick(t.adjs, 12)).map(w => mk(w, "adj")),
     ...LIENS.map(w => mk(w, "lien")),
     ...PONCT.map(w => mk(w, "lien")),
   ];
 }
+/* débuts de poème : « / » passe à la ligne */
+const STARTERS = [
+  "il était une fois", "ce matin / la pluie", "si demain", "je cherche une clé", "sous la neige", "le vent murmure",
+  "quand la lune tombe", "nous attendons encore", "dans le silence", "tu es mon", "la mer coud un ourlet / de lumière",
+  "un secret / sous le banc", "elle danse avec", "mon cœur est un", "j' attends le soleil", "derrière la porte",
+  "après la pluie", "rien ne", "doucement , la brume", "il y a des étoiles", "à minuit , / tout", "mes souvenirs dansent",
+  "on oublie toujours", "le café est froid", "ma fenêtre ouvre sur", "aujourd'hui , je", "hier encore", "entre deux nuages",
+  "un fil de soie / entre nous", "quand novembre arrive", "la neige tombe sur", "nous sommes des",
+  "écoute la pluie", "la forêt chuchote", "un jour , / peut-être", "loin de la ville", "le phare attend", "comme une plume",
+];
+/* retrouve chaque mot du tiroir (et sa forme conjuguée ou accordée) */
+const FORMS = new Map();
+function indexForms(){
+  const add = (w, c, l, f) => { if (!FORMS.has(w)) FORMS.set(w, {c, l, f}); };
+  [...LIENS, ...PONCT].forEach(w => add(w, "lien", w, 0));
+  ALL.noms.forEach(n => nounForms(n).forEach((x, f) => add(x.w, "nom", n, f)));
+  uniq([...ALL.verbes, ...COMMON_VERBS]).forEach(v => verbForms(v).forEach((x, f) => add(x.w, "verbe", v, f)));
+  ALL.adjs.forEach(a => adjForms(a).forEach((x, f) => add(x.w, "adj", a, f)));
+}
+function starterLines(text){
+  if (!FORMS.size) indexForms();
+  return text.split("/").map(line => line.trim().split(/\s+/).filter(Boolean).map(w => {
+    const k = FORMS.get(w); return k ? [w, k.c, k.l, k.f] : [w, "lien", w, 0];
+  }));
+}
+function putStarter(text){
+  const lines = starterLines(text), dw = door.getBoundingClientRect().width || 340, dh = door.getBoundingClientRect().height || 400;
+  const lh = 46 / dh * 100;
+  lines.forEach((line, li) => {
+    let x = [7, 13, 18, 10][li % 4];
+    for (const [w, c, l, f] of line){
+      const m = mk(w, c, {l, f, on:true, x, y: 8 + li*lh + rnd(-0.6, 0.6)});
+      words.push(m); x += measure(w) / dw * 100 + 1.8;
+    }
+  });
+}
 function sample(){
   pool = "tout";
   freshDrawer();
-  const lines = [[["la","lien"],["mer","nom"]],[["coud","verbe","coudre",2],["un","lien"],["ourlet","nom"]],[["de","lien"],["lumière","nom"]],[["sous","lien"],["mon","lien"],["phare","nom"]]];
-  sampleLines = [];
-  lines.forEach((line, li) => {
-    const ids = [];
-    for (const [w, c, l, f] of line){ const m = mk(w, c, {l: l || w, f: f || 0, on:true, x:8, y:12 + li*12 + rnd(-0.8, 0.8)}); words.push(m); ids.push(m); }
-    sampleLines.push({ids, indent: [8, 14, 20, 10][li]});
-  });
+  sampleLines = STARTERS[(Math.random()*STARTERS.length)|0];
 }
 function guessCat(w){
   if (ALL.noms.includes(w)) return "nom";
@@ -374,7 +417,7 @@ function guessCat(w){
   if (ALL.adjs.includes(w)) return "adj";
   return "lien";
 }
-function save(){ try { localStorage.setItem(KEY, JSON.stringify({v:3, pool, tab, words, carnet, mode, challenge, recent})); } catch(e){} }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify({v:5, pool, tab, words, carnet, mode, challenge, recent})); } catch(e){} }
 function load(){
   try {
     const d = JSON.parse(localStorage.getItem(KEY) || "null");
@@ -388,7 +431,7 @@ function load(){
       recent = Array.isArray(d.recent) ? d.recent : [];
       if (mode !== "libre" && !challenge) mode = "libre";
       uid = Math.max(0, ...words.map(m => m.id)) + 1;
-      if (d.v !== 3) freshDrawer();
+      if (d.v !== 5) freshDrawer();
       return;
     }
   } catch(e){}
@@ -482,7 +525,16 @@ function render(freshId){
   drawer.innerHTML = "";
   for (const m of words){
     if (m.on){ const el = magEl(m, m.id === freshId); el.style.left = m.x + "%"; el.style.top = m.y + "%"; door.append(el); }
-    else if (m.c === tab) drawer.append(magEl(m, false));
+    else if (m.c === tab && tab !== "lien") drawer.append(magEl(m, newIds.has(m.id)));
+  }
+  if (tab === "lien"){
+    const pool = words.filter(m => !m.on && m.c === "lien");
+    for (const [name, list] of LIEN_GROUPS){
+      const ms = list.map(w => pool.find(m => m.w === w)).filter(Boolean);
+      if (!ms.length) continue;
+      const lab = document.createElement("div"); lab.className = "glabel"; lab.textContent = name; drawer.append(lab);
+      ms.forEach(m => drawer.append(magEl(m, false)));
+    }
   }
   tabsEl.querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b.dataset.k === tab));
   document.getElementById("emptyMsg").hidden = words.some(m => m.on);
@@ -583,7 +635,7 @@ function poemText(list){
     for (const m of l.items.sort((a, b) => a.x - b.x)){
       const w = m.w;
       if (w.startsWith("-") && w.length > 1) s += w.slice(1);
-      else if (w === "," || w === "…") s += w;
+      else if (w === "," || w === "…" || w === ".") s += w;
       else if (w === "?" || w === "!") s += " " + w;
       else if (s.endsWith("'") || !s) s += w;
       else s += " " + w;
@@ -592,77 +644,55 @@ function poemText(list){
   }).join("\n");
 }
 
-/* ================= carnet : un poème par page ================= */
-const carnetPage = document.getElementById("carnetPage"), sheet = document.getElementById("sheet");
-const listEl = document.getElementById("list"), readerEl = document.getElementById("reader"), listBtn = document.getElementById("listBtn");
-let cur = 0;   // 0 = le plus récent
-const ordered = () => carnet.slice().reverse();
-const fmtDate = (t, long) => new Date(t).toLocaleDateString("fr-FR", long ? {weekday:"long", day:"numeric", month:"long"} : {day:"numeric", month:"short"});
-function showPoem(dir){
-  const list = ordered();
-  const delBtn = document.getElementById("delP");
-  delete delBtn.dataset.sure; delBtn.classList.remove("sure"); delBtn.textContent = "🗑";
-  sheet.className = "sheet" + (dir ? " in-" + dir : "");
-  sheet.innerHTML = "";
-  if (!list.length){
-    sheet.innerHTML = '<p class="blank">Ton carnet est vide.<br>Compose un poème sur le frigo, puis touche « Garder ».</p>';
-    document.querySelector(".nav").hidden = document.querySelector(".pageacts").hidden = true; return;
+/* ================= carnet : les textes à la suite ================= */
+const carnetPage = document.getElementById("carnetPage"), poemsEl = document.getElementById("poems"), qEl = document.getElementById("q");
+const fmtDate = t => new Date(t).toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"});
+const fold = t => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+/* entoure les passages trouvés, sans tenir compte des accents ni des majuscules */
+function highlight(el, text, q){
+  if (!q){ el.textContent = text; return; }
+  const f = fold(text); let i = 0, k;
+  while ((k = f.indexOf(q, i)) !== -1){
+    el.append(text.slice(i, k));
+    const m = document.createElement("mark"); m.textContent = text.slice(k, k + q.length); el.append(m);
+    i = k + q.length;
   }
-  document.querySelector(".nav").hidden = document.querySelector(".pageacts").hidden = false;
-  cur = clamp(cur, 0, list.length - 1);
-  const p = list[cur];
-  if (p.defi){ const d = document.createElement("div"); d.className = "defi"; d.textContent = p.defi; sheet.append(d); }
-  const pre = document.createElement("pre"); pre.textContent = poemText(p.words); sheet.append(pre);
-  const dt = document.createElement("div"); dt.className = "date"; dt.textContent = fmtDate(p.date, true); sheet.append(dt);
-  sheet.scrollTop = 0;
-  document.getElementById("countP").textContent = `${cur + 1} / ${list.length}`;
-  document.getElementById("prevP").disabled = cur === 0;
-  document.getElementById("nextP").disabled = cur === list.length - 1;
+  el.append(text.slice(i));
 }
-function go(step){ const n = ordered().length; const t = cur + step; if (t < 0 || t >= n) return; cur = t; showPoem(step > 0 ? "right" : "left"); }
-document.getElementById("prevP").onclick = () => go(-1);
-document.getElementById("nextP").onclick = () => go(1);
-/* glisser le doigt pour tourner les pages */
-let sw = null;
-sheet.addEventListener("pointerdown", e => { sw = {x:e.clientX, y:e.clientY}; });
-sheet.addEventListener("pointerup", e => {
-  if (!sw) return; const dx = e.clientX - sw.x, dy = e.clientY - sw.y; sw = null;
-  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
-});
-sheet.addEventListener("pointercancel", () => { sw = null; });
-function renderList(){
-  listEl.innerHTML = "";
-  const list = ordered();
-  if (!list.length){ listEl.innerHTML = '<p class="blank">Ton carnet est vide.</p>'; return; }
-  list.forEach((p, i) => {
-    const b = document.createElement("button"); b.type = "button";
-    const first = document.createElement("span"); first.className = "first";
-    if (p.defi){ const st = document.createElement("span"); st.className = "star"; st.textContent = "✦"; first.append(st); }
-    first.append(poemText(p.words).split("\n")[0] || "…");
+function renderCarnet(){
+  poemsEl.innerHTML = "";
+  const q = fold(qEl.value.trim());
+  const all = carnet.slice().reverse();
+  const list = q ? all.filter(p => fold(poemText(p.words) + " " + (p.defi || "")).includes(q)) : all;
+  document.getElementById("found").textContent = q ? (list.length ? `${list.length} poème${list.length > 1 ? "s" : ""}` : "") : "";
+  if (!all.length){ poemsEl.innerHTML = '<p class="blank">Ton carnet est vide.<br>Compose un poème sur le frigo, puis touche « Garder ».</p>'; return; }
+  if (!list.length){ poemsEl.innerHTML = '<p class="blank">Aucun poème avec ce mot.</p>'; return; }
+  for (const p of list){
+    const e = document.createElement("article"); e.className = "entry";
+    if (p.defi){ const d = document.createElement("div"); d.className = "defi"; highlight(d, p.defi, q); e.append(d); }
+    const pre = document.createElement("pre"); highlight(pre, poemText(p.words), q); e.append(pre);
+    const meta = document.createElement("div"); meta.className = "meta";
     const d = document.createElement("span"); d.className = "d"; d.textContent = fmtDate(p.date);
-    b.append(first, d);
-    b.onclick = () => { cur = i; setList(false); showPoem(); };
-    listEl.append(b);
-  });
+    const reopen = document.createElement("button"); reopen.type = "button"; reopen.textContent = "↩ Sur le frigo";
+    reopen.onclick = () => {
+      words = [...words.filter(m => !m.on), ...p.words.map(w => mk(w.w, w.c || guessCat(w.w), {l: w.l || w.w, f: w.f || 0, on:true, x:w.x, y:w.y, r:w.r}))];
+      lastSaved = snapshot();
+      render(); save(); closeCarnet(); toast("Poème remis sur le frigo");
+    };
+    const del = document.createElement("button"); del.type = "button"; del.className = "del"; del.textContent = "Supprimer";
+    del.onclick = () => {
+      if (del.dataset.sure){ carnet = carnet.filter(x => x !== p); save(); render(); renderCarnet(); toast("Poème supprimé"); }
+      else { del.dataset.sure = "1"; del.classList.add("sure"); del.textContent = "Sûre ?"; setTimeout(() => { if (del.isConnected){ delete del.dataset.sure; del.classList.remove("sure"); del.textContent = "Supprimer"; } }, 2500); }
+    };
+    meta.append(d, reopen, del); e.append(meta);
+    poemsEl.append(e);
+  }
 }
-function setList(on){ listEl.hidden = !on; readerEl.hidden = on; listBtn.setAttribute("aria-pressed", on); if (on) renderList(); }
-listBtn.onclick = () => setList(listEl.hidden);
-document.getElementById("reopenP").onclick = () => {
-  const p = ordered()[cur]; if (!p) return;
-  words = [...words.filter(m => !m.on), ...p.words.map(w => mk(w.w, w.c || guessCat(w.w), {l: w.l || w.w, f: w.f || 0, on:true, x:w.x, y:w.y, r:w.r}))];
-  lastSaved = snapshot();
-  render(); save(); closeCarnet(); toast("Poème remis sur le frigo");
-};
-document.getElementById("delP").onclick = e => {
-  const b = e.currentTarget, p = ordered()[cur]; if (!p) return;
-  if (b.dataset.sure){ carnet = carnet.filter(x => x !== p); save(); render(); showPoem(); toast("Poème supprimé"); }
-  else { b.dataset.sure = "1"; b.classList.add("sure"); b.textContent = "Supprimer ?"; setTimeout(() => { if (b.dataset.sure){ delete b.dataset.sure; b.classList.remove("sure"); b.textContent = "🗑"; } }, 2500); }
-};
-function openCarnet(at = 0){ cur = at; setList(false); showPoem(); carnetPage.hidden = false; hideSaved(); }
-function closeCarnet(){ carnetPage.hidden = true; }
-document.getElementById("carnetBtn").onclick = () => openCarnet(0);
+qEl.addEventListener("input", renderCarnet);
+function openCarnet(){ qEl.value = ""; renderCarnet(); carnetPage.hidden = false; carnetPage.querySelector(".scroll").scrollTop = 0; hideSaved(); }
+function closeCarnet(){ carnetPage.hidden = true; qEl.blur(); }
+document.getElementById("carnetBtn").onclick = openCarnet;
 document.getElementById("carnetBack").onclick = closeCarnet;
-document.addEventListener("keydown", e => { if (!carnetPage.hidden && !readerEl.hidden){ if (e.key === "ArrowLeft") go(-1); if (e.key === "ArrowRight") go(1); } });
 
 /* ================= garder un poème, en douceur ================= */
 const savedEl = document.getElementById("saved"); let savedT;
@@ -683,7 +713,7 @@ document.getElementById("keep").onclick = () => {
   door.classList.remove("kept"); void door.offsetWidth; door.classList.add("kept");
   savedEl.hidden = false; clearTimeout(savedT); savedT = setTimeout(hideSaved, 9000);
 };
-document.getElementById("savedRead").onclick = () => openCarnet(0);
+document.getElementById("savedRead").onclick = () => openCarnet();
 document.getElementById("savedNew").onclick = () => { hideSaved(); openMenu("new"); };
 
 /* ================= menu ================= */
@@ -699,6 +729,12 @@ function openMenu(kind){
 function closeMenu(){ menu.hidden = true; }
 function startFresh(){ if (menuClears){ words = words.filter(m => !m.on); lastSaved = null; hideSaved(); render(); } }
 document.getElementById("pickFree").onclick = () => { startFresh(); setMode("libre"); closeMenu(); };
+let lastStarter = null;
+document.getElementById("pickStart").onclick = () => {
+  words = words.filter(m => !m.on); lastSaved = null; hideSaved();
+  let t; do { t = STARTERS[(Math.random()*STARTERS.length)|0]; } while (t === lastStarter && STARTERS.length > 1);
+  lastStarter = t; putStarter(t); setMode("libre"); render(); save(); closeMenu();
+};
 document.getElementById("pickDefi").onclick = () => { startFresh(); challenge = newChallenge(); setMode("propose"); closeMenu(); };
 document.getElementById("menuStay").onclick = () => closeMenu();
 menu.addEventListener("click", e => { if (e.target === menu) document.getElementById("menuStay").click(); });
@@ -719,7 +755,23 @@ function renderPools(){
   poolsEl.append(chip("tout"), sep(), ...AMBIANCES.map(chip), sep(), ...SAISONS.map(chip));
 }
 renderPools();
-document.getElementById("shuffle").onclick = () => { freshDrawer(); render(); drawer.scrollTop = 0; save(); toast("🎁 Nouveau sachet de mots"); };
+/* un sachet ajoute quelques mots au tiroir, sans enlever ceux qui y sont */
+let newIds = new Set();
+document.getElementById("shuffle").onclick = () => {
+  const t = poolLists(pool);
+  const have = c => new Set(words.filter(m => !m.on && m.c === c).map(m => m.l));
+  const take = (list, c, n) => pick(list.filter(w => !have(c).has(w)), n).map(w => mk(w, c));
+  const verbs = uniq([...t.verbes, ...COMMON_VERBS]);
+  const fresh = [...take(t.noms, "nom", 4), ...take(verbs, "verbe", 2), ...take(t.adjs, "adj", 2)];
+  if (!fresh.length){ toast("Tu as déjà tous les mots de cette ambiance"); return; }
+  newIds = new Set(fresh.map(m => m.id));
+  words = [...words.filter(m => m.on), ...fresh, ...words.filter(m => !m.on)];
+  /* on montre l'onglet où il y a du nouveau */
+  if (!fresh.some(m => m.c === tab)) tab = fresh[0].c;
+  render(); drawer.scrollTop = 0; save();
+  toast(`🎁 +${fresh.length} mot${fresh.length > 1 ? "s" : ""} dans ton tiroir`);
+  setTimeout(() => { newIds = new Set(); }, 50);
+};
 document.getElementById("clearDoor").onclick = () => { words = words.filter(m => !m.on); lastSaved = null; hideSaved(); render(); save(); };
 
 const toastEl = document.getElementById("toast"); let tt;
@@ -730,11 +782,7 @@ function toast(t){ toastEl.textContent = t; toastEl.classList.add("on"); clearTi
 document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, {passive:false});
 document.addEventListener("dblclick", e => e.preventDefault(), {passive:false});
 
-if (sampleLines){
-  const dw = door.getBoundingClientRect().width || 340;
-  for (const l of sampleLines){ let x = l.indent; for (const m of l.ids){ m.x = x; x += measure(m.w) / dw * 100 + 2.2; } }
-  sampleLines = null;
-}
+if (sampleLines){ putStarter(sampleLines); sampleLines = null; save(); }
 render(); renderChallenge();
 openMenu("start");
 </script>
