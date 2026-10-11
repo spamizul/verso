@@ -1,4 +1,5 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>verso</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -9,7 +10,7 @@
 <link rel="icon" href="icon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Libre+Caslon+Text:ital@0;1&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
-/* La porte du frigo en haut, le tiroir rangé par catégories dessous ; côte à côte sur grand écran. Émail menthe rétro, aimants blancs. */
+/* Une seule page sans défilement : le frigo prend la place libre, le tiroir est fixé en bas. Le carnet est une page à part. */
 :root{
   --bg:#eef2f0; --surface:#ffffff; --ink:#1d2422; --muted:#5b6763; --line:#d3dcd8;
   --door:#cfe3db; --door-edge:#b4cec4; --door-shine:rgba(255,255,255,.55);
@@ -17,6 +18,7 @@
   --f-title:"Young Serif", Georgia, serif;
   --f-magnet:"Libre Caslon Text", "Times New Roman", serif;
   --f-ui:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -29,110 +31,110 @@
   --magnet:#f4f2ec; --magnet-ink:#161616; --accent:#7cc4b9; --accent-soft:#21403b; color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{margin:0;background:var(--bg);color:var(--ink);overflow-x:hidden;overscroll-behavior:none}
-body{font-family:var(--f-ui);font-size:15px;line-height:1.45;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(32px + env(safe-area-inset-bottom,0px));-webkit-user-select:none;user-select:none}
-.wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
-h1{font-family:var(--f-title);font-weight:400;font-size:clamp(26px,6vw,36px);margin:0;letter-spacing:-.01em}
-.hbtns{display:flex;gap:8px;flex:none}
-.icon{height:44px;min-width:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}
-.icon:hover{border-color:var(--accent)}
-.icon[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);overscroll-behavior:none;touch-action:manipulation;-webkit-text-size-adjust:100%}
+body{font-family:var(--f-ui);font-size:15px;line-height:1.4;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-.app{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
-@media (min-width:880px){.app{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
+.shell{height:100dvh;display:flex;flex-direction:column;gap:10px;padding:calc(10px + var(--safe-t)) 12px calc(10px + var(--safe-b));max-width:1100px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:none}
+h1{font-family:var(--f-title);font-weight:400;font-size:30px;margin:0;letter-spacing:-.01em;line-height:1}
+.hbtns{display:flex;gap:8px}
+.icon{height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}
+.icon .n{font-weight:400;color:var(--muted)}
 
-/* ----- bandeau défi : libre / proposé / en cours ----- */
-.challenge{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-height:58px}
-.challenge .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);flex:none}
-.challenge .text{margin:0;flex:1 1 180px;min-width:0;font-family:var(--f-magnet);font-style:italic;font-size:15px;color:var(--muted)}
-.challenge .acts{display:flex;gap:6px;flex:none;margin-left:auto}
-.challenge .link{border:none;background:none;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;padding:8px 6px;text-decoration:underline}
-.challenge .go{border:1px solid var(--accent);background:var(--surface);color:var(--accent);font:inherit;font-size:13px;font-weight:700;border-radius:999px;padding:7px 12px;cursor:pointer}
-.challenge.propose{border-style:dashed;border-color:var(--accent)}
-.challenge.propose .tag{color:var(--accent)}
-.challenge.propose .text{color:var(--ink);cursor:pointer;border:none;background:none;text-align:left;padding:0;font-family:var(--f-magnet);font-style:italic;font-size:15px}
-.challenge.propose .text:hover{text-decoration:underline;text-decoration-color:var(--accent)}
+/* ----- bandeau défi ----- */
+.challenge{flex:none;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 6px 6px 12px;min-height:46px}
+.challenge .text{margin:0;flex:1;min-width:0;font-family:var(--f-magnet);font-style:italic;font-size:14.5px;line-height:1.3;color:var(--muted);text-align:left;border:none;background:none;padding:0}
+.challenge .text b{font-family:var(--f-ui);font-style:normal;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-right:6px}
+.challenge .acts{display:flex;gap:2px;flex:none}
+.challenge .link{border:none;background:none;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;padding:8px 7px;text-decoration:underline}
+.challenge .go{border:1px solid var(--accent);background:var(--surface);color:var(--accent);font:inherit;font-size:13px;font-weight:700;border-radius:999px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.challenge.propose{border-style:dashed;border-color:var(--accent);flex-wrap:wrap;row-gap:2px}
+.challenge.propose .text{flex-basis:100%;padding-top:4px}
+.challenge.propose .acts{margin-left:auto}
+.challenge.propose .text{color:var(--ink);cursor:pointer}
 .challenge.propose .go{background:var(--accent);color:var(--surface)}
 .challenge.defi{background:var(--accent-soft);border-color:var(--accent)}
-.challenge.defi .tag{color:var(--accent)}
 .challenge.defi .text{color:var(--ink)}
 
-.door{position:relative;width:100%;aspect-ratio:4/5;max-height:62svh;border-radius:18px;background:
+/* ----- frigo + tiroir ----- */
+.app{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
+.door{position:relative;flex:1;min-height:0;border-radius:16px;background:
   linear-gradient(115deg,var(--door-shine) 0%,transparent 28%,transparent 70%,var(--door-shine) 100%),var(--door);
-  box-shadow:inset 0 0 0 1px var(--door-edge),inset -10px 0 0 var(--door-edge),0 10px 28px rgba(20,40,35,.16);overflow:hidden;touch-action:none}
-@media (min-width:880px){.door{max-height:none;aspect-ratio:auto;height:min(76vh,660px)}}
-.door.over{box-shadow:inset 0 0 0 2px var(--accent),inset -10px 0 0 var(--door-edge),0 10px 28px rgba(20,40,35,.16)}
-.handle{position:absolute;right:22px;top:12%;width:8px;height:22%;border-radius:6px;background:var(--door-edge);box-shadow:inset 1px 0 0 var(--door-shine)}
-.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-family:var(--f-magnet);font-style:italic;padding:24px;pointer-events:none}
+  box-shadow:inset 0 0 0 1px var(--door-edge),inset -9px 0 0 var(--door-edge),0 8px 22px rgba(20,40,35,.14);overflow:hidden;touch-action:none}
+.door.over{box-shadow:inset 0 0 0 2px var(--accent),inset -9px 0 0 var(--door-edge)}
+.handle{position:absolute;right:20px;top:12%;width:7px;height:22%;border-radius:6px;background:var(--door-edge)}
+.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-family:var(--f-magnet);font-style:italic;font-size:14px;padding:24px 40px;pointer-events:none}
 
-.mag{position:absolute;font-family:var(--f-magnet);font-size:17px;line-height:1;color:var(--magnet-ink);background:var(--magnet);padding:6px 8px 5px;border-radius:1px;
+.mag{position:absolute;font-family:var(--f-magnet);font-size:17px;line-height:1;color:var(--magnet-ink);background:var(--magnet);padding:7px 9px 6px;border-radius:1px;
   box-shadow:0 1px 0 rgba(0,0,0,.12),1px 2px 3px rgba(0,0,0,.18);white-space:nowrap;cursor:grab;touch-action:none;transform:rotate(var(--r,0deg))}
 .door .mag.morph{box-shadow:0 1px 0 rgba(0,0,0,.12),1px 2px 3px rgba(0,0,0,.18),inset 0 -2px 0 var(--accent-soft)}
-.mag.drag{position:fixed;z-index:50;cursor:grabbing;box-shadow:0 2px 0 rgba(0,0,0,.1),3px 8px 16px rgba(0,0,0,.28);transform:rotate(var(--r,0deg)) scale(1.08)}
+.mag.drag{position:fixed;z-index:50;cursor:grabbing;box-shadow:0 2px 0 rgba(0,0,0,.1),3px 8px 16px rgba(0,0,0,.28);transform:rotate(var(--r,0deg)) scale(1.1)}
 .mag.fresh{animation:pop .25s ease-out}
 @keyframes pop{from{transform:rotate(var(--r,0deg)) scale(.7);opacity:.4}}
 
-.side{display:flex;flex-direction:column;gap:12px;min-width:0}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px}
-.label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips button{font:inherit;font-size:13px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
-.chips button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
-.pools{display:flex;flex-direction:column;gap:6px}
-.grp{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
-.grplabel{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px;min-width:78px}
-.grp button{font:inherit;font-size:13px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
-.grp button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
-.drawer .mag.neuf::after{content:"";position:absolute;top:-3px;right:-3px;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--surface)}
-.drawer{position:relative;display:flex;flex-direction:column;gap:10px;min-height:160px;max-height:44svh;overflow-y:auto;padding:2px 2px 8px;touch-action:pan-y}
-@media (min-width:880px){.drawer{max-height:50vh}}
-.sec{display:flex;flex-direction:column;gap:6px}
-.sec .seclabel{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
-.sec .secwords{display:flex;flex-wrap:wrap;gap:8px 7px;align-content:flex-start}
-.drawer .mag{position:relative;transform:rotate(var(--r,0deg))}
-.drawer .mag.drag{position:fixed;transform:rotate(var(--r,0deg)) scale(1.08)}
-.drawer.over{outline:2px dashed var(--accent);outline-offset:4px;border-radius:8px}
-.row{display:flex;flex-wrap:wrap;gap:8px}
-.btn{font:inherit;font-size:14px;padding:9px 14px;min-height:42px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.side{flex:none;height:min(44dvh,380px);min-height:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;overflow:hidden}
+.side.over{outline:2px dashed var(--accent);outline-offset:-2px}
+.pools{flex:none;display:flex;gap:6px;overflow-x:auto;padding:10px 10px 6px;scrollbar-width:none;touch-action:pan-x}
+.pools::-webkit-scrollbar{display:none}
+.pools button{flex:none;font:inherit;font-size:13px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.pools button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.pools .sep{flex:none;width:1px;background:var(--line);margin:4px 2px}
+.tabs{flex:none;display:flex;border-bottom:1px solid var(--line);padding:0 6px}
+.tabs button{flex:1;font:inherit;font-size:13.5px;font-weight:700;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;padding:8px 2px 7px;cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.drawer{flex:1;min-height:0;overflow-y:auto;display:flex;flex-wrap:wrap;gap:9px 7px;align-content:flex-start;padding:12px 10px;touch-action:pan-y}
+.drawer .mag{position:relative;touch-action:pan-y}
+.drawer .mag.drag{position:fixed}
+.bar{flex:none;display:flex;gap:6px;padding:8px;border-top:1px solid var(--line)}
+.btn{flex:1;font:inherit;font-size:14px;padding:8px 6px;min-height:42px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;white-space:nowrap}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:700}
-.btn:hover{border-color:var(--accent)}
 
-.carnet{display:flex;flex-direction:column;gap:10px}
-.poem{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg);display:flex;flex-direction:column;gap:8px}
-.poem pre{margin:0;font-family:var(--f-magnet);font-size:16px;line-height:1.5;white-space:pre-wrap;color:var(--ink)}
-.poem .defi{font-size:12.5px;color:var(--accent);font-style:italic;font-family:var(--f-magnet);padding-left:9px;border-left:2px solid var(--accent-soft)}
-.poem .defi::before{content:"Défi · ";font-family:var(--f-ui);font-style:normal;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
-.poem .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--muted);font-size:12px}
-.poem .meta div{display:flex;gap:4px}
-.poem .meta button{border:none;background:none;color:var(--accent);font:inherit;font-size:13px;font-weight:700;cursor:pointer;padding:6px}
-.poem .meta button.del{color:var(--muted);font-weight:400}
-.hint{margin:0;color:var(--muted);font-size:13px}
+@media (min-width:880px){
+  .shell{padding:20px 20px 20px}
+  .app{flex-direction:row}
+  .side{height:auto;width:42%}
+  h1{font-size:36px}
+}
 
-/* ----- menu de départ ----- */
+/* ----- carnet : page à part ----- */
+.page{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column}
+.page header{padding:calc(10px + var(--safe-t)) 12px 10px;max-width:1100px;width:100%;margin:0 auto}
+.page h2{font-family:var(--f-title);font-weight:400;font-size:28px;margin:0}
+.page .scroll{flex:1;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+.grid{max-width:1100px;margin:0 auto;padding:4px 12px calc(20px + var(--safe-b));display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;align-items:start}
+.poem{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.poem pre{margin:0;font-family:var(--f-magnet);font-size:15px;line-height:1.45;white-space:pre-wrap;word-break:break-word;color:var(--ink)}
+.poem .defi{font-size:12px;line-height:1.3;color:var(--accent);font-style:italic;font-family:var(--f-magnet)}
+.poem .meta{display:flex;justify-content:space-between;align-items:center;gap:4px;color:var(--muted);font-size:11.5px;border-top:1px solid var(--line);padding-top:6px}
+.poem .meta div{display:flex}
+.poem .meta button{border:none;background:none;color:var(--accent);font:inherit;font-size:16px;cursor:pointer;padding:4px 6px}
+.poem .meta button.del.sure{font-size:12px;font-weight:700;color:#b3473a}
+.blank{grid-column:1/-1;color:var(--muted);text-align:center;padding:40px 20px;font-family:var(--f-magnet);font-style:italic}
+
+/* ----- menu ----- */
 .menu{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(20,30,27,.42);backdrop-filter:blur(3px)}
-.menu .card{width:100%;max-width:400px;background:var(--surface);border-radius:18px;padding:22px 18px 14px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
-.menu h2{font-family:var(--f-title);font-weight:400;font-size:26px;margin:0}
-.menu .sub{margin:0 0 4px;color:var(--muted)}
+.menu .card{width:100%;max-width:400px;background:var(--surface);border-radius:18px;padding:22px 18px 12px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.menu h2{font-family:var(--f-title);font-weight:400;font-size:25px;margin:0}
+.menu .sub{margin:0 0 2px;color:var(--muted);font-size:14px}
 .choice{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;cursor:pointer}
-.choice:hover{border-color:var(--accent)}
 .choice .em{font-size:28px;flex:none}
 .choice b{display:block;font-size:16px}
 .choice span.d{display:block;font-size:13px;color:var(--muted)}
 .menu .stay{align-self:center;border:none;background:none;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:8px}
 
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:calc(100% - 32px);z-index:80}
+.toast{position:fixed;left:50%;top:32%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:calc(100% - 32px);z-index:80;text-align:center}
 .toast.on{opacity:1}
 @media (prefers-reduced-motion: reduce){.mag.fresh{animation:none}.toast{transition:none}}
 </style></head><body>
 
-<div class="wrap">
+<div class="shell">
   <header>
     <h1>verso</h1>
     <div class="hbtns">
       <button class="icon" id="newBtn" type="button">✨ Nouveau</button>
-      <button class="icon" id="carnetBtn" type="button" aria-pressed="false">📓 Carnet</button>
+      <button class="icon" id="carnetBtn" type="button">📓 <span class="n" id="carnetCount"></span></button>
     </div>
   </header>
 
@@ -141,48 +143,47 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   <div class="app">
     <div class="door" id="door" aria-label="Porte du frigo où composer ton poème">
       <div class="handle"></div>
-      <div class="empty" id="emptyMsg">Touche un mot du tiroir pour le poser ici,<br>ou fais-le glisser où tu veux.</div>
+      <div class="empty" id="emptyMsg">Touche un mot du tiroir pour le poser ici.<br>Touche-le sur le frigo pour le conjuguer ou l'accorder, glisse-le vers le tiroir pour l'enlever.</div>
     </div>
 
-    <div class="side">
-      <div class="panel" id="drawerPanel">
-        <div class="label">Tiroir</div>
-        <div class="pools" id="pools"></div>
-        <div class="drawer" id="drawer"></div>
-        <div class="row">
-          <button class="btn" id="shuffle" type="button">🎁 Ouvrir un sachet</button>
-          <button class="btn" id="clearDoor" type="button">Tout ranger</button>
-          <button class="btn primary" id="keep" type="button">Garder ce poème</button>
-        </div>
-        <p class="hint">Un mot du tiroir se pose autant de fois que tu veux. Sur le frigo, touche un verbe pour le conjuguer, un nom ou un adjectif pour l'accorder ; glisse-le jusqu'au tiroir pour l'enlever. Les mots avec un point ✦ sont ceux que tu n'as encore jamais gardés.</p>
-      </div>
-
-      <div class="panel" id="carnetPanel" hidden>
-        <div class="label">Mon carnet</div>
-        <div class="carnet" id="carnet"></div>
+    <div class="side" id="side">
+      <div class="pools" id="pools"></div>
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div class="drawer" id="drawer"></div>
+      <div class="bar">
+        <button class="btn" id="shuffle" type="button">🎁 Sachet</button>
+        <button class="btn" id="clearDoor" type="button">Tout ranger</button>
+        <button class="btn primary" id="keep" type="button">Garder ✓</button>
       </div>
     </div>
   </div>
 </div>
 
+<section class="page" id="carnetPage" hidden aria-label="Mon carnet">
+  <header>
+    <h2>Carnet</h2>
+    <button class="icon" id="carnetBack" type="button">← Frigo</button>
+  </header>
+  <div class="scroll"><div class="grid" id="carnet"></div></div>
+</section>
+
 <div class="menu" id="menu" hidden>
   <div class="card" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
     <h2 id="menuTitle">Qu'est-ce qui te tente ?</h2>
-    <p class="sub" id="menuSub">Tu pourras changer d'avis en cours de route.</p>
+    <p class="sub" id="menuSub"></p>
     <button class="choice" id="pickFree" type="button"><span class="em">✍️</span><span><b>Écrire librement</b><span class="d">Juste toi et les mots, sans consigne.</span></span></button>
     <button class="choice" id="pickDefi" type="button"><span class="em">🎲</span><span><b>Relever un défi</b><span class="d">On t'en propose un, tu pioches jusqu'à ce qu'il te plaise.</span></span></button>
-    <button class="stay" id="menuStay" type="button">Revenir à mon frigo</button>
+    <button class="stay" id="menuStay" type="button"></button>
   </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
 /* ================= les mots ================= */
+const uniq = a => [...new Set(a)];
 const LIENS = ["le","la","les","l'","un","une","des","de","du","d'","et","ou","mais","car","mon","ma","mes","ton","ta","tes","son","sa","ses","je","j'","tu","il","elle","nous","vous","on","ils","elles","me","te","se","moi","toi","ne","n'","pas","plus","encore","jamais","toujours","si","que","qui","où","sous","sur","dans","avec","sans","pour","vers","contre","comme","quand","puis","très","trop","doucement","ailleurs","peut-être","ici","déjà","à","au","en"];
 const PONCT = [",","?","!","…"];
 const COMMON_VERBS = ["être","avoir","aller","faire","voir","aimer","écrire"];
-const uniq = a => [...new Set(a)];
-/* chaque groupe : n = noms, v = verbes, a = adjectifs. Un mot peut être dans plusieurs groupes. */
 const L = (n, v, a) => ({n:n.split(" "), v:v.split(" "), a:a.split(" ")});
 const LEX = {
   doux: L("fil soie coton velours dentelle ruban plume nuage plaid thé câlin caresse coussin laine pétale miel lait berceuse bobine aiguille ourlet bouton tissu",
@@ -210,20 +211,12 @@ const LEX = {
           "geler fondre souffler briller dormir attendre glisser blanchir",
           "blanc froid glacé endormi immense silencieux pâle"),
 };
-const POOL_NAMES = {tout:"Tout mélangé", mes:"Mes mots", doux:"Doux", melanco:"Mélancolique", joyeux:"Joyeux", myst:"Mystérieux",
+const POOL_NAMES = {tout:"Tout", doux:"Doux", melanco:"Mélancolique", joyeux:"Joyeux", myst:"Mystérieux",
   printemps:"Printemps", ete:"Été", automne:"Automne", hiver:"Hiver",
   /* anciens thèmes, pour les poèmes déjà gardés */ mer:"Mer", couture:"Couture", reves:"Rêves", ville:"Ville"};
 const AMBIANCES = ["doux","melanco","joyeux","myst"], SAISONS = ["printemps","ete","automne","hiver"];
 const ALL = {noms:uniq(Object.values(LEX).flatMap(g => g.n)), verbes:uniq(Object.values(LEX).flatMap(g => g.v)), adjs:uniq(Object.values(LEX).flatMap(g => g.a))};
-const TOTAL = ALL.noms.length + ALL.verbes.length + ALL.adjs.length;
-function poolLists(key){
-  if (key === "mes"){
-    const has = c => w => collection.includes(c + ":" + w);
-    return {noms:ALL.noms.filter(has("nom")), verbes:ALL.verbes.filter(has("verbe")), adjs:ALL.adjs.filter(has("adj"))};
-  }
-  const g = LEX[key];
-  return g ? {noms:g.n, verbes:g.v, adjs:g.a} : ALL;
-}
+function poolLists(key){ const g = LEX[key]; return g ? {noms:g.n, verbes:g.v, adjs:g.a} : ALL; }
 
 /* ----- conjugaison et accords ----- */
 const VLAB = ["infinitif","je","tu","il / elle","nous","vous","ils / elles","imparfait","participe passé","futur"];
@@ -236,9 +229,7 @@ const IRR = {
   "écrire":["écrire","écris","écris","écrit","écrivons","écrivez","écrivent","écrivait","écrit","écrira"],
   "attendre":["attendre","attends","attends","attend","attendons","attendez","attendent","attendait","attendu","attendra"],
   "coudre":["coudre","couds","couds","coud","cousons","cousez","cousent","cousait","cousu","coudra"],
-  "découdre":["découdre","découds","découds","découd","décousons","décousez","décousent","décousait","décousu","découdra"],
   "cueillir":["cueillir","cueille","cueilles","cueille","cueillons","cueillez","cueillent","cueillait","cueilli","cueillera"],
-  "battre":["battre","bats","bats","bat","battons","battez","battent","battait","battu","battra"],
   "courir":["courir","cours","cours","court","courons","courez","courent","courait","couru","courra"],
   "partir":["partir","pars","pars","part","partons","partez","partent","partait","parti","partira"],
   "dormir":["dormir","dors","dors","dort","dormons","dormez","dorment","dormait","dormi","dormira"],
@@ -252,10 +243,7 @@ const IRR = {
 const SECOND = ["fleurir","grandir","rougir","blanchir"];
 function verbForms(inf){
   let f = IRR[inf];
-  if (!f && SECOND.includes(inf)){
-    const st = inf.slice(0, -2);
-    f = [inf, st+"is", st+"is", st+"it", st+"issons", st+"issez", st+"issent", st+"issait", st+"i", inf+"a"];
-  }
+  if (!f && SECOND.includes(inf)){ const st = inf.slice(0, -2); f = [inf, st+"is", st+"is", st+"it", st+"issons", st+"issez", st+"issent", st+"issait", st+"i", inf+"a"]; }
   if (!f){
     const st = inf.slice(0, -2);
     const soft = st.endsWith("g") ? st + "e" : st.endsWith("c") ? st.slice(0, -1) + "ç" : st;
@@ -264,8 +252,7 @@ function verbForms(inf){
   return merge(f, VLAB);
 }
 const AIRR = {
-  "doux":["doux","douce","doux","douces"], "roux":["roux","rousse","roux","rousses"],
-  "gris":["gris","grise","gris","grises"], "blanc":["blanc","blanche","blancs","blanches"],
+  "doux":["doux","douce","doux","douces"], "roux":["roux","rousse","roux","rousses"], "blanc":["blanc","blanche","blancs","blanches"],
   "secret":["secret","secrète","secrets","secrètes"], "frais":["frais","fraîche","frais","fraîches"],
   "nouveau":["nouveau","nouvelle","nouveaux","nouvelles"], "fou":["fou","folle","fous","folles"],
 };
@@ -286,7 +273,6 @@ function nounForms(n){
   const pl = /[sxz]$/.test(n) ? n : /(eau|au|eu)$/.test(n) ? n + "x" : n + "s";
   return merge([n, pl], ["singulier","pluriel"]);
 }
-/* fusionne les formes identiques : « je · il / elle » */
 function merge(words, labels){
   const out = [];
   words.forEach((w, i) => { const o = out.find(x => x.w === w); if (o) o.lab += " · " + labels[i]; else out.push({w, lab:labels[i]}); });
@@ -308,19 +294,18 @@ const mk = (w, c, extra = {}) => ({id: uid++, w, c, l:w, f:0, on:false, x:0, y:0
 
 /* ================= état ================= */
 const KEY = "mots-aimantes-v1";
-let pool = "tout", words = [], carnet = [], collection = [], sampleLines = null;
+let pool = "tout", tab = "nom", words = [], carnet = [], sampleLines = null;
 let mode = "libre", challenge = null, recent = [];   // mode : libre | propose | defi
 
-/* le tiroir : chaque mot y est en un seul exemplaire, mais on peut le poser autant de fois qu'on veut */
+/* le tiroir garde chaque mot ; on peut le poser autant de fois qu'on veut */
 function freshDrawer(){
   const onBoard = words.filter(m => m.on);
   const t = poolLists(pool);
-  const extraVerbs = pool === "mes" ? [] : pick(COMMON_VERBS, 2);
   words = [...onBoard,
-    ...shuffle(pick(t.noms, 14)).map(w => mk(w, "nom")),
-    ...shuffle(uniq([...pick(t.verbes, 7), ...extraVerbs])).map(w => mk(w, "verbe")),
-    ...shuffle(pick(t.adjs, 7)).map(w => mk(w, "adj")),
-    ...shuffle(pick(LIENS, 22)).map(w => mk(w, "lien")),
+    ...shuffle(pick(t.noms, 18)).map(w => mk(w, "nom")),
+    ...shuffle(uniq([...pick(t.verbes, 8), ...pick(COMMON_VERBS, 3)])).map(w => mk(w, "verbe")),
+    ...shuffle(pick(t.adjs, 10)).map(w => mk(w, "adj")),
+    ...LIENS.map(w => mk(w, "lien")),
     ...PONCT.map(w => mk(w, "lien")),
   ];
 }
@@ -331,46 +316,36 @@ function sample(){
   sampleLines = [];
   lines.forEach((line, li) => {
     const ids = [];
-    for (const [w, c, l, f] of line){ const m = mk(w, c, {l: l || w, f: f || 0, on:true, x:8, y:16 + li*13 + rnd(-0.8, 0.8)}); words.push(m); ids.push(m); }
+    for (const [w, c, l, f] of line){ const m = mk(w, c, {l: l || w, f: f || 0, on:true, x:8, y:12 + li*12 + rnd(-0.8, 0.8)}); words.push(m); ids.push(m); }
     sampleLines.push({ids, indent: [8, 14, 20, 10][li]});
   });
 }
-/* catégorie d'un vieil aimant sauvegardé avant les catégories */
 function guessCat(w){
   if (ALL.noms.includes(w)) return "nom";
   if (ALL.verbes.includes(w) || COMMON_VERBS.includes(w)) return "verbe";
   if (ALL.adjs.includes(w)) return "adj";
   return "lien";
 }
-function save(){ try { localStorage.setItem(KEY, JSON.stringify({pool, words, carnet, collection, mode, challenge, recent})); } catch(e){} }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify({v:3, pool, tab, words, carnet, mode, challenge, recent})); } catch(e){} }
 function load(){
   try {
     const d = JSON.parse(localStorage.getItem(KEY) || "null");
     if (d && Array.isArray(d.words)){
-      pool = POOL_NAMES[d.pool] && (LEX[d.pool] || d.pool === "mes") ? d.pool : "tout";
+      pool = LEX[d.pool] ? d.pool : "tout";
+      tab = ["nom","verbe","adj","lien"].includes(d.tab) ? d.tab : "nom";
       words = d.words.map(m => m.c ? m : {...m, c: guessCat(m.w), l: m.w, f: 0});
       carnet = d.carnet || [];
-      collection = Array.isArray(d.collection) ? d.collection : [];
-      if (!collection.length) carnet.forEach(p => p.words.forEach(w => addToCollection(w.c || guessCat(w.w), w.l || w.w)));
       mode = ["libre","propose","defi"].includes(d.mode) ? d.mode : "libre";
       challenge = typeof d.challenge === "string" ? d.challenge : null;
       recent = Array.isArray(d.recent) ? d.recent : [];
       if (mode !== "libre" && !challenge) mode = "libre";
       uid = Math.max(0, ...words.map(m => m.id)) + 1;
-      /* nouvelle version : un seul exemplaire de chaque mot dans le tiroir */
-      if (!d.pool || !words.some(m => !m.on)) freshDrawer();
+      if (d.v !== 3) freshDrawer();
       return;
     }
   } catch(e){}
   sample();
 }
-function addToCollection(c, l){
-  if (c === "lien") return false;
-  const k = c + ":" + l;
-  if (collection.includes(k)) return false;
-  collection.push(k); return true;
-}
-const known = m => m.c === "lien" || collection.includes(m.c + ":" + m.l);
 load();
 
 /* ================= défis ================= */
@@ -395,6 +370,7 @@ const FIXED = [
   "Commence par « il était une fois ».", "Écris un compliment à quelqu'un que tu croises souvent.", "Un poème pour l'hiver qui arrive.",
   "Écris une carte postale de l'endroit où tu es.", "Tout au futur : un poème de ce qui arrivera.", "Tout à l'imparfait : un souvenir.",
   "Conjugue le même verbe deux fois, à deux personnes différentes.", "Un poème à « nous ».", "Un poème qui parle à « vous ».",
+  "Utilise le même mot trois fois.",
 ];
 const THEMED = [
   t => `Utilise ces trois mots : ${pick(t.noms, 2).join(", ")}, ${pick(t.verbes, 1)[0]}.`,
@@ -409,8 +385,7 @@ const THEMED = [
 function newChallenge(){
   let txt, tries = 0;
   do {
-    const t = poolLists(pool), ok = t.noms.length > 1 && t.verbes.length && t.adjs.length;
-    txt = ok && Math.random() < .35 ? THEMED[(Math.random()*THEMED.length)|0](t) : FIXED[(Math.random()*FIXED.length)|0];
+    txt = Math.random() < .35 ? THEMED[(Math.random()*THEMED.length)|0](poolLists(pool)) : FIXED[(Math.random()*FIXED.length)|0];
   } while (recent.includes(txt) && ++tries < 30);
   recent = [...recent, txt].slice(-25);
   return txt;
@@ -420,36 +395,35 @@ function setMode(m){ mode = m; if (m === "propose" && !challenge) challenge = ne
 function renderChallenge(){
   chEl.className = "challenge " + mode;
   chEl.innerHTML = "";
-  const tag = document.createElement("span"); tag.className = "tag";
   const acts = document.createElement("div"); acts.className = "acts";
   const btn = (cls, label, fn) => { const b = document.createElement("button"); b.type = "button"; b.className = cls; b.textContent = label; b.onclick = fn; return b; };
+  const accept = () => { setMode("defi"); toast("C'est parti !"); };
   let text;
   if (mode === "libre"){
-    tag.textContent = "Écriture libre";
-    text = document.createElement("p"); text.className = "text"; text.textContent = "Pas de consigne, écris ce qui vient.";
+    text = document.createElement("p"); text.className = "text"; text.innerHTML = "<b>Libre</b>écris ce qui vient";
     acts.append(btn("go", "🎲 Un défi ?", () => setMode("propose")));
   } else if (mode === "propose"){
-    tag.textContent = "Défi proposé";
-    text = btn("text", challenge, () => { setMode("defi"); toast("C'est parti !"); });
-    text.title = "Touche le défi pour le relever";
-    acts.append(
-      btn("link", "Un autre", () => { challenge = newChallenge(); renderChallenge(); save(); }),
-      btn("link", "Non merci", () => setMode("libre")),
-      btn("go", "Je le fais", () => { setMode("defi"); toast("C'est parti !"); }));
+    text = btn("text", "", accept); text.innerHTML = "<b>Défi ?</b>"; text.append(challenge);
+    acts.append(btn("link", "Un autre", () => { challenge = newChallenge(); renderChallenge(); save(); }), btn("link", "✕", () => setMode("libre")), btn("go", "Je le fais", accept));
   } else {
-    tag.textContent = "✓ Défi en cours";
-    text = document.createElement("p"); text.className = "text"; text.textContent = challenge;
-    acts.append(btn("link", "Laisser tomber", () => setMode("libre")));
+    text = document.createElement("p"); text.className = "text"; text.innerHTML = "<b>✓ Défi</b>"; text.append(challenge);
+    acts.append(btn("link", "Arrêter", () => setMode("libre")));
   }
-  chEl.append(tag, text, acts);
+  chEl.append(text, acts);
 }
 
 /* ================= rendu ================= */
-const door = document.getElementById("door"), drawer = document.getElementById("drawer");
-const SECTIONS = [["nom","Noms"],["verbe","Verbes"],["adj","Adjectifs"],["lien","Mots de lien"]];
+const door = document.getElementById("door"), drawer = document.getElementById("drawer"), side = document.getElementById("side");
+const TABS = [["nom","Noms"],["verbe","Verbes"],["adj","Adjectifs"],["lien","Liens"]];
+const tabsEl = document.getElementById("tabs");
+TABS.forEach(([k, name]) => {
+  const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "tab"); b.textContent = name; b.dataset.k = k;
+  b.onclick = () => { tab = k; render(); drawer.scrollTop = 0; save(); };
+  tabsEl.append(b);
+});
 function magEl(m, fresh){
   const el = document.createElement("div");
-  el.className = "mag" + (fresh ? " fresh" : "") + (m.on && (formsOf(m)?.length > 1) ? " morph" : "") + (!m.on && !known(m) ? " neuf" : "");
+  el.className = "mag" + (fresh ? " fresh" : "") + (m.on && (formsOf(m)?.length > 1) ? " morph" : "");
   el.textContent = m.w; el.dataset.id = m.id;
   el.style.setProperty("--r", m.r + "deg");
   el.addEventListener("pointerdown", startDrag);
@@ -458,40 +432,35 @@ function magEl(m, fresh){
 function render(freshId){
   door.querySelectorAll(".mag").forEach(e => e.remove());
   drawer.innerHTML = "";
-  const secs = {};
-  for (const [c, name] of SECTIONS){
-    const s = document.createElement("div"); s.className = "sec";
-    s.innerHTML = `<div class="seclabel">${name}</div><div class="secwords"></div>`;
-    secs[c] = s; drawer.append(s);
-  }
   for (const m of words){
-    const el = magEl(m, m.id === freshId);
-    if (m.on){ el.style.left = m.x + "%"; el.style.top = m.y + "%"; door.append(el); }
-    else (secs[m.c] || secs.lien).querySelector(".secwords").append(el);
+    if (m.on){ const el = magEl(m, m.id === freshId); el.style.left = m.x + "%"; el.style.top = m.y + "%"; door.append(el); }
+    else if (m.c === tab) drawer.append(magEl(m, false));
   }
-  for (const s of Object.values(secs)) s.hidden = !s.querySelector(".mag");
+  tabsEl.querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b.dataset.k === tab));
   document.getElementById("emptyMsg").hidden = words.some(m => m.on);
+  document.getElementById("carnetCount").textContent = carnet.length || "Carnet";
 }
 
 /* ================= glisser-déposer ================= */
 let drag = null;
 function startDrag(e){
-  if (e.button > 0) return;
+  if (e.button > 0 || drag) return;
   const el = e.currentTarget, m = words.find(w => w.id === +el.dataset.id);
   const r = el.getBoundingClientRect();
-  drag = {m, el, sx:e.clientX, sy:e.clientY, ox:e.clientX - r.left, oy:e.clientY - r.top, moved:false, w:r.width, h:r.height};
+  drag = {m, el, sx:e.clientX, sy:e.clientY, ox:e.clientX - r.left, oy:e.clientY - r.top, moved:false, w:r.width, h:r.height, fromDrawer: !m.on, st: drawer.scrollTop};
   el.setPointerCapture(e.pointerId);
   el.addEventListener("pointermove", moveDrag);
   el.addEventListener("pointerup", endDrag);
   el.addEventListener("pointercancel", endDrag);
-  e.preventDefault();
+  if (m.on) e.preventDefault();
 }
 function inside(rect, x, y){ return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom; }
 function moveDrag(e){
   if (!drag) return;
   const d = drag;
   if (!d.moved){
-    if (Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 6) return;
+    const dx = e.clientX - d.sx, dy = e.clientY - d.sy;
+    if (Math.hypot(dx, dy) < 7) return;
     d.moved = true;
     d.el.classList.add("drag");
     d.el.style.width = d.w + "px";
@@ -499,7 +468,7 @@ function moveDrag(e){
   d.el.style.left = (e.clientX - d.ox) + "px";
   d.el.style.top = (e.clientY - d.oy) + "px";
   door.classList.toggle("over", inside(door.getBoundingClientRect(), e.clientX, e.clientY));
-  drawer.classList.toggle("over", inside(document.getElementById("drawerPanel").getBoundingClientRect(), e.clientX, e.clientY) && d.m.on);
+  side.classList.toggle("over", d.m.on && inside(side.getBoundingClientRect(), e.clientX, e.clientY));
 }
 function endDrag(e){
   if (!drag) return;
@@ -507,27 +476,27 @@ function endDrag(e){
   d.el.removeEventListener("pointermove", moveDrag);
   d.el.removeEventListener("pointerup", endDrag);
   d.el.removeEventListener("pointercancel", endDrag);
-  door.classList.remove("over"); drawer.classList.remove("over");
-  const dr = door.getBoundingClientRect();
+  door.classList.remove("over"); side.classList.remove("over");
+  if (e.type === "pointercancel"){ render(); return; }
   if (!d.moved){
-    if (e.type === "pointercancel") return;
     if (d.m.on){ morph(d.m); return; }
     const c = copyOf(d.m); placeFree(c); render(c.id); save(); return;
   }
-  if (e.type !== "pointercancel" && inside(dr, e.clientX, e.clientY)){
+  const dr = door.getBoundingClientRect();
+  if (inside(dr, e.clientX, e.clientY)){
     const left = e.clientX - d.ox - dr.left, top = e.clientY - d.oy - dr.top;
     const m = d.m.on ? d.m : copyOf(d.m);
     m.on = true;
     m.x = clamp(left / dr.width * 100, 0, 100 - d.w / dr.width * 100);
     m.y = clamp(top / dr.height * 100, 0, 100 - d.h / dr.height * 100);
     words = [...words.filter(w => w !== m), m];
-  } else if (d.m.on){
+  } else if (d.m.on && inside(side.getBoundingClientRect(), e.clientX, e.clientY)){
     words = words.filter(w => w !== d.m);
   }
   render(); save();
+  drawer.scrollTop = d.st;
 }
 function copyOf(m){ const c = mk(m.w, m.c, {l:m.l, f:m.f}); words.push(c); return c; }
-/* toucher un mot posé : conjuguer ou accorder */
 function morph(m){
   const forms = formsOf(m);
   if (!forms || forms.length < 2){ toast("Ce mot-là ne change pas"); return; }
@@ -535,20 +504,20 @@ function morph(m){
   render(m.id); save(); toast(forms[m.f].lab);
 }
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-/* un mot touché dans le tiroir se pose à la suite du poème */
 function placeFree(m){
   const on = words.filter(w => w.on && w !== m);
   const dr = door.getBoundingClientRect();
-  let x = 8, y = 10;
+  const lh = 44 / dr.height * 100;   // hauteur d'une ligne
+  let x = 6, y = 6;
   if (on.length){
     const lastLineY = Math.max(...on.map(w => w.y));
-    const line = on.filter(w => Math.abs(w.y - lastLineY) < 5);
+    const line = on.filter(w => Math.abs(w.y - lastLineY) < lh / 2);
     const right = Math.max(...line.map(w => w.x + measure(w.w) / dr.width * 100));
-    x = right + 2; y = lastLineY;
-    if (x + measure(m.w) / dr.width * 100 > 88){ x = 8; y = lastLineY + 11; }
-    if (y > 88){ y = rnd(10, 80); x = rnd(6, 60); }
+    x = right + 1.5; y = lastLineY;
+    if (x + measure(m.w) / dr.width * 100 > 90){ x = 6; y = lastLineY + lh; }
+    if (y > 100 - lh){ y = rnd(8, 80); x = rnd(6, 55); }
   }
-  m.on = true; m.x = x + rnd(-0.6, 0.6); m.y = y + rnd(-0.8, 0.8);
+  m.on = true; m.x = x + rnd(-0.5, 0.5); m.y = y + rnd(-0.6, 0.6);
   words = [...words.filter(w => w !== m), m];
 }
 const meas = document.createElement("div"); meas.className = "mag"; meas.style.visibility = "hidden"; meas.style.left = "-999px";
@@ -559,7 +528,7 @@ function measure(w){ meas.textContent = w; return meas.getBoundingClientRect().w
 function poemText(list){
   const on = list.filter(m => m.on !== false).sort((a, b) => a.y - b.y);
   const lines = [];
-  for (const m of on){ const l = lines.find(l => Math.abs(l.y - m.y) < 5); if (l) l.items.push(m); else lines.push({y:m.y, items:[m]}); }
+  for (const m of on){ const l = lines.find(l => Math.abs(l.y - m.y) < 4); if (l) l.items.push(m); else lines.push({y:m.y, items:[m]}); }
   return lines.map(l => {
     let s = "";
     for (const m of l.items.sort((a, b) => a.x - b.x)){
@@ -574,110 +543,89 @@ function poemText(list){
   }).join("\n");
 }
 
-/* ================= carnet ================= */
-const carnetEl = document.getElementById("carnet"), carnetPanel = document.getElementById("carnetPanel"), carnetBtn = document.getElementById("carnetBtn");
+/* ================= carnet (page à part) ================= */
+const carnetEl = document.getElementById("carnet"), carnetPage = document.getElementById("carnetPage");
 function renderCarnet(){
   carnetEl.innerHTML = "";
-  if (!carnet.length){ carnetEl.innerHTML = '<p class="hint">Ton carnet est vide. Compose un poème sur le frigo, puis touche « Garder ce poème ».</p>'; return; }
+  if (!carnet.length){ carnetEl.innerHTML = '<p class="blank">Ton carnet est vide.<br>Compose un poème sur le frigo, puis touche « Garder ».</p>'; return; }
   carnet.slice().reverse().forEach(p => {
-    const card = document.createElement("div"); card.className = "poem";
+    const card = document.createElement("article"); card.className = "poem";
     if (p.defi){ const d = document.createElement("div"); d.className = "defi"; d.textContent = p.defi; card.append(d); }
     const pre = document.createElement("pre"); pre.textContent = poemText(p.words);
     const meta = document.createElement("div"); meta.className = "meta";
-    const date = new Date(p.date).toLocaleDateString("fr-FR", {day:"numeric", month:"long"});
-    const span = document.createElement("span"); const nm = POOL_NAMES[p.pool || p.theme]; span.textContent = nm ? `${date} · ${nm}` : date;
-    meta.append(span);
+    const span = document.createElement("span");
+    span.textContent = new Date(p.date).toLocaleDateString("fr-FR", {day:"numeric", month:"short"});
     const btns = document.createElement("div");
-    const reopen = document.createElement("button"); reopen.type = "button"; reopen.textContent = "Remettre sur le frigo";
+    const reopen = document.createElement("button"); reopen.type = "button"; reopen.textContent = "↩"; reopen.title = "Remettre sur le frigo"; reopen.setAttribute("aria-label", "Remettre sur le frigo");
     reopen.onclick = () => {
-      const keep = words.filter(m => !m.on);
-      words = [...keep, ...p.words.map(w => mk(w.w, w.c || guessCat(w.w), {l: w.l || w.w, f: w.f || 0, on:true, x:w.x, y:w.y, r:w.r}))];
-      render(); save(); toast("Poème remis sur le frigo"); window.scrollTo({top:0, behavior:"smooth"});
+      words = [...words.filter(m => !m.on), ...p.words.map(w => mk(w.w, w.c || guessCat(w.w), {l: w.l || w.w, f: w.f || 0, on:true, x:w.x, y:w.y, r:w.r}))];
+      render(); save(); closeCarnet(); toast("Poème remis sur le frigo");
     };
-    const del = document.createElement("button"); del.type = "button"; del.className = "del"; del.textContent = "Supprimer";
+    const del = document.createElement("button"); del.type = "button"; del.className = "del"; del.textContent = "🗑"; del.setAttribute("aria-label", "Supprimer");
     del.onclick = () => {
-      if (del.dataset.sure){ carnet = carnet.filter(x => x !== p); renderCarnet(); save(); }
-      else { del.dataset.sure = "1"; del.textContent = "Sûre ?"; setTimeout(() => { if (del.isConnected){ delete del.dataset.sure; del.textContent = "Supprimer"; } }, 2500); }
+      if (del.dataset.sure){ carnet = carnet.filter(x => x !== p); renderCarnet(); render(); save(); }
+      else { del.dataset.sure = "1"; del.textContent = "Supprimer ?"; del.classList.add("sure"); setTimeout(() => { if (del.isConnected){ delete del.dataset.sure; del.textContent = "🗑"; del.classList.remove("sure"); } }, 2500); }
     };
-    btns.append(reopen, del); meta.append(btns);
+    btns.append(reopen, del); meta.append(span, btns);
     card.append(pre, meta); carnetEl.append(card);
   });
 }
-carnetBtn.onclick = () => {
-  const open = carnetPanel.hidden;
-  carnetPanel.hidden = !open; carnetBtn.setAttribute("aria-pressed", open);
-  if (open){ renderCarnet(); carnetPanel.scrollIntoView({behavior:"smooth", block:"start"}); }
-};
+function openCarnet(){ renderCarnet(); carnetPage.hidden = false; carnetPage.querySelector(".scroll").scrollTop = 0; }
+function closeCarnet(){ carnetPage.hidden = true; }
+document.getElementById("carnetBtn").onclick = openCarnet;
+document.getElementById("carnetBack").onclick = closeCarnet;
 document.getElementById("keep").onclick = () => {
   const on = words.filter(m => m.on);
   if (!on.length){ toast("Le frigo est vide pour l'instant"); return; }
   carnet.push({date:Date.now(), pool, defi: mode === "defi" ? challenge : null,
     words:on.map(m => ({w:m.w, c:m.c, l:m.l, f:m.f, x:+m.x.toFixed(1), y:+m.y.toFixed(1), r:m.r}))});
-  let gained = 0; on.forEach(m => { if (addToCollection(m.c, m.l)) gained++; });
-  save(); renderCarnet(); renderPools(); render();
-  openMenu("after", gained);
+  save(); render();
+  openMenu("after");
 };
 
 /* ================= menu ================= */
 const menu = document.getElementById("menu");
 let menuClears = false;
-function openMenu(kind, gained = 0){
+function openMenu(kind){
   menuClears = kind !== "start";
   document.getElementById("menuTitle").textContent = kind === "after" ? "Gardé dans ton carnet 📓" : kind === "new" ? "Un nouveau poème ?" : "Qu'est-ce qui te tente ?";
-  document.getElementById("menuSub").textContent = kind === "start" ? "Tu pourras changer d'avis en cours de route."
-    : (gained ? `⭐ ${gained} nouveau${gained > 1 ? "x" : ""} mot${gained > 1 ? "s" : ""} dans ta collection (${collection.length} / ${TOTAL}). ` : "") + "Choisis la suite, le frigo sera vidé.";
+  document.getElementById("menuSub").textContent = kind === "start" ? "Tu pourras changer d'avis en cours de route." : "Le frigo sera vidé pour repartir de zéro.";
   document.getElementById("menuStay").textContent = kind === "start" ? "Juste regarder mon frigo" : kind === "after" ? "Rester sur ce poème" : "Annuler";
   menu.hidden = false;
-  document.getElementById("pickFree").focus();
 }
 function closeMenu(){ menu.hidden = true; }
-function startFresh(){ if (menuClears){ words = words.filter(m => !m.on); freshDrawer(); render(); } }
+function startFresh(){ if (menuClears){ words = words.filter(m => !m.on); render(); } }
 document.getElementById("pickFree").onclick = () => { startFresh(); setMode("libre"); closeMenu(); };
 document.getElementById("pickDefi").onclick = () => { startFresh(); challenge = newChallenge(); setMode("propose"); closeMenu(); };
-document.getElementById("menuStay").onclick = () => {
-  if (menuClears && mode === "defi"){ /* le défi est relevé : on repasse en libre */ setMode("libre"); }
-  closeMenu();
-};
+document.getElementById("menuStay").onclick = () => { if (menuClears && mode === "defi") setMode("libre"); closeMenu(); };
 menu.addEventListener("click", e => { if (e.target === menu) document.getElementById("menuStay").click(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !menu.hidden) document.getElementById("menuStay").click(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape"){ if (!menu.hidden) document.getElementById("menuStay").click(); else closeCarnet(); } });
 document.getElementById("newBtn").onclick = () => openMenu("new");
 
-/* ================= boutons ================= */
+/* ================= sachets et boutons ================= */
 const poolsEl = document.getElementById("pools");
 function renderPools(){
   poolsEl.innerHTML = "";
   const chip = k => {
-    const b = document.createElement("button"); b.type = "button";
-    b.textContent = k === "mes" ? `⭐ Mes mots · ${collection.length}` : POOL_NAMES[k];
+    const b = document.createElement("button"); b.type = "button"; b.textContent = POOL_NAMES[k];
     b.setAttribute("aria-pressed", k === pool);
-    b.onclick = () => {
-      if (k === "mes" && collection.length < 3){ toast("Garde des poèmes : leurs mots rejoignent ta collection ⭐"); return; }
-      pool = k; renderPools(); freshDrawer(); render(); save();
-    };
+    b.onclick = () => { pool = k; renderPools(); freshDrawer(); render(); drawer.scrollTop = 0; save(); };
     return b;
   };
-  const group = (label, keys) => {
-    const g = document.createElement("div"); g.className = "grp";
-    if (label){ const l = document.createElement("span"); l.className = "grplabel"; l.textContent = label; g.append(l); }
-    keys.forEach(k => g.append(chip(k))); poolsEl.append(g);
-  };
-  group("", ["tout","mes"]);
-  group("Ambiances", AMBIANCES);
-  group("Saisons", SAISONS);
+  const sep = () => { const s = document.createElement("span"); s.className = "sep"; return s; };
+  poolsEl.append(chip("tout"), sep(), ...AMBIANCES.map(chip), sep(), ...SAISONS.map(chip));
 }
 renderPools();
-document.getElementById("shuffle").onclick = () => {
-  freshDrawer(); render(); save();
-  const n = words.filter(m => !m.on && !known(m)).length;
-  toast(n ? `🎁 Nouveau sachet · ${n} mot${n > 1 ? "s" : ""} jamais utilisé${n > 1 ? "s" : ""}` : "🎁 Nouveau sachet");
-};
+document.getElementById("shuffle").onclick = () => { freshDrawer(); render(); drawer.scrollTop = 0; save(); toast("🎁 Nouveau sachet de mots"); };
 document.getElementById("clearDoor").onclick = () => { words = words.filter(m => !m.on); render(); save(); };
 
 const toastEl = document.getElementById("toast"); let tt;
-function toast(t){ toastEl.textContent = t; toastEl.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => toastEl.classList.remove("on"), 1600); }
+function toast(t){ toastEl.textContent = t; toastEl.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => toastEl.classList.remove("on"), 1500); }
 
-/* la page ne zoome pas sur téléphone */
-["gesturestart","gesturechange"].forEach(t => document.addEventListener(t, e => e.preventDefault(), {passive:false}));
+/* pas de zoom sur téléphone : ni pincement, ni double-tape */
+["gesturestart","gesturechange","gestureend"].forEach(t => document.addEventListener(t, e => e.preventDefault(), {passive:false}));
+document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, {passive:false});
+document.addEventListener("dblclick", e => e.preventDefault(), {passive:false});
 
 if (sampleLines){
   const dw = door.getBoundingClientRect().width || 340;
