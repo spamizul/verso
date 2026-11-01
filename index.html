@@ -4946,7 +4946,7 @@ function render(full){
     for (const a of animals) if (Math.floor((a.y - 2) / T) === y && inView(a.x, a.y)) drawAnimal(a);
   }
   for (const g of gulls) if (inView(g.x, g.y)) drawGull(g);
-  if (glob.story.v === 2 && isStory()){ drawMist(c2); drawYunaTete(c2); }
+  if (glob.story.v === 2 && isStory()){ drawMist(c2); drawYunaTete(c2); drawMarche(c2); }
   const {dark, warm} = darkness(tday);
   if (!eco) drawParticles(dark > 0.2, inView);
   if (warm > 0){ c2.fillStyle = `rgba(255,140,70,${warm})`; c2.fillRect(vx, vy, s, sh); }
@@ -7948,7 +7948,7 @@ const CHAPTERS_V2 = [
      ['Le premier panier du jour', () => glob.story.epiPremier ? 1 : 0, 1, '« Pour les paniers des voisins ! »', 'Touche l’épicerie avec la main ✋ : elle te montre le panier du jour. Apporte ce qu’elle demande.']],
    get goals(){ return phase3(this) ? this.goals3 : phase2(this) ? this.goals2 : this.goals1; },
    wants:i => O[i] === 'Ą' || (phase2(CHAPTERS[glob.story.chapter]) && !glob.story.marketOn && O[i] === 'ā'),
-   actLabel:i => O[i] === 'ā' ? 'Sonner la cloche' : phase2(CHAPTERS[glob.story.chapter]) && !glob.story.marketOn && !cnt('ā') ? 'Ouvrir le marché' : 'Choisir ce qu’il vend',
+   actLabel:i => mkScene && O[i] === 'Ą' ? 'Servir' : O[i] === 'ā' ? 'Sonner la cloche' : phase2(CHAPTERS[glob.story.chapter]) && !glob.story.marketOn && !cnt('ā') ? 'Ouvrir le marché' : 'Choisir ce qu’il vend',
    tap:i => {
      if (mkScene && O[i] === 'Ą') return marcheTap(i);
      if (O[i] === 'Ą' && !(phase2(CHAPTERS[glob.story.chapter]) && !cnt('ā'))){ openStall(i); return true; }
@@ -8001,8 +8001,8 @@ const CHAPTERS_V2 = [
   {season:3, title:'La boîte en fer', who:'yuna', give:['J'],
    onIntro:() => { passageCalc(); glob.story.buoy0 = cnt('J'); glob.story.photoJob = 0; saveGlob(); setTimeout(() => { const ps = glob.story.passage; if (ps && ps.pts.length){ const i = ps.pts[0]; lookAt(i % N, (i / N)|0); forceDraw = true; } }, 300); },
    intro:[{who:'toi', t:'Yuna est déjà dans l’eau, entre les rochers, sa lampe frontale allumée.'}, '« Je cherche les endroits profonds, et toi, tu poses une bouée à côté de moi. Bouée après bouée, on trace le passage jusqu’à la plage ! »'],
-   goals1:[['Le passage de Yuna', () => passageAvance(), () => (glob.story.passage || {pts:[1,2,3,4,5,6]}).pts.length, '« Ici, c’est profond ! »', 'La tête de Yuna dépasse de l’eau, près de l’île aux pins. Pose une bouée juste à côté d’elle (onglet Port) : elle avancera un peu plus loin.']],
-   mid:[{who:'toi', t:'À la sixième bouée, Yuna ne remonte pas tout de suite. Une seconde, deux, dix…'}, {who:'toi', t:'Puis elle jaillit de l’eau, une petite boîte en fer rouillée dans les bras.'}, {who:'toi', t:'Dedans, une vieille photo gondolée : deux enfants assis sur les marches de notre phare. Et une vieille clé, avec une étiquette à moitié effacée : « Phare ».'}, '« Il faut montrer ça à Job. »'],
+   goals1:[['Le passage de Yuna', () => passageAvance(), () => (glob.story.passage || {pts:[1,2,3,4]}).pts.length, () => yunaLa() ? '« Ici, c’est profond ! »' : 'Yuna est rentrée se sécher…', () => yunaLa() ? 'La tête de Yuna dépasse de l’eau, près de l’île aux pins. Pose une bouée juste à côté d’elle (onglet Port) : elle avancera un peu plus loin.' : 'Yuna est rentrée se sécher. Elle replonge demain matin, à 7 h.']],
+   mid:[{who:'toi', t:'À la quatrième bouée, Yuna ne remonte pas tout de suite. Une seconde, deux, dix…'}, {who:'toi', t:'Puis elle jaillit de l’eau, une petite boîte en fer rouillée dans les bras.'}, {who:'toi', t:'Dedans, une vieille photo gondolée : deux enfants assis sur les marches de notre phare. Et une vieille clé, avec une étiquette à moitié effacée : « Phare ».'}, '« Il faut montrer ça à Job. »'],
    goals2:[['Porte la boîte à Job', () => glob.story.photoJob ? 1 : 0, 1, '« Il saura peut-être ce que c’est. »', 'Touche le phare avec la main ✋.']],
    get goals(){ return phase2(this) ? this.goals2 : this.goals1; },
    wants:i => O[i] === 'L' && phase2(CHAPTERS[glob.story.chapter]) && !glob.story.photoJob,
@@ -8790,20 +8790,44 @@ function marcheClient(){
   if (!vend.length) return marcheFin();
   const who = MK_CLIENTS.filter(w => PEOPLE[w] && w !== (mkScene.who || ''));
   mkScene.who = who[(Math.random() * who.length)|0]; mkScene.veut = vend[(Math.random() * vend.length)|0];
-  scSayBubble(MK_VEUT[mkScene.veut][0], mkScene.who, 60000, `Client ${mkScene.n + 1} sur 6`);
+  scSayBubble(MK_VEUT[mkScene.veut][0], mkScene.who, 60000, `Client ${mkScene.n + 1} sur 4`); forceDraw = true;
 }
-function marcheDebut(){ mkScene = {n:0}; marcheClient(); }
+function marcheDebut(){
+  // le client attend sur une case libre, tout près des étals
+  const et = []; O.forEach((o, i) => { if (o === 'Ą') et.push(i); });
+  let at = -1, bd = 1e9; const mx = et.reduce((s, i) => s + i % N, 0) / (et.length || 1), my = et.reduce((s, i) => s + ((i / N)|0), 0) / (et.length || 1);
+  for (let i = 0; i < N*N; i++){ if (O[i] || !'gscp'.includes(G[i]) || et.some(j => dist2(i, j) < 1.9) || !et.some(j => dist2(i, j) <= 3)) continue;   /* un peu en retrait, pour que sa bulle ne cache pas les étals */ const d = Math.hypot(i % N - mx, ((i / N)|0) - my); if (d < bd){ bd = d; at = i; } }
+  if (at < 0) for (let i = 0; i < N*N; i++) if (!O[i] && 'gscp'.includes(G[i]) && et.some(j => dist2(i, j) <= 1.5)){ at = i; break; }
+  mkScene = {n:0, at}; marcheClient();
+}
+/* pendant la scène : le client sur la carte avec ce qu'il veut au-dessus de la tête, et ce que vend chaque étal */
+function drawMarche(c2){
+  if (!mkScene) return;
+  const st = glob.story.stalls || {};
+  c2.save(); c2.textAlign = 'center'; c2.textBaseline = 'middle'; c2.font = '9px sans-serif';
+  for (const [k, p] of Object.entries(st)){ const i = +k; if (O[i] !== 'Ą' || !MARKET[p]) continue; const x = (i % N)*T + 8, y = ((i / N)|0)*T - 4;
+    c2.fillStyle = 'rgba(255,255,255,.85)'; c2.beginPath(); c2.arc(x, y, 6, 0, 6.29); c2.fill(); c2.fillStyle = '#000'; c2.fillText(MARKET[p][1], x, y + 0.5); }
+  if (mkScene.at >= 0 && mkScene.who){ const i = mkScene.at, x = (i % N)*T, y = ((i / N)|0)*T, pp = PEOPLE[mkScene.who] || {};
+    c2.fillStyle = pp.hair || '#5a3a22'; c2.fillRect(x + 6, y + 3, 4, 2);
+    c2.fillStyle = pp.skin || '#e8b48e'; c2.fillRect(x + 6, y + 5, 4, 3);
+    c2.fillStyle = pp.clothes || '#3f6e8a'; c2.fillRect(x + 5, y + 8, 6, 5);
+    c2.fillStyle = '#2b2b30'; c2.fillRect(x + 6, y + 13, 1, 2); c2.fillRect(x + 9, y + 13, 1, 2);
+    if (mkScene.veut && MARKET[mkScene.veut]){ c2.fillStyle = '#fff'; c2.beginPath(); c2.arc(x + 8, y - 6, 7, 0, 6.29); c2.fill(); c2.beginPath(); c2.moveTo(x + 6, y); c2.lineTo(x + 10, y); c2.lineTo(x + 8, y + 3); c2.fill();
+      c2.font = '10px sans-serif'; c2.fillStyle = '#000'; c2.fillText(MARKET[mkScene.veut][1], x + 8, y - 5.5); } }
+  c2.restore();
+}
 function marcheTap(i){
   if (!mkScene || O[i] !== 'Ą') return false;
   const p = (glob.story.stalls || {})[i];
-  if (p !== mkScene.veut){ scSayBubble(`« Non, ça c’est ${MARKET[p] ? MK_VEUT[p][1] : 'un étal vide'} ! »`, mkScene.who, 60000, `Client ${mkScene.n + 1} sur 6`); return true; }
+  if (p !== mkScene.veut){ scSayBubble(`« Non, ça c’est ${MARKET[p] ? MK_VEUT[p][1] : 'un étal vide'} ! »`, mkScene.who, 60000, `Client ${mkScene.n + 1} sur 4`); return true; }
   resv().k += 1; saveGlob(); renderRes(true); mkScene.n++;
   scSayBubble(MK_MERCI[mkScene.n % MK_MERCI.length] + ' · +1 🐚', mkScene.who, 1200);
-  if (mkScene.n >= 6) setTimeout(marcheFin, 1100); else setTimeout(marcheClient, 1100);
+  mkScene.veut = null; forceDraw = true;
+  if (mkScene.n >= 4) setTimeout(marcheFin, 1100); else setTimeout(marcheClient, 1100);
   return true;
 }
 function marcheFin(){
-  mkScene = null; const b = document.getElementById('scBubble'); if (b) b.hidden = true;
+  mkScene = null; forceDraw = true; const b = document.getElementById('scBubble'); if (b) b.hidden = true;
   glob.story.marketOn = 1; const n = marketSell(true); saveGlob(); renderStoryCard(); setTimeout(() => toast(`🧺 Le premier marché a rapporté ${n} 🐚 de plus`, 3000), 600);
   openStoryModal({mode:'letter', who:'gaspard', kicker:'Le premier marché', title:'Le premier marché', paras:[{who:'toi', t:'À midi, les étals sont vides et les paniers sont pleins.'}, `Le marché a rapporté ${n} 🐚 de plus ! Il ouvrira maintenant chaque matin.`], go:'Continuer'});
 }
@@ -9012,7 +9036,7 @@ function pineCount(i){ try { const cab = eliasCabin(); if (s3Ch() === 'La place 
 /* ---------- la boîte en fer : Yuna trace le passage entre les rochers ----------
    Le chemin d'eau le plus court, des balises allumées jusqu'à la plage de l'île aux pins, coupé en 6 étapes.
    La tête de Yuna sort de l'eau à l'étape en cours ; une bouée posée à côté d'elle (1 case) la fait avancer. */
-const PASS_N = 6;
+const PASS_N = 4;
 function passageCalc(){
   if (glob.story.passage) return glob.story.passage;
   for (let i = 0; i < N*N; i++) if (O[i] === 'ý') O[i] = null;
@@ -9024,10 +9048,12 @@ function passageCalc(){
   const pts = [];
   if (pn && mn){ px /= pn; py /= pn; mx /= mn; my /= mn;
     const a0 = Math.atan2(my - py, mx - px), ang = i => Math.atan2(((i / N)|0) - py, i % N - px), dA = (a, b) => Math.abs(Math.atan2(Math.sin(a - b), Math.cos(a - b)));
-    const cand = []; for (let i = 0; i < N*N; i++) if (G[i] === 'w' && !O[i] && dP[i] >= 1 && dP[i] <= 6 && !fogAt(i % N, (i / N)|0)) cand.push(i);
+    const libre = i => G[i] === 'w' && !O[i] && dP[i] >= 1 && dP[i] <= 6 && !fogAt(i % N, (i / N)|0);
+    let cand = []; for (let i = 0; i < N*N; i++) if (libre(i) && !mistDense(i % N, (i / N)|0)) cand.push(i);   // en eau dégagée, hors de la brume
+    if (cand.length < 12){ cand = []; for (let i = 0; i < N*N; i++) if (libre(i)) cand.push(i); }
     const sens = Math.random() < 0.5 ? 1 : -1;
     for (let k = 0; k < PASS_N; k++){   // un arc autour de l'île, de plus en plus près de la plage
-      const ta = a0 + sens * k * 0.32, td = k === PASS_N - 1 ? 1 : 5 - k * 0.8;
+      const ta = a0 + sens * k * 0.4, td = k === PASS_N - 1 ? 1 : 5 - k * 1.3;
       let best = -1, bs = 1e9;
       for (const i of cand){ if (pts.some(j => dist2(i, j) < 3)) continue; const sc = dA(ang(i), ta) * 6 + Math.abs(dP[i] - td); if (sc < bs){ bs = sc; best = i; } }
       if (best >= 0) pts.push(best);
@@ -9035,15 +9061,17 @@ function passageCalc(){
   }
   glob.story.passage = {pts, k:0}; saveGlob(); save(); forceDraw = true; return glob.story.passage;
 }
+const yunaLa = () => { const h = tday * 24; return h >= 7 && h < 20 && (glob.story.introSeen ?? -1) >= glob.story.chapter; };   // de jour, une fois le chapitre commencé
 function passageAvance(){   // appelé par l'objectif : avance Yuna quand une bouée est posée à côté d'elle
   const ps = passageCalc(); let bouge = false;
+  if (!yunaLa()) return Math.min(ps.k, ps.pts.length);
   while (ps.k < ps.pts.length && O.some((o, i) => o === 'J' && dist2(i, ps.pts[ps.k]) <= 1.5)){ ps.k++; bouge = true; }
-  if (bouge){ saveGlob(); forceDraw = true; if (ps.k < ps.pts.length) setTimeout(() => scSayBubble(['« Ici, c’est profond ! »', '« Par ici ! »', '« Encore un peu plus loin… »', '« Ici aussi, on passe ! »', '« Presque à la plage ! »'][Math.min(4, ps.k - 1)], 'yuna', 4000), 300); }
+  if (bouge){ saveGlob(); forceDraw = true; if (ps.k < ps.pts.length) setTimeout(() => scSayBubble(['« Par ici ! »', '« Encore un peu plus loin… »', '« Presque à la plage ! »'][Math.min(2, ps.k - 1)], 'yuna', 4000), 300); }
   return Math.min(ps.k, ps.pts.length);
 }
 const passageFait = () => { const ps = glob.story.passage; return ps ? Math.min(ps.k, ps.pts.length) : 0; };
 function drawYunaTete(c2){   // une petite tête qui dépasse de l'eau, avec sa lampe frontale
-  const ps = glob.story.passage; if (!ps || s3Ch() !== 'La boîte en fer' || phase2(CHAPTERS[glob.story.chapter]) || ps.k >= ps.pts.length) return;
+  const ps = glob.story.passage; if (!ps || s3Ch() !== 'La boîte en fer' || phase2(CHAPTERS[glob.story.chapter]) || ps.k >= ps.pts.length || !yunaLa()) return;
   const i = ps.pts[ps.k], x = (i % N)*T, y = ((i / N)|0)*T, dk = darkness(tday).dark;
   c2.fillStyle = 'rgba(255,255,255,.55)'; c2.fillRect(x + 2, y + 11, 12, 1); c2.fillRect(x + 4, y + 13, 8, 1);   // les ronds dans l'eau
   c2.fillStyle = '#1d2b36'; c2.fillRect(x + 5, y + 5, 6, 6);   // la cagoule
@@ -14007,7 +14035,7 @@ const SHORT = {
   },
   'La boîte en fer': {
     intro:[B('yuna', '« Je cherche les endroits **profonds**, et toi, tu poses une **bouée** à côté de moi. Bouée après bouée, on trace le passage ! »', 'Yuna est déjà dans l’eau, entre les rochers, sa lampe frontale allumée.')],
-    mid:[B('carnet', 'À la sixième bouée, Yuna ne remonte pas. Une seconde, deux, dix…'),
+    mid:[B('carnet', 'À la quatrième bouée, Yuna ne remonte pas. Une seconde, deux, dix…'),
       B('yuna', '« Coincée entre deux rochers. Depuis longtemps… »', 'Puis elle jaillit de l’eau, une petite boîte en fer rouillée dans les bras.'),
       B('carnet', 'Dedans, une vieille **photo** : deux enfants sur les marches de notre phare. Et une vieille **clé**, avec une étiquette : « Phare ».')],
     outro:[B('job', '« Je vais la garder, si vous voulez bien. »', 'Job regarde la photo longtemps, très longtemps.'),
