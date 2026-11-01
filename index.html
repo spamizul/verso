@@ -9476,7 +9476,7 @@ function s4Tick(){
   }
 }
 /* ---------- les arrivées : le voilier de Gaspard, les bouteilles à ramasser ---------- */
-const ARRIVE = {'Mei, la photographe':'boat', 'Les abeilles':'boat', 'Basile et Moussaillon':'boat', 'Le pain':'boat', 'La verrière':'boat', 'L’architecte':'boat', 'La factrice':'boat', 'Le poulailler':'boat', 'La longère':'boat', 'La bibliothécaire':'boat', 'La fête des lumières':'elias'};
+const ARRIVE = {'Mei, la photographe':'boat', 'Les abeilles':'boat', 'Basile et Moussaillon':'boat', 'Le pain':'boat', 'La verrière':'boat', 'L’architecte':'boat', 'La factrice':'boat', 'Le poulailler':'boat', 'La longère':'boat', 'La bibliothécaire':'boat'};
 function beachSpot(){ const land = mainLand(), a = []; for (let i = 0; i < N*N; i++) if (land[i] && !O[i] && G[i] === 's' && near8(i, j => G[j] === 'w') && !fogAt(i % N, (i / N)|0) && !inIsle(i, 'ilot')) a.push(i);
   if (!a.length) for (let i = 0; i < N*N; i++) if (land[i] && !O[i] && (G[i] === 's' || G[i] === 'g') && !fogAt(i % N, (i / N)|0)) a.push(i);
   return a.length ? a[(Math.random() * a.length)|0] : -1; }
@@ -9501,6 +9501,7 @@ function arrState(i){ const a = glob.story.arr; return a && a.i === i ? a : null
 /* true : le chapitre attend quelque chose avant de commencer */
 function arrGate(i){
   if (!isStory() || glob.story.v !== 2 || window.__instant) return false;
+  { const a0 = glob.story.arr; if (a0 && a0.kind === 'elias'){ if (a0.at != null && O[a0.at] === 'ʚ'){ O[a0.at] = null; save(); forceDraw = true; } glob.story.arr = null; saveGlob(); } }   // plus d'écorce d'Elias : il annonce lui-même sa venue (1er novembre)
   if (glob.story.rPend){ s4Bottles(); return true; }
   const ch = CHAPTERS[i], kind = ch && ARRIVE[ch.title]; if (!kind) return false;
   if ((glob.story.arrOk || {})[i]) return false;
