@@ -20,7 +20,7 @@ button{touch-action:manipulation}
 </style>
 </head>
 <body>
-<title>iloe TEST</title>
+<title>iloe proto</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
 /* Layout : le terrain en pixel art à gauche, l'établi d'outils à droite (empilés sur téléphone). Couleurs : granit et ardoise bretons, volets bleus, lueur des lampadaires. */
@@ -1156,14 +1156,26 @@ html:not(.pret){background:#11171c}
 // VERSION_TEST : le nouveau jeu en chantier. Affiche un bandeau « VERSION TEST » en haut de l'écran.
 // À passer à false le jour où le nouveau jeu remplace l'ancien sur le vrai site.
 const VERSION_TEST = true;
+// PROTO : le prototype « iloe proto » (envies des habitants, bonheur du village).
+// Ses sauvegardes sont rangées à part (préfixe « proto- »), pour ne jamais toucher à celles de la version test.
+const PROTO = true;
+if (PROTO){ try {
+  const P = 'proto-', S = Storage.prototype, g = S.getItem, s = S.setItem, r = S.removeItem, kk = S.key;
+  const mine = st => { const a = []; for (let j = 0; j < st.length; j++){ const x = kk.call(st, j); if (x && x.startsWith(P)) a.push(x); } return a; };
+  S.getItem = function(a){ return g.call(this, P + a); };
+  S.setItem = function(a, b){ return s.call(this, P + a, b); };
+  S.removeItem = function(a){ return r.call(this, P + a); };
+  S.clear = function(){ for (const x of mine(this)) r.call(this, x); };
+  S.key = function(i){ const x = mine(this)[i]; return x == null ? null : x.slice(P.length); };
+} catch(e){} }
 // BAC_SABLE : les terrains hors histoire deviennent des bacs à sable (tout gratuit, sans demandes ni caisse)
 const BAC_SABLE = true;
 if (VERSION_TEST){ try {
   // un toucher sur le bandeau ouvre l'atelier (les 5 touchers sur la boussole marchent toujours)
-  const bt = document.createElement('button'); bt.type = 'button'; bt.id = 'bandeauTest'; bt.textContent = 'VERSION TEST · atelier'; bt.setAttribute('aria-label', 'Version test : ouvrir l’atelier');
-  bt.style.cssText = 'position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:99999;border:0;cursor:pointer;background:#c0392b;color:#fff;font:700 11px/1 system-ui,sans-serif;letter-spacing:.08em;padding:calc(6px + env(safe-area-inset-top, 0px)) 14px 7px;border-radius:0 0 10px 10px;opacity:.92;touch-action:manipulation';
+  const bt = document.createElement('button'); bt.type = 'button'; bt.id = 'bandeauTest'; bt.textContent = PROTO ? 'PROTO · atelier' : 'VERSION TEST · atelier'; bt.setAttribute('aria-label', 'Version test : ouvrir l’atelier');
+  bt.style.cssText = 'position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:99999;border:0;cursor:pointer;background:'+(PROTO?'#2e7d5b':'#c0392b')+';color:#fff;font:700 11px/1 system-ui,sans-serif;letter-spacing:.08em;padding:calc(6px + env(safe-area-inset-top, 0px)) 14px 7px;border-radius:0 0 10px 10px;opacity:.92;touch-action:manipulation';
   bt.addEventListener('click', e => { e.stopPropagation(); try { openAtelier(); } catch(err){} });
-  document.body.append(bt); document.title = 'iloe · TEST';
+  document.body.append(bt); document.title = PROTO ? 'iloe · PROTO' : 'iloe · TEST';
 } catch(e){} }
 /* ---------- la carte fixe : la même pour tout le monde ---------- */
 // Chaque île : centre (cx, cy) et demi-largeur / demi-hauteur (rx, ry), en cases, sur la carte de 80 × 80.
@@ -4972,7 +4984,7 @@ function render(full){
     for (const a of animals) if (Math.floor((a.y - 2) / T) === y && inView(a.x, a.y)) drawAnimal(a);
   }
   for (const g of gulls) if (inView(g.x, g.y)) drawGull(g);
-  if (glob.story.v === 2 && isStory()){ drawMist(c2); drawYunaTete(c2); drawMarche(c2); }
+  if (glob.story.v === 2 && isStory()){ drawMist(c2); drawYunaTete(c2); drawMarche(c2); drawEnvies(c2); }
   const {dark, warm} = darkness(tday);
   if (!eco) drawParticles(dark > 0.2, inView);
   if (warm > 0){ c2.fillStyle = `rgba(255,140,70,${warm})`; c2.fillRect(vx, vy, s, sh); }
@@ -6211,7 +6223,7 @@ function interact(x, y){
   if (GROWN[O[i]]){ toast('🌱 Cette pousse grandit encore… patience !'); return; }
   try { if (arrTap(i)) return; if (!O[i] && crabTap(x, y)) return; } catch(e){ console.warn(e); }
   try { if (O[i] === 'u' && honeyHarvest(i)) return; if (O[i] === '˸' && crate10Tap(i)) return; if (O[i] === '˹' && paxTap(i)) return; if (woolTap(i)) return; if (O[i] === '˳' && catTap(i)) return; if (O[i] === '˲' && glob.story && glob.story.catBasket === i){ toast('🐈 Moussaillon ronronne dans son panier.', 1800); return; } } catch(e){ console.warn(e); }
-  try { if (pecheTap(i)) return; if (pecheMarche(i)) return; if (ricoTap(i)) return; } catch(e){ console.warn(e); }
+  try { if (pecheTap(i)) return; if (pecheMarche(i)) return; if (ricoTap(i)) return; if (envTap(i)) return; } catch(e){ console.warn(e); }
   { const ch = CHAPTERS[glob.story.chapter]; if (ch && ch.tap && resOn() && glob.story.ville && (glob.story.introSeen ?? -1) >= glob.story.chapter && glob.story.pendingOutro == null && ch.tap(i)) return; }
   if (resOn() && brokenAt(i)){
     const r = resv(), cab = O[i] === 'Ĉ', need = cab ? {b:2} : {p:2};
@@ -7142,7 +7154,7 @@ const AT_SNAP = {"19": {"iloe-global": "{\"gifts\":[\"u\",\"e\",\"O\",\"a\",\"y\
 const AT_BACK = 'iloe-atelier-copie', AT_GOTO = 'iloe-atelier-aller';
 const atWait = ms => new Promise(r => setTimeout(r, ms));
 function atBackup(){
-  const d = {}; for (let k = 0; k < localStorage.length; k++){ const key = localStorage.key(k); if (key.startsWith('iloe') && key !== AT_BACK && key !== AT_GOTO) d[key] = localStorage.getItem(key); }
+  const d = {}; for (let k = 0; k < localStorage.length; k++){ const key = localStorage.key(k); if (key && key.startsWith('iloe') && key !== AT_BACK && key !== AT_GOTO) d[key] = localStorage.getItem(key); }
   try { localStorage.setItem(AT_BACK, JSON.stringify({at:Date.now(), name:(glob.story || {}).name || '', chapter:(glob.story || {}).chapter || 0, d})); return true; } catch (e){ return false; }
 }
 function atRestore(){
@@ -7640,12 +7652,11 @@ const CHAPTERS_V2 = [
    give2:['B'],
    goals2:[['Un quai sur ton île', () => cntG('q') - quaiIlot(), 4, 'Où accosteront les barques, chez toi ?', 'Construis un quai le long de ton île.'], ['Une barque de pêche', () => Math.max(0, cnt('B') - 1), 1, 'Il faut bien faire l’aller-retour…', 'Pose une nouvelle barque sur l’eau, près de ton quai.']],
    get goals(){ return phase2(this) ? this.goals2 : this.goals1; },
-   outro:['En fin de journée, une petite voile approche. Un homme saute sur ton nouveau quai, les mains pleines de sciure.', {who:'kofi', t:'« Kofi, charpentier. On m’a dit qu’il y avait de la belle pierre par ici… et du calme. »'}, {who:'kofi', t:'Il regarde déjà {vers:carriere}, où des falaises rouges percent la brume.'}], outroWho:'kofi',
-   after:() => { nextIsle('carriere', 6, 'm', 6, 5, 'carriere', '🌫️ {Dir:carriere}, des falaises rouges sortent de la brume…'); showIsle('carriere'); },
+   outro:['Tomas amarre la nouvelle barque et s’assoit au bout du quai, les pieds au-dessus de l’eau. « Un vrai port ! Il ne manque plus que des voisins… »', {who:'job', t:'Là-haut, Job te fait signe depuis son phare. « Dis… quand tu auras un moment, j’aurais une petite envie. Regarde au-dessus de chez moi ! »'}],
    reward:[]},
   {season:1, title:'La carrière', who:'kofi', give:['n', '~', 'Ț'],
    onIntro:() => { nextIsle('carriere', 6, 'm', 6, 5, 'carriere', '🌫️ {Dir:carriere}, des falaises rouges sortent de la brume…'); showIsle('carriere'); },
-   intro:['« Ces falaises rouges, {dir:carriere}… De la pierre à volonté, et de l’argile. C’est pour ça que je suis venu. »', '« Il faudrait un pont pour y aller. Et là-bas, un atelier du tailleur : je taillerai la pierre pour toi, tu en useras moins. »'],
+   intro:[{who:'toi', t:'Un matin, une petite voile sort de la brume et accoste à ton quai. Un homme saute à terre, les mains pleines de sciure.'}, '« Kofi, charpentier. Sur le continent, on raconte qu’il y a une île, par ici, où les gens sont heureux. Alors je suis venu voir. »', '« Ces falaises rouges, {dir:carriere}… De la pierre à volonté, et de l’argile. C’est pour ça que je suis venu. »', '« Il faudrait un pont pour y aller. Et là-bas, un atelier du tailleur : je taillerai la pierre pour toi, tu en useras moins. »'],
    goals1:[['Un pont jusqu’à l’île aux pierres', () => bridgeTo('carriere') ? 1 : 0, 1, 'Comment rejoindre les falaises rouges, {dir:carriere} ?', 'Construis un pont entre ton île et l’île aux pierres.'],
      ['Atelier du tailleur', () => Math.min(1, cntIn('Ț', 'carriere')), 1, 'Kofi voulait son atelier sur l’île aux pierres…', 'Construis l’atelier du tailleur sur l’île aux pierres.']],
    mid:['« Ta cabane ne tiendra pas le vent, tu sais. Tiens, le plan d’une vraie maison. »', '« Et moi, il me faudrait une maison aussi. Où tu veux ! »', {who:'tomas', t:'« Et moi, une maison près du port ? Pour partir pêcher au lever du jour, hein ! Ma cabane sur l’îlot, je la garde pour quelqu’un qui en aura besoin. »'}],
@@ -12939,7 +12950,7 @@ const WISHES = [
 ];
 const RES_ICON = {laine:'🧶', vr:'🪟', oeuf:'🥚', poisson:'🐟', farine:'🫓', miel:'🍯', gateau:'🎂', crepe:'🥞', lait:'🥛', b:'🪵', p:'🪨', a:'🧱', m:'⚙️', t:'⬜', k:'🐚', w:'🌾', v:'🥕', pie:'🥧'};
 const resTxt = c => Object.entries(c).map(([k, n]) => `${n} ${RES_ICON[k]}`).join(' + ');
-const WISHES_ON = true; // les envies des habitants : en pause, on cherchera une façon plus maligne
+const WISHES_ON = false; // les envies des habitants : en pause, on cherchera une façon plus maligne
 function wishTide(){
   if (!WISHES_ON || !glob.story.ville || !resOn()) return;
   const w = glob.story.wish; if (w && w.id) return;
@@ -12982,6 +12993,7 @@ function curReq(){
   return {rq, v, home:v.home};
 }
 function pickReq(){
+  if (PROTO) return;   // le prototype a ses propres envies (28-envies.js)
   if (!glob.story.ville || !resOn() || glob.story.req || Date.now() < (glob.story.reqAt || 0)) return;
   const vs0 = villagers().filter(v => v.home != null && O[v.home] === 'h' && !fogAt(v.home % N, (v.home / N)|0)); if (!vs0.length) return;
   const rc = glob.story.reqCnt || (glob.story.reqCnt = {}), low = Math.min(...vs0.map(v => rc[v.name] || 0)), vs = vs0.filter(v => (rc[v.name] || 0) === low);
@@ -13468,7 +13480,7 @@ function checkTier(){
 }
 function pausing(){ return (glob.story.nextAt || 0) > 0 && (glob.story.introSeen ?? -1) < glob.story.chapter; }
 function chaptersToday(){ const t = glob.story.today; return t && t.d === today() ? t.n : 0; }
-function chapterReady(){ return chaptersToday() < PER_DAY; }
+function chapterReady(){ return chaptersToday() < PER_DAY && envGateOk(); }
 function countTouchPath(id){
   return O.filter((o, i) => o === id && [[1,0],[-1,0],[0,1],[0,-1]].some(([a, b]) => walkable(gAt(i % N + a, ((i / N)|0) + b)))).length;
 }
@@ -15624,10 +15636,12 @@ function renderStoryCard(){
   const si = seasonInfo(i), head = `${glob.story.ville ? tierName() : 'Journal de bord'} — S${si.s} · Ch. ${si.k}`;
   if (pausing()){
     scPaint('job'); face.style.setProperty('--p', '100%'); storyCard.classList.add('ready');
+    if (!envGateOk()){ envCardWait(titled, head); return; }
     titled(head, 'Une pause'); scNext.hidden = Date.now() < (window._nextHold || 0); if (scNext.hidden) setTimeout(() => { try { renderStoryCard(); } catch(e){} }, 2700); scPopClose(); return;
   }
   if ((glob.story.introSeen ?? -1) < i){
     scPaint('job');
+    if (!envGateOk()){ envCardWait(titled, head); return; }
     titled(head, 'Un nouveau chapitre');
     if (!chapterReady()){ const li = document.createElement('li'); li.className = 'free'; li.textContent = '🌙 Ce chapitre arrive demain. En attendant, construis librement !'; scGoals.append(li); }
     { const t = typeof arrLine === 'function' ? arrLine(i) : ''; if (t){ const li = document.createElement('li'); li.className = 'free'; li.textContent = t; scGoals.append(li); } }
@@ -15651,6 +15665,7 @@ document.getElementById('scFace').onclick = e => {
   const i = glob.story.chapter, ch = CHAPTERS[i];
   if (!ch){ scSayBubble('« La suite arrive bientôt. En attendant, fais grandir ton île comme tu veux ! »', 'job', 7000); return; }
   if ((glob.story.introSeen ?? -1) < i && typeof arrLine === 'function' && arrLine(i)){ arrShow(); scSayBubble(arrLine(i), (glob.story.arr || {}).kind === 'boat' && !glob.story.rPend ? 'gaspard' : 'job', 8000); return; }
+  if ((glob.story.introSeen ?? -1) < i && !envGateOk()){ const c = envCur(); if (c) scSayBubble('«\u00a0' + c.e.t + '\u00a0»', c.e.who, 8000, c.e.path ? '💛 Une envie' : `💛 ${envProg(c)} / ${envNeed(c.e)}`); else scSayBubble('« Regarde au-dessus des maisons : quelqu’un aura bientôt une envie. »', 'job', 7000); return; }
   if ((glob.story.introSeen ?? -1) < i){ scSayBubble(chapterReady() ? '« Il se passe quelque chose, sur l’île… »' : '« Repose-toi. Demain, il se passera quelque chose, je le sens. »', 'job', 7000); return; }
   const r = relanceLine(ch); scSayBubble(r ? r.t : chapterSay(ch), r ? r.who : ch.who, 7000, r && r.prog);
 };
@@ -15658,7 +15673,7 @@ document.getElementById('scWishDot').onclick = e => { e.stopPropagation(); const
 function scPopAt(pop){ const r = document.getElementById('storyCard').getBoundingClientRect(); pop.style.top = Math.round(r.bottom + 8) + 'px'; }
 document.addEventListener('pointerdown', e => { if (!e.target.closest || !e.target.closest('#storyCard')) scPopClose(); }, true);
 const scDone = document.getElementById('scDone');
-document.getElementById('scNext').onclick = () => { window._s5Explicit = true;
+document.getElementById('scNext').onclick = () => { window._s5Explicit = true; if (!envGateOk()){ renderStoryCard(); return; }
   { const hh = tday * 24, ev = (storyTimes(CHAPTERS[glob.story.chapter], 'intro') || {})[0]; if (isStory() && glob.story.chapter > 0 && !(ev >= 16.5) && (hh >= 16.5 || hh < 5.9 || s5WaitDay()) && nightRun(() => document.getElementById('scNext').onclick())) return; }
   const p = glob.story.chapter - 1, pc = CHAPTERS[p];
   if (pc && pc.dawn && isStory() && !(glob.story.dawnSeen || {})[p]){
@@ -16829,6 +16844,203 @@ function ricoJouer(histoire){
   }
   requestAnimationFrame(() => { taille(); requestAnimationFrame(boucle); });
   window.addEventListener('resize', taille);
+}
+/* ---------- PROTOTYPE : les envies des habitants et le bonheur du village ----------
+   Une envie à la fois, dans une bulle au-dessus de chez l'habitant.
+   On la réalise en posant ce qu'il faut tout près : il est content, il dit merci,
+   il fait parfois un cadeau (un plan, du bois…), et le bonheur du village monte.
+   Les paliers de bonheur font arriver les chapitres suivants (Kofi, Lina, Elias…). */
+
+/* le bonheur qu'il faut pour ouvrir chaque chapitre (index du chapitre → bonheur total) */
+const ENV_PALIERS = {4:3, 5:5, 6:7, 7:9, 8:11, 10:Infinity};
+const ENV_PAUSE = new Set(['Après la tempête']);   // pendant ces chapitres, plus d'envies : on répare
+const bonheur = () => (glob.story && glob.story.bonheur) || 0;
+const envPalier = i => ENV_PALIERS[i] ?? 0;
+function envGateOk(i = glob.story.chapter){ if (window.__instant) return true; return bonheur() >= envPalier(i); }
+
+/* les envies, dans l'ordre où elles arrivent */
+const ENVIES = [
+  {id:'job_fleurs', who:'job', obj:'f', n:3, r:2, t:'Au pied de mon phare, tout est gris… Trois touffes de fleurs, ça me ferait plaisir.', merci:'Oh… des couleurs. Merci. Tiens, le plan d’un banc : mon père en avait fait un, ici.', unlock:'b'},
+  {id:'tomas_banc', who:'tomas', obj:'b', n:1, r:2, t:'Un banc au bord du quai ? Pour réparer mes filets en regardant la mer !', merci:'Parfait ! Tiens, du bois flotté que j’avais mis de côté.', res:{b:6}},
+  {id:'job_arbres', who:'job', obj:'t', n:2, r:3, t:'Le vent siffle fort, là-haut, la nuit. Deux arbres près du phare, pour le couper un peu ?', merci:'Écoute… on entend déjà les feuilles. Tiens, le plan d’un pot fleuri.', unlock:'ʬ'},
+  {id:'tomas_fleurs', who:'tomas', obj:'f', n:2, r:2, t:'Ça sent un peu trop le poisson, chez moi… Deux touffes de fleurs ?', merci:'Ah ! Ça sent le printemps, maintenant. Tiens, des coquillages.', res:{k:5}},
+  {id:'kofi_chemin', who:'kofi', path:true, t:'Un chemin jusqu’à ma porte ? J’ai de la poussière de pierre plein les bottes.', merci:'Bien droit, bien tassé. Tiens, des pierres que j’avais en trop.', res:{p:6}, need:() => unlocked('c')},
+  {id:'kofi_banc', who:'kofi', obj:'b', n:1, r:2, t:'Le soir, après la carrière, j’aimerais m’asseoir devant chez moi. Un banc ?', merci:'Ah, ça fait du bien aux jambes. Tiens, le plan d’un bac à fleurs.', unlock:'î'},
+  {id:'lina_citron', who:'lina', obj:'ʯ', n:1, r:2, start:'ʯ', t:'Gaspard m’a rapporté un plant de citronnier du continent ! Tu me le plantes devant chez moi ? Pour mes tartes au citron.', merci:'Ma première tarte au citron sera pour toi ! Tiens, du blé.', res:{w:4}},
+  {id:'tomas_citron', who:'tomas', obj:'ʯ', n:1, r:2, t:'J’ai goûté la tarte au citron de Lina… Moi aussi, je veux un citronnier !', merci:'Mon citronnier à moi ! Je l’arroserai tous les jours. Bon… presque tous les jours.', res:{k:6}},
+  {id:'job_pots', who:'job', obj:'ʬ', n:2, r:2, t:'Deux pots fleuris sur les marches du phare ? Ça me ferait de la compagnie.', merci:'Ils sont jolis. Je leur parle un peu, la nuit. Ne le répète pas.', res:{b:5}},
+  {id:'elias_arbres', who:'elias', obj:'t', n:3, r:3, t:'… Trois arbres, autour de ma cabane. Pour que les oiseaux reviennent.', merci:'… Écoute. Un merle. Merci.', res:{b:8}},
+  {id:'lina_bacs', who:'lina', obj:'î', n:2, r:2, t:'Deux bacs à fleurs devant la maison ? J’y mettrai des herbes pour mon pain.', merci:'Du thym, du romarin… Ça sent déjà bon ! Tiens, du blé.', res:{w:5}},
+  {id:'margaux_lampe', who:'margaux', obj:'l', n:1, r:2, t:'Un lampadaire devant chez moi ? Le soir, je dessine tard.', merci:'Parfait, une vraie lumière d’atelier ! Tiens, des coquillages.', res:{k:6}},
+  {id:'kofi_fleurs', who:'kofi', obj:'f', n:3, r:2, t:'Ne le dis à personne… mais j’aime bien les fleurs. Trois touffes, devant chez moi ?', merci:'… Elles sont belles. Bon. Je retourne tailler ma pierre.', res:{p:5}},
+  {id:'elias_banc', who:'elias', obj:'b', n:1, r:2, t:'Un banc, devant ma cabane. Pour regarder l’horizon.', merci:'… Merci. Viens t’asseoir, un soir.', res:{b:6}}
+];
+/* quand toutes les envies sont faites, on en tire au hasard parmi celles-ci */
+const ENV_ENCORE = [
+  {obj:'f', n:2, r:2, t:'Deux touffes de fleurs devant chez moi, ça mettrait de la couleur !', merci:'Merci ! C’est tout de suite plus gai.'},
+  {obj:'t', n:1, r:3, t:'Un arbre près de chez moi, pour avoir de l’ombre l’été ?', merci:'Merci ! J’y ferai la sieste.'},
+  {obj:'b', n:1, r:2, t:'Un banc devant ma porte, pour regarder le soir tomber.', merci:'Merci ! Ce soir, je regarde le coucher de soleil.'},
+  {obj:'ʬ', n:1, r:2, t:'Un pot fleuri devant chez moi ?', merci:'Merci ! Il est parfait.'},
+  {obj:'î', n:1, r:2, t:'Un bac à fleurs sous ma fenêtre ?', merci:'Merci ! J’y planterai des herbes.'},
+  {obj:'ʯ', n:1, r:2, t:'Un petit citronnier près de chez moi ? Ça sent si bon…', merci:'Merci ! Ça sent déjà le citron.'},
+  {obj:'l', n:1, r:2, t:'Il fait tout noir devant chez moi, le soir. Un lampadaire ?', merci:'Merci ! Je n’aurai plus peur de rater ma porte.'}
+];
+
+/* où vit chacun (et où on regarde son envie) */
+function envAnchor(who){
+  try {
+    if (who === 'job'){ const l = O.indexOf('L'); return l >= 0 ? l : null; }
+    if (who === 'tomas' && !Object.values(glob.story.homes || {}).includes('tomas')){
+      const land = mainLand(); let best = null;   // pas encore de maison : on le trouve au port
+      for (let i = 0; i < N*N; i++) if (G[i] === 'q' && !inIsle(i, 'ilot') && [1, -1, N, -N].some(d => land[i + d] && G[i + d] !== 'q' && G[i + d] !== 'w')){ best = i; break; }
+      return best;
+    }
+    const h = homeOf(who); return h == null ? null : h;
+  } catch(e){ return null; }
+}
+const envHere = who => { const a = envAnchor(who); return a != null && !fogAt(a % N, (a / N)|0); };
+const envWho = () => ['job', 'tomas', 'kofi', 'lina', 'elias', 'margaux'].filter(envHere);
+function envCount(e, at){
+  if (e.path) return [1, -1, N, -N].some(d => PATHISH.has(G[at + d])) ? 1 : 0;
+  const ok = o => o === e.obj || GROWN[o] === e.obj || (e.obj === 't' && TREES.has(o));   // une pousse plantée compte déjà
+  let n = 0; for (let i = 0; i < N*N; i++) if (O[i] && ok(O[i]) && cheb(i, at) <= e.r) n++; return n;
+}
+function envCur(){
+  const s = glob.story.env; if (!s || !s.id) return null;
+  const e = s.id.startsWith('encore:') ? Object.assign({id:s.id, who:s.who}, ENV_ENCORE[+s.id.split(':')[1]]) : ENVIES.find(x => x.id === s.id);
+  if (!e) return null;
+  const at = envAnchor(e.who); if (at == null) return null;
+  return {e, at, s};
+}
+const envProg = c => c.e.path ? envCount(c.e, c.at) : Math.max(0, envCount(c.e, c.at) - (c.s.base || 0));
+const envNeed = e => e.path ? 1 : e.n;
+function envOn(){
+  if (glob.story.v !== 2 || !isStory() || !resOn()) return false;
+  const i = glob.story.chapter, ch = CHAPTERS[i];
+  if (i < 4 && !(i === 3 && pausing())) return false;   // tout commence après le petit port
+  if (ch && ENV_PAUSE.has(ch.title) && (glob.story.introSeen ?? -1) >= i) return false;
+  return true;
+}
+function envPick(){
+  const done = glob.story.envDone || (glob.story.envDone = []), here = envWho();
+  let e = ENVIES.find(x => !done.includes(x.id) && here.includes(x.who) && (!x.need || x.need()) && (x.start || unlocked(x.obj) || x.path));
+  let id, who;
+  if (e){ id = e.id; who = e.who; }
+  else {
+    // tout est fait : une envie au hasard, chez quelqu'un qui n'a rien demandé depuis longtemps
+    const last = glob.story.envLast || {};
+    const ppl = here.slice().sort((a, b) => (last[a] || 0) - (last[b] || 0)); if (!ppl.length) return;
+    const pool = ENV_ENCORE.map((x, k) => [x, k]).filter(([x]) => unlocked(x.obj)); if (!pool.length) return;
+    const [x, k] = pool[(Math.random()*pool.length)|0]; e = Object.assign({}, x); id = 'encore:' + k; who = ppl[0];
+  }
+  if (e.path && envCount(e, envAnchor(who)) && id === e.id){ (glob.story.envDone || (glob.story.envDone = [])).push(id); saveGlob(); return; }   // déjà un chemin devant sa porte : il n'a rien à demander
+  if (e.start && !unlocked(e.start)){ unlockItem(e.start); try { buildTools(); renderRecent(); } catch(err){} }
+  const at = envAnchor(who); if (at == null) return;
+  glob.story.env = {id, who, base:envCount(e, at), t:Date.now()};
+  (glob.story.envLast || (glob.story.envLast = {}))[who] = Date.now();
+  saveGlob(); forceDraw = true;
+  scSayBubble('«\u00a0' + e.t + '\u00a0»', who, 9000, '💛 Une envie');
+  try { renderStoryCard(); } catch(err){}
+}
+let envFx = null;   // les petits cœurs qui montent après un merci
+function envMerci(c){
+  const {e, at, s} = c, r = resv();
+  glob.story.bonheur = bonheur() + 1;
+  (glob.story.envDone || (glob.story.envDone = [])).push(s.id);
+  glob.story.env = null; glob.story.envAt = Date.now() + 9000;
+  let gift = '';
+  if (e.unlock && !unlocked(e.unlock)){ unlockItem(e.unlock); const t = TOOLS.find(t => t.id === e.unlock); gift = `📜 Nouveau plan : ${t ? t.name : ''}`; try { buildTools(); renderRecent(); } catch(err){} }
+  if (e.res){ for (const [k, n] of Object.entries(e.res)) r[k] = (r[k] || 0) + n; gift = `+${resTxt(e.res)}`; }
+  saveGlob(); renderRes(true);
+  envFx = {at, t0:performance.now()};
+  const fxT = setInterval(() => { forceDraw = true; if (!envFx) clearInterval(fxT); }, 60);
+  setTimeout(() => { envFx = null; forceDraw = true; }, 2600);
+  scSayBubble('«\u00a0' + e.merci + '\u00a0»', e.who, 7000, `💛 Bonheur du village : ${bonheur()}`);
+  if (gift) setTimeout(() => toast(gift, 3000), 1400);
+  envPalierCheck();
+  try { renderStoryCard(); } catch(err){}
+}
+/* un palier est atteint : on le dit, la suite peut arriver */
+function envPalierCheck(){
+  const i = glob.story.chapter, need = envPalier(i);
+  if (!need || !isFinite(need) || bonheur() !== need || (glob.story.introSeen ?? -1) >= i) return;
+  setTimeout(() => toast('💛 Le village est heureux… quelque chose se prépare !', 3500), 3200);
+}
+function envTick(){
+  try {
+    if (window.__instant || !envOn() || !storyBox.hidden || glob.story.pendingOutro != null) return;
+    const c = envCur();
+    if (!c){ if (glob.story.env && glob.story.env.id){ glob.story.env = null; saveGlob(); } if (Date.now() >= (glob.story.envAt || 0)) envPick(); return; }
+    const pg = envProg(c); if (pg >= envNeed(c.e)){ envMerci(c); return; }
+    if (pg !== envTick.last){ envTick.last = pg; forceDraw = true; try { renderStoryCard(); } catch(err){} }
+  } catch(e){ console.warn('envies', e); }
+}
+setInterval(envTick, 700);
+/* toucher la maison (ou le phare) de quelqu'un qui a une envie : il la redit */
+function envTap(i){
+  const c = envCur(); if (!c || !envOn() || inviting()) return false;
+  if (i !== c.at && !(O[c.at] === 'L' && cheb(i, c.at) <= 1)) return false;
+  scSayBubble('«\u00a0' + c.e.t + '\u00a0»', c.e.who, 8000, c.e.path ? '💛 Une envie' : `💛 ${envProg(c)} / ${envNeed(c.e)}`);
+  return true;
+}
+/* ce que la carte d'histoire affiche quand on attend la suite */
+function envLine(){
+  const c = envCur();
+  if (!c) return '💛 Les habitants ont parfois des envies : guette les bulles au-dessus de chez eux.';
+  const p = PEOPLE[c.e.who] || {};
+  return `💛 ${p.name || ''} : «\u00a0${c.e.t}\u00a0»` + (c.e.path ? '' : ` (${envProg(c)} / ${envNeed(c.e)})`);
+}
+
+/* ---------- le dessin : la bulle au-dessus de la maison, les cœurs ---------- */
+const envIcons = {};
+function envIcon(id){
+  if (envIcons[id]) return envIcons[id];
+  const t = TOOLS.find(t => t.id === id); if (!t) return null;
+  const cv = document.createElement('canvas'); cv.width = 16; cv.height = 20;
+  try { drawIconTo(t, cv); } catch(e){ return null; }
+  return (envIcons[id] = cv);
+}
+const ENV_UP = {L:14, h:4, 'Ĉ':3};
+function drawEnvies(c2){
+  const F = (a, b, w, h, col) => { c2.fillStyle = col; c2.fillRect(a, b, w, h); };
+  const c = envOn() && storyBox.hidden ? envCur() : null;
+  if (c){
+    const x = (c.at % N)*T, y = ((c.at / N)|0)*T, up = ENV_UP[O[c.at]] ?? 6;
+    const bx = x + 1, by = y - up - 16;
+    // la bulle : bord sombre, fond blanc, petite queue
+    F(bx + 1, by - 1, 12, 1, '#2b2b30'); F(bx + 1, by + 14, 12, 1, '#2b2b30'); F(bx, by, 1, 14, '#2b2b30'); F(bx + 13, by, 1, 14, '#2b2b30');
+    F(bx + 1, by, 12, 14, '#fff');
+    F(bx + 6, by + 15, 2, 1, '#fff'); F(bx + 5, by + 15, 1, 1, '#2b2b30'); F(bx + 8, by + 15, 1, 1, '#2b2b30'); F(bx + 6, by + 16, 2, 1, '#2b2b30');
+    const ic = envIcon(c.e.path ? 'c' : c.e.obj);
+    if (ic){ const sm = c2.imageSmoothingEnabled; c2.imageSmoothingEnabled = false; c2.drawImage(ic, 2, 5, 12, 11, bx + 1, by + 1, 12, 11); c2.imageSmoothingEnabled = sm; }
+    // combien il en reste : des petits points
+    const need = envNeed(c.e), got = Math.min(need, envProg(c));
+    for (let k = 0; k < need; k++) F(bx + 7 - need + k*2, by + 12, 1, 1, k < got ? '#e0a020' : '#b8b8c0');
+  }
+  if (envFx){
+    const t = (performance.now() - envFx.t0) / 2600, x = (envFx.at % N)*T, y = ((envFx.at / N)|0)*T - (ENV_UP[O[envFx.at]] ?? 6);
+    const heart = (hx, hy, col) => { F(hx, hy, 2, 1, col); F(hx + 3, hy, 2, 1, col); F(hx - 1, hy + 1, 7, 2, col); F(hx, hy + 3, 5, 1, col); F(hx + 1, hy + 4, 3, 1, col); F(hx + 2, hy + 5, 1, 1, col); };
+    for (let k = 0; k < 4; k++){
+      const tt = t - k*0.15; if (tt < 0 || tt > 0.85) continue;
+      heart(Math.round(x + 2 + k*4 + Math.sin(tt*9 + k)*2), Math.round(y - 4 - tt*26), k % 2 ? '#e8577a' : '#f07d9a');
+    }
+  }
+}
+/* la carte d'histoire, entre deux chapitres, tant que le village n'est pas assez heureux */
+function envCardWait(titled, head){
+  const i = glob.story.chapter, need = envPalier(i), face = document.getElementById('scFace');
+  scPaint('job'); document.getElementById('scNext').hidden = true;
+  if (!isFinite(need)){
+    titled(head, 'Fin du prototype 🧪');
+    const li = document.createElement('li'); li.className = 'free'; li.textContent = 'Merci d’avoir joué ! La suite au prochain épisode. Les envies continuent : fais grandir le bonheur du village.'; scGoals.append(li);
+    const l2 = document.createElement('li'); l2.className = 'free'; l2.textContent = `💛 Bonheur du village : ${bonheur()}`; scGoals.append(l2);
+    face.style.setProperty('--p', '100%'); return;
+  }
+  titled(head, 'Des voisins heureux');
+  const li = document.createElement('li'); li.className = 'free'; li.textContent = `💛 Bonheur du village : ${bonheur()} / ${need}`; scGoals.append(li);
+  const l2 = document.createElement('li'); l2.className = 'free'; l2.textContent = envLine(); scGoals.append(l2);
+  const prev = Object.entries(ENV_PALIERS).map(([k, v]) => [+k, v]).filter(([k]) => k < i).map(([, v]) => v).pop() || 0;
+  face.style.setProperty('--p', Math.round(Math.min(1, Math.max(0, (bonheur() - prev) / Math.max(1, need - prev)))*100) + '%');
 }
 </script>
 
