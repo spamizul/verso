@@ -4299,7 +4299,7 @@ function whoLivesAt(i){
 /* les pousses grandissent ; la marée rapporte du bois ; chaque matin, un peu de nouveau */
 function growTick(){
   const g = S.grow || {}; let ch = false;
-  for (const [k, t] of Object.entries(g)){ const i = +k; if (!GROWN[O[i]]){ delete g[k]; ch = true; continue; } if (Date.now() - t > 4*60*1000){ O[i] = GROWN[O[i]]; delete g[k]; ch = true; } }
+  for (const [k, t] of Object.entries(g)){ const i = +k; if (!GROWN[O[i]]){ delete g[k]; ch = true; continue; } if (Date.now() - t > 90*1000){ O[i] = GROWN[O[i]];   /* un arbre pousse en 1 min 30 */ delete g[k]; ch = true; } }
   if (ch){ save(); forceDraw = true; }
   // le blé qui vient de mûrir : on redessine le sol
   const b = S.ble || {}; for (const [k, t] of Object.entries(b)) if (Date.now() - t >= BLE_MS){ delete b[k]; groundDirty = true; }
@@ -4361,7 +4361,7 @@ const ENVIES = [
   {id:'tomas_banc', who:'tomas', obj:'b', n:1, r:2, t:'Un banc devant chez moi ? Pour réparer mes filets en regardant la mer !', merci:'Parfait ! Je vais pouvoir réparer mes filets face à la mer.', res:{b:5}, fait:'Répare ses filets sur un banc, face à la mer.'},
   {id:'tomas_bonnet', who:'tomas', type:'perdu', item:'ꜰ', t:'Mon bonnet s’est envolé ! Tu ne l’aurais pas vu ?', merci:'Mon bonnet ! Sans lui, j’ai les oreilles toutes froides.', res:{p:4}, fait:'Tient beaucoup à son bonnet rouge.'},
   {id:'tomas_torche', who:'tomas', obj:'ŧ', n:1, r:2, t:'Le soir, en rentrant de la pêche, je ne vois plus rien… Une torche devant chez moi ?', merci:'Plus besoin de tâtonner dans le noir !', res:{p:4}, fait:'Rentre de la pêche à la nuit tombée.'},
-  {id:'tomas_coq', who:'tomas', type:'apporte', pay:{k:3}, need:() => S.done.includes('arrivee'), t:'Tu aurais 3 coquillages ? Pour décorer ma barque.', merci:'Elle brille de partout ! Les poissons vont être jaloux.', res:{b:5}, fait:'A décoré sa barque avec des coquillages.'},
+  {id:'tomas_appat', who:'tomas', type:'apporte', pay:{poisson:2}, need:() => S.done.includes('tomas'), t:'Tu aurais 2 poissons ? Pour appâter mes casiers.', merci:'Parfait ! Demain, les casiers seront pleins.', fait:'Appâte ses casiers avec tes poissons.'},
   {id:'tomas_kofi', who:'tomas', type:'message', to:'kofi', t:'Tu peux dire à Kofi que j’ai une planche pour lui, s’il veut ?', rep:'Une planche de Tomas… J’espère qu’elle n’a pas trop pris l’eau.', res:{b:4}, fait:'Garde des planches pour Kofi.'},
   {id:'tomas_casier', who:'tomas', obj:'N', n:1, r:4, t:'Un casier de plus, près de chez moi ? Les homards sont revenus !', merci:'Le premier homard est pour toi ! Enfin… si tu sais le cuisiner.', res:{b:4}, fait:'Pose ses casiers au lever du jour.'},
   {id:'tomas_matin', who:'tomas', type:'heure', quand:'matin', t:'Passe me voir au lever du jour : c’est là que la mer est la plus belle.', pasla:'Pas maintenant ! Au lever du jour, je t’ai dit.', merci:'Regarde… la mer est toute rose. Ça valait le coup de se lever, non ?', res:{p:4}, fait:'Regarde la mer devenir rose, au lever du jour.'},
@@ -4400,7 +4400,7 @@ const ENV_ENCORE = [
   {obj:'ʬ', n:1, r:2, t:'Un pot fleuri devant chez moi ?', merci:'Merci ! Il est parfait.'},
   {obj:'ŧ', n:1, r:2, t:'Une torche de plus, pour les soirs sans lune ?', merci:'Merci ! On y voit comme en plein jour.'},
   {type:'apporte', pay:{poisson:2}, t:'Tu aurais 2 poissons ? Pour le dîner de ce soir.', merci:'Merci ! Ça sent déjà bon.'},
-  {type:'apporte', pay:{k:3}, need:() => S.done.includes('arrivee'), t:'Tu aurais 3 coquillages ? Je commence une collection.', merci:'Merci ! Ils sont magnifiques.'},
+  {type:'apporte', pay:{b:3}, t:'Tu aurais 3 bouts de bois ? Ma barrière a pris l’eau.', merci:'Merci ! Elle tient debout, maintenant.'},
   {type:'apporte', pay:{v:2}, need:() => unlocked('V'), t:'Deux carottes de ton potager ? Je n’ai plus rien pour la soupe.', merci:'Merci ! Je t’en garde un bol.'},
   {type:'perdu', t:'J’ai perdu {objet}… Ouvre l’œil, en te promenant !', merci:'Merci ! Je le cherchais partout.'},
   {type:'message', t:'Tu peux dire à {nom} {phrase} ?', merci:''},
