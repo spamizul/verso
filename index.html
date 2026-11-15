@@ -4334,13 +4334,21 @@ function mareeTick(){
   if (now < S.mareeAt) return;
   S.mareeAt = now + MAREE_MS;
   const ile = S.done.includes('arrivee');
-  maree(6, ile ? 1 + (Math.random() < 0.5 ? 1 : 0) : 0, ile ? 2 : 0); argileMaree(); gaspTick(); save();
+  maree(6, ile ? 1 + (Math.random() < 0.5 ? 1 : 0) : 0, ile ? 2 : 0); argileMaree(); rochersMaree(); gaspTick(); save();
 }
 /* la marée rapporte aussi un peu d'argile au pied des falaises rouges */
 function argileMaree(){
   if (!S.isles || !S.isles.carriere || cnt('ɋ') >= 5) return;
   const c = []; for (let i = 0; i < N*N; i++) if (inIsle(i, 'carriere') && !O[i] && G[i] !== 'w' && G[i] !== 'q' && G[i] !== 'n' && !fogAt(i % N, (i / N)|0)) c.push(i);
   for (const i of shuffle(c).slice(0, Math.min(2, 5 - cnt('ɋ')))) O[i] = 'ɋ';
+  forceDraw = true;
+}
+/* les rochers des falaises reviennent aussi avec la marée (jusqu'à 8) */
+function rochersMaree(){
+  if (!S.isles || !S.isles.carriere) return;
+  const n = O.reduce((k, o, i) => k + (o === 'r' && inIsle(i, 'carriere') ? 1 : 0), 0); if (n >= 8) return;
+  const c = []; for (let i = 0; i < N*N; i++) if (inIsle(i, 'carriere') && !O[i] && G[i] !== 'w' && G[i] !== 'q' && G[i] !== 'n' && !fogAt(i % N, (i / N)|0)) c.push(i);
+  for (const i of shuffle(c).slice(0, Math.min(3, 8 - n))) O[i] = 'r';
   forceDraw = true;
 }
 function newDay(){ S.jour = (S.jour || 1) + 1; save(); }
