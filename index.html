@@ -537,7 +537,7 @@ const abriAt = () => null, basinFull = () => false, beamAngle = () => 0, beamOn 
 const fanalLit = () => true, ggAt = () => null, r62Near = () => false, r67Wet = () => new Set(), launchRocket = () => {};
 const pixMk = () => {};
 function houseEmpty(i){ return O[i] === 'h' && !(S && S.homes && S.homes[i]); }
-function vegRipe(i){ const v = S && S.veg; return !!(v && v[i] != null && Date.now() - v[i] >= 6*60*1000); }
+function vegRipe(i){ const v = S && S.veg; return !!(v && v[i] != null && Date.now() - v[i] >= 2*60*1000); }
 function sparkle(ox, oy, x, y){
   const tw = reduce ? 1 : (Math.sin(now/300 + x*3 + y*2)*0.5 + 0.5), al = (0.35 + tw*0.65).toFixed(2);
   R(ox+13, oy+1, 1, 5, `rgba(255,236,170,${al})`); R(ox+11, oy+3, 5, 1, `rgba(255,236,170,${al})`); R(ox+13, oy+3, 1, 1, '#ffffff');
@@ -3789,7 +3789,7 @@ function houseBuilt(i){
   wait.sort((a, b) => (MAISON_OK[b] ? 1 : 0) - (MAISON_OK[a] ? 1 : 0));   // une maison près du port va d'abord à celui qui la voulait là
   if (!wait.length) return null;
   const w = wait[0]; S.homes[i] = w; S.bonheur = (S.bonheur || 0) + 1;   // une maison pour quelqu'un : le village est plus heureux
-  const t = S.tents[w]; if (t != null && O[t] === 'ï'){ O[t] = null; delete S.tents[w]; }
+  const t = S.tents[w]; if (t != null && O[t] === 'ï'){ undoPush(t); O[t] = null; delete S.tents[w]; }   // (Annuler la fera revenir)
   save(); return w;
 }
 
@@ -3806,14 +3806,25 @@ function syncWalkers(){
   }
 }
 const walkOk = (x, y, w) => { const i = idx(x, y); if (i < 0) return false; const g = G[i]; if (g === 'w' || fogAt(x, y)) return false; if (O[i] && !'fŦ'.includes(O[i])) return false; return cheb(i, w.home) <= 3; };
+/* un habitant loin de chez lui rentre à pied, case après case ; vraiment coincé, il réapparaît devant sa porte */
+function rentrer(w, voisins){
+  const libre = ([a, b]) => { const i = idx(a, b); return i >= 0 && G[i] !== 'w' && !fogAt(a, b) && (!O[i] || 'fŦ'.includes(O[i])); };
+  const ici = cheb(idx(w.cx, w.cy), w.home), pas = voisins.filter(libre).filter(([a, b]) => cheb(idx(a, b), w.home) < ici);
+  if (pas.length && (w.perdu || 0) < 40){ const n = pas[(Math.random()*pas.length)|0]; w.tx = n[0]; w.ty = n[1]; w.perdu = (w.perdu || 0) + 1; return; }
+  const [hx, hy] = xy(w.home), porte = [[hx, hy + 1], [hx + 1, hy], [hx - 1, hy], [hx, hy - 1], [hx + 1, hy + 1], [hx - 1, hy + 1]].find(libre);
+  if (porte){ w.cx = w.tx = porte[0]; w.cy = w.ty = porte[1]; w.px = porte[0]*T + 8; w.py = porte[1]*T + 10; }
+  w.perdu = 0; w.pause = 1 + Math.random()*2;
+}
 function updateWalkers(dt){
   for (const w of walkers){
     if (w.pause > 0){ w.pause -= dt; continue; }
     const gx = w.tx*T + 8, gy = w.ty*T + 10, dx = gx - w.px, dy = gy - w.py, d = Math.hypot(dx, dy), sp = 9*dt;
     if (d <= sp){
       w.px = gx; w.py = gy; w.cx = w.tx; w.cy = w.ty;
-      const opts = [[1,0],[-1,0],[0,1],[0,-1]].map(([a, b]) => [w.cx + a, w.cy + b]).filter(([a, b]) => walkOk(a, b, w));
-      if (opts.length){ const n = opts[(Math.random()*opts.length)|0]; w.tx = n[0]; w.ty = n[1]; }
+      const voisins = [[1,0],[-1,0],[0,1],[0,-1]].map(([a, b]) => [w.cx + a, w.cy + b]);
+      const opts = cheb(idx(w.cx, w.cy), w.home) <= 3 ? voisins.filter(([a, b]) => walkOk(a, b, w)) : [];
+      if (opts.length){ const n = opts[(Math.random()*opts.length)|0]; w.tx = n[0]; w.ty = n[1]; w.perdu = 0; }
+      else rentrer(w, voisins);   // trop loin de chez lui (il a déménagé) ou coincé : il rentre
       if (Math.random() < 0.25) w.pause = 1 + Math.random()*3;
       // Job, la nuit, reste dans son phare
     } else { w.px += dx/d*sp; w.py += dy/d*sp; w.step += dt*6; }
@@ -4202,7 +4213,7 @@ function placeAt(id, i){
   const sacItem = deSac(id); if (!unlocked(id) && !sacItem) return false;
   const why = placeWhy(id, i); if (why !== null){ if (why) hint(why); return false; }
   const c = sacItem ? {} : costOf(id); if (!canPay(c)){ hint(`Il te faut ${resWords(c)} pour ${(toolOf(id) || {}).name || 'ça'}. ${howTo(c)}`); return false; }
-  if (!sacItem) undoPush(i); pay(c);
+  undoPush(i); pay(c);
   const t = toolOf(id);
   if (t.kind === 'ground'){ if (id === 'k' && O[i] && NATURE.has(O[i])) O[i] = null; G[i] = id; groundDirty = true; }
   else O[i] = SAPLING[id] || id;
@@ -4549,7 +4560,7 @@ function envTick(){
   const c = envCur();
   if (!c){ if (S.env){ if (S.env.item != null && O[S.env.item] === S.env.obj) O[S.env.item] = null; S.env = null; save(); } if (Date.now() >= (S.envAt || 0) && envPasMaintenant() === false) envPick(); return; }
   const t = typeOf(c.e);
-  if ((t === 'pose' || t === 'relie') && envProg(c) >= envN(c.e)) envMerci(c);
+  if ((t === 'pose' || t === 'relie') && envProg(c) >= envN(c.e) && $('bulle').hidden && !dialogOpen()) envMerci(c);   // le merci attend qu'on ait fini de lire
 }
 /* ramasser un objet perdu (la main, sur la carte) */
 function perduTap(i){
@@ -4670,7 +4681,7 @@ function villTick(){
   S.met.push(id); wantHouse(id); S.faits[id] = [trait];
   S.villAt = Date.now() + 240000; save();   // un nouveau venu toutes les 4 minutes environ syncWalkers(); forceDraw = true;
   // pas de zoom ni de discours : une tente apparaît au port, la personne se présente quand on vient la voir
-  v.pourquoi = pick(['Je cherchais un coin calme au bord de l’eau.', 'J’ai vu la lumière du phare depuis le large.', 'Tomas m’a parlé de ton île, au marché.', 'Ma barque cherchait une escale… et je crois que je vais rester.']);
+  v.pourquoi = pick(['Je cherchais un coin calme au bord de l’eau.', 'J’ai vu la lumière du phare depuis le large.', 'J’ai croisé Tomas en mer : il m’a parlé de ton île.', 'Ma barque cherchait une escale… et je crois que je vais rester.']);
   save(); renderCard(true); toast('⛵ Quelqu’un a planté sa tente au port.', 3500);
 }
 /* la première fois qu'on touche sa tente (ou la personne) : elle se présente */
@@ -5506,13 +5517,15 @@ function closePops(){ batPopHide(); if (!$('panel').hidden) closePanel(); if (!s
 
 /* annuler : la dernière pose ou le dernier coup de pioche */
 let undoList = [], undoGroup = 0;
-function undoPush(i){ undoList.push({i, g:G[i], o:O[i], res:Object.assign({}, S.res), homes:JSON.stringify(S.homes), grp:undoGroup}); if (undoList.length > 400) undoList.shift(); }
-function undoOne(){ const u = undoList.pop(); if (!u) return; G[u.i] = u.g; O[u.i] = u.o; S.res = u.res; S.homes = JSON.parse(u.homes); groundDirty = true; forceDraw = true; }
+function undoPush(i){ undoList.push({i, g:G[i], o:O[i], res:Object.assign({}, S.res), homes:JSON.stringify(S.homes), sac:JSON.stringify(S.sac || {}), tents:JSON.stringify(S.tents || {}), wait:JSON.stringify(S.waitHouse || []), bh:S.bonheur, grp:undoGroup}); if (undoList.length > 400) undoList.shift(); }
+function undoOne(){ const u = undoList.pop(); if (!u) return; G[u.i] = u.g; O[u.i] = u.o; S.res = u.res; S.homes = JSON.parse(u.homes);
+  if (u.sac) S.sac = JSON.parse(u.sac); if (u.tents) S.tents = JSON.parse(u.tents); if (u.wait) S.waitHouse = JSON.parse(u.wait); if (u.bh != null) S.bonheur = u.bh;   // le sac, les tentes, le bonheur : tout revient comme avant
+  groundDirty = true; forceDraw = true; }
 /* annuler défait tout le dernier geste (un glissé entier d'un coup) */
 $('undoBtn').onclick = () => {
   if (!undoList.length) return; const g = undoList[undoList.length - 1].grp;
   while (undoList.length && undoList[undoList.length - 1].grp === g) undoOne();
-  save(); renderRes(); renderBar(); syncWalkers(); afterChange();
+  save(); renderRes(); renderBar(); syncWalkers(); sacBouton(); renderCard(true); afterChange();
 };
 
 /* ---------- la bulle : quelqu'un parle ---------- */
