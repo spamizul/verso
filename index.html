@@ -6100,7 +6100,7 @@ $('rgClose').onclick = () => { $('reglages').hidden = true; };
 $('reglages').addEventListener('click', e => { if (e.target.id === 'reglages') e.target.hidden = true; });
 
 /* ---------- toucher un bâtiment : une petite étiquette avec son nom et des boutons (repris de l'ancien jeu) ---------- */
-const BATIMENTS = new Set([...'˷ĈʜʠˮhK912ËÆaWmÇɃȚŚƑueyʋʡʧʫʾĂITSAEéüèàùœɧëOjûˢˤ˶ÖYʢ']);
+const BATIMENTS = new Set([...'˿˷ĈʜʠˮhK912ËÆaWmÇɃȚŚƑueyʋʡʧʫʾĂITSAEéüèàùœɧëOjûˢˤ˶ÖYʢ']);
 function nomBat(i){
   const o = O[i], w = S.homes[i];
   if (w === 'toi') return 'Ta maison'; if (w === 'toi_c') return 'Ta cabane';
