@@ -4532,7 +4532,7 @@ function envProg(c){
 }
 const envN = e => e.n || 1;
 const envHere = w => { const a = homeOf(w); return S.met.includes(w) && a != null && O[a] !== 'ï' && !fogAt(a % N, (a / N)|0) && !blockedAt(a); };
-const envPossible = e => { const t = typeOf(e); return (t !== 'pose' || unlocked(e.obj)) && (!e.need || e.need()) && (t !== 'message' || !e.to || (S.met.includes(e.to) && homeOf(e.to) != null)); };
+const envPossible = e => { const t = typeOf(e); return (t !== 'heure' || (heureBientot(e.quand) && S.envType !== 'heure')) && (t !== 'pose' || unlocked(e.obj)) && (!e.need || e.need()) && (t !== 'message' || !e.to || (S.met.includes(e.to) && homeOf(e.to) != null)); };
 
 /* où se cache l'objet perdu : au pied d'un arbre, entre deux rochers… loin de chez la personne */
 function cachette(at){
@@ -4572,7 +4572,7 @@ function envPick(){
     extra.texte = (extra.texte || e.t).replace('{objet}', PERDUS[item].nom);   // pas d'indice : on cherche
   }
   S.env = Object.assign({id, who, base:0, t0:Date.now()}, extra);   // ce qui est déjà autour compte aussi
-  S.envLast[who] = Date.now(); S.envLastWho = who;
+  S.envLast[who] = Date.now(); S.envLastWho = who; S.envType = typeOf(e);   // jamais deux « viens à telle heure » d'affilée
   save(); forceDraw = true; renderCard(true);
   say(who, '« ' + (extra.texte || e.t) + ' »', {auto:7000});
 }
@@ -4614,6 +4614,15 @@ function envTick(){
   const c = envCur();
   if (!c){ if (S.env){ if (S.env.item != null && O[S.env.item] === S.env.obj) O[S.env.item] = null; S.env = null; save(); } if (Date.now() >= (S.envAt || 0) && envPasMaintenant() === false) envPick(); return; }
   const t = typeOf(c.e);
+  // le moment est passé sans toi : tant pis, une autre fois (rien n'est perdu, les autres demandes reprennent)
+  if (t === 'heure'){
+    if (heureOk(c.e.quand)){ if (!S.env.fen){ S.env.fen = 1; save(); } }
+    else if (S.env.fen){
+      const who = c.e.who; S.env = null; S.envAt = Date.now() + 20000; save(); forceDraw = true; renderCard(true);
+      if ($('bulle').hidden && !dialogOpen()) say(who, '« Tant pis, une autre fois ! »', {auto:4000});
+      return;
+    }
+  }
   if ((t === 'pose' || t === 'relie') && envProg(c) >= envN(c.e) && $('bulle').hidden && !dialogOpen()) envMerci(c);   // le merci attend qu'on ait fini de lire
 }
 /* ramasser un objet perdu (la main, sur la carte) */
@@ -4658,6 +4667,8 @@ const PETITS_MOTS = {
   elias:['« … »', '« Le vent a tourné. »'],
   margaux:['« Ici, une fontaine… Non, là ! »', '« Tu as vu la lumière, ce matin ? Parfaite pour dessiner. »']
 };
+/* « viens ce soir / au lever du jour » : demandé juste avant le bon moment (pour ne pas attendre des heures) */
+const heureBientot = q => { const h = tday*24; return q === 'soir' ? (h >= 16 && h < 21) : (h >= 2 && h < 7.5); };
 const heureOk = q => { const h = tday*24; return q === 'soir' ? (h >= 19 || h < 5.5) :   // « ce soir » : toute la nuit, jusqu'au lever du jour
     (h >= 5.5 && h < 9.5); };
 function tapPerson(who, surPlace){
