@@ -3500,7 +3500,7 @@ const TOOLS = [
   {id:'Ɨ', kind:'obj', name:'Boîte à livres', group:'Village', story:true},
   {id:'Ƙ', kind:'obj', name:'Un lecteur', group:'Village', story:true},
   {id:'˻', kind:'obj', name:'Abri à bateau', group:'Port', story:true},
-  {id:'˿', kind:'obj', name:'Atelier de canoës', group:'Port', story:true},
+  {id:'˿', kind:'obj', name:'Abri à canoës', group:'Port', story:true},
   {id:'ȹ', kind:'obj', name:'Ponton en bois', group:'Port', story:true},
   {id:'Ɓ', kind:'obj', name:'Le canoë d’Elias et Rita', group:'Port', story:true},
   {id:'Ƃ', kind:'obj', name:'Le voilier de Rita', group:'Port', story:true},
@@ -3591,7 +3591,7 @@ const TOOLS = [
   {id:'Ć', kind:'obj', name:'Longère', group:'Campagne', story:true},
   {id:'x', kind:'erase', name:'Pioche', group:'Outils'}
 ];
-const COST = {'Ç':{b:4, p:2}, 'ȷ':{k:1}, 'ɘ':{p:1}, 'ȑ':{b:1}, 'ɷ':{m:2}, 'ɸ':{b:1}, 'ɹ':{b:2}, 'ǅ':{b:2, laine:1}, 'Ǉ':{b:2, vr:2}, 'ƽ':{b:3, m:3}, 'ƾ':{b:4, p:3}, 'ǀ':{p:1, vr:1}, 'ǁ':{p:1, vr:1}, 'ƹ':{b:2, m:2}, 'ƺ':{b:2}, 'Ƶ':{b:2, laine:1}, 'Ʒ':{b:2, w:1}, 'ƫ':{b:2, laine:1}, 'Ƭ':{b:3, vr:2}, 'Ƨ':{p:2}, 'ƣ':{a:3}, 'Ʀ':{b:3, laine:2}, 'Ƥ':{p:1}, 'Ɯ':{b:2, a:2}, 'Ɲ':{b:3}, 'Ɵ':{b:2}, 'Ơ':{m:1, vr:1}, 'Ɣ':{a:4, vr:3, b:2}, 'Ɩ':{laine:1}, 'Ɨ':{b:1, vr:1}, 'Ƅ':{b:4}, 'Ɔ':{b:3, laine:2}, 'Ƈ':{p:4}, 'Ƌ':{p:6, b:3, vr:1}, 'Ʉ':{b:2, laine:1}, 'Ǝ':{b:2}, 'ɏ':{b:3, laine:1}, 'ȹ':{b:2}, '˿':{b:3, a:3}, '˻':{b:2}, '˼':{p:4}, '˽':{m:1}, '˺':{a:4, vr:2, b:2}, '˷':{b:2}, 'ʠ':{b:3, p:3, m:1}, '˴':{m:2, b:1}, '˵':{m:2}, 'ˮ':{b:4, p:2, vr:2}, '˯':{b:2}, '˲':{b:1, laine:2}, 'ˢ':{b:3}, 'ˣ':{b:1}, 'ˤ':{b:6, p:2}, '˕':{m:3, a:2}, '˝':{vr:1, b:1}, 'ʟ':{m:2, a:1}, 'ʧ':{a:6, m:3}, 'ʫ':{vr:3, m:2}, 'ʱ':{b:6, m:2}, 'ʲ':{b:5, m:1}, 'ʭ':{b:1}, 'ʬ':{b:1}, 'ʦ':{b:4, p:2}, 'ʮ':{w:1}, 'ʯ':{b:1, vr:1}, 'ʋ':{p:4, b:3}, 'à':{p:6, b:4}, 'a':{p:8, b:2}, 'Ā':{b:3}, 'ā':{p:2}, 'Ą':{b:2}, 'Ċ':{b:2}, 'Ă':{b:3, p:2}, 'Ć':{b:2}, p:{p:1}, v:{w:4}, 'Ĉ':{b:3}, h:{b:1, p:3}, F:{b:1}, b:{b:2}, B:{b:2}, q:{b:2}, n:{b:2}, X:{b:1}, 'Î':{p:1}, 'æ':{p:1}, W:{p:3}, V:{b:1}, r:{p:3}, '4':{b:1}, 'Ô':{b:3}, 'Ê':{b:1}, '8':{b:1}, l:{p:1, b:1}, '£':{b:1}, 'ŧ':{b:1}, 'Ț':{b:4, p:4}, 'ɖ':{k:3}, 'ɱ':{k:8, p:4}, k:{w:1}, 'ɟ':{b:2}, 'ɮ':{b:1}, U:{b:2}, K:{b:2, a:2}, S:{b:2, p:2}, 'î':{p:1}, o:{w:1}, 'ɥ':{b:3}, 'ɧ':{b:4, p:4}, u:{b:2}, 'è':{p:3, b:2}, R:{p:1},
+const COST = {'Ç':{b:4, p:2}, 'ȷ':{k:1}, 'ɘ':{p:1}, 'ȑ':{b:1}, 'ɷ':{m:2}, 'ɸ':{b:1}, 'ɹ':{b:2}, 'ǅ':{b:2, laine:1}, 'Ǉ':{b:2, vr:2}, 'ƽ':{b:3, m:3}, 'ƾ':{b:4, p:3}, 'ǀ':{p:1, vr:1}, 'ǁ':{p:1, vr:1}, 'ƹ':{b:2, m:2}, 'ƺ':{b:2}, 'Ƶ':{b:2, laine:1}, 'Ʒ':{b:2, w:1}, 'ƫ':{b:2, laine:1}, 'Ƭ':{b:3, vr:2}, 'Ƨ':{p:2}, 'ƣ':{a:3}, 'Ʀ':{b:3, laine:2}, 'Ƥ':{p:1}, 'Ɯ':{b:2, a:2}, 'Ɲ':{b:3}, 'Ɵ':{b:2}, 'Ơ':{m:1, vr:1}, 'Ɣ':{a:4, vr:3, b:2}, 'Ɩ':{laine:1}, 'Ɨ':{b:1, vr:1}, 'Ƅ':{b:4}, 'Ɔ':{b:3, laine:2}, 'Ƈ':{p:4}, 'Ƌ':{p:6, b:3, vr:1}, 'Ʉ':{b:2, laine:1}, 'Ǝ':{b:2}, 'ɏ':{b:4}, 'ȹ':{b:2}, '˿':{b:3, a:3}, '˻':{b:2}, '˼':{p:4}, '˽':{m:1}, '˺':{a:4, vr:2, b:2}, '˷':{b:2}, 'ʠ':{b:3, p:3, m:1}, '˴':{m:2, b:1}, '˵':{m:2}, 'ˮ':{b:4, p:2, vr:2}, '˯':{b:2}, '˲':{b:1, laine:2}, 'ˢ':{b:3}, 'ˣ':{b:1}, 'ˤ':{b:6, p:2}, '˕':{m:3, a:2}, '˝':{vr:1, b:1}, 'ʟ':{m:2, a:1}, 'ʧ':{a:6, m:3}, 'ʫ':{vr:3, m:2}, 'ʱ':{b:6, m:2}, 'ʲ':{b:5, m:1}, 'ʭ':{b:1}, 'ʬ':{b:1}, 'ʦ':{b:4, p:2}, 'ʮ':{w:1}, 'ʯ':{b:1, vr:1}, 'ʋ':{p:4, b:3}, 'à':{p:6, b:4}, 'a':{p:8, b:2}, 'Ā':{b:3}, 'ā':{p:2}, 'Ą':{b:2}, 'Ċ':{b:2}, 'Ă':{b:3, p:2}, 'Ć':{b:2}, p:{p:1}, v:{w:4}, 'Ĉ':{b:3}, h:{b:1, p:3}, F:{b:1}, b:{b:2}, B:{b:2}, q:{b:2}, n:{b:2}, X:{b:1}, 'Î':{p:1}, 'æ':{p:1}, W:{p:3}, V:{b:1}, r:{p:3}, '4':{b:1}, 'Ô':{b:3}, 'Ê':{b:1}, '8':{b:1}, l:{p:1, b:1}, '£':{b:1}, 'ŧ':{b:1}, 'Ț':{b:4, p:4}, 'ɖ':{k:3}, 'ɱ':{k:8, p:4}, k:{w:1}, 'ɟ':{b:2}, 'ɮ':{b:1}, U:{b:2}, K:{b:2, a:2}, S:{b:2, p:2}, 'î':{p:1}, o:{w:1}, 'ɥ':{b:3}, 'ɧ':{b:4, p:4}, u:{b:2}, 'è':{p:3, b:2}, R:{p:1},
   N:{b:1}, G:{b:4}, 'Ç':{p:2, b:4}, 'Ƀ':{p:6}, 'Ś':{b:4, p:2}, 'Ƒ':{p:4, a:4},
   '1':{p:2, a:3}, m:{b:3, a:2}, '9':{b:3}, '2':{b:2, a:2}, Q:{p:4}, A:{a:4, p:6}, E:{p:2, a:4}, I:{a:6, m:2}, i:{a:4, m:3}, O:{b:3, m:1}, L:{p:8, b:1}, 'ê':{p:6}, e:{p:2, m:2}};
 const WATER_OBJ = new Set(['ǃ', 'ƻ', 'Ƹ', 'Ɛ', 'Ɓ', 'Ƃ', 'ɏ', 'ȹ', '˰', 'ˠ', 'ˡ', '˙', '˚', '˒', 'ˬ', '˭', '˄', 'ˑ', 'ʸ', 'ʷ', 'ʞ','ʟ','ʱ','ʲ','B','G','J','6','Û','Ý','ý','ɓ','Ā','Ċ']);
@@ -3710,6 +3710,7 @@ function mainLandSet(){
 const inMain = i => !isleOf(i);
 /* une île sans quai ni pont : on n'y touche à rien (règle des îles) */
 function isleOpen(key){
+  if (key === 'pins' && S.pinsOk) return true;   // on y accoste en canoë, sur la plage d'Elias
   for (let i = 0; i < N*N; i++) if (inIsle(i, key) && (G[i] === 'q' || G[i] === 'n')) return true;
   return false;
 }
@@ -3811,7 +3812,7 @@ function houseBuilt(i){
 let walkers = [];
 const HABITANTS = ['job', 'tomas', 'kofi', 'lina', 'elias', 'margaux'];
 function syncWalkers(){
-  const here = S.met.filter(w => PEOPLE[w] && homeOf(w) != null);
+  const here = S.met.filter(w => PEOPLE[w] && homeOf(w) != null && !(w === 'elias' && S.eliasParti));   // Elias est parti sur l'île aux pins
   walkers = walkers.filter(w => here.includes(w.who));
   for (const who of here){
     let w = walkers.find(v => v.who === who);
@@ -4195,10 +4196,10 @@ function unlock(id, quiet){
 
 /* les objets qui vivent sur l'eau, ceux qui poussent */
 const SUR_EAU = new Set(['B', 'N']), NATURE = new Set(['t', 'P', 'f', 'ʯ', 'V', 'H']);
-const SAPLING = {t:'ţ', P:'ş'}, GROWN = {'ţ':'t', 'ş':'P'};
+const SAPLING = {t:'ţ', P:'ş', 'ǰ':'ş'}, GROWN = {'ţ':'t', 'ş':'P'};
 const TREE = new Set(['t', 'P', 'ţ', 'ş']);
 /* on ne touche pas à ces objets-là avec la pioche */
-const PROTEGE = {L:'🗼 Le phare de Job. On n’y touche pas !', 'ï':'⛺ Quelqu’un dort sous cette tente.', 'Ȝ':'⛵ Le voilier de Gaspard. On n’y touche pas !', 'ƿ':'📜 Un plan de Margaux : ramasse-le à la main ✋.', 'ʶ':'🪵 Des débris : ramasse-les à la main ✋.'};
+const PROTEGE = {'ď':'🌲 Une marque dans l’écorce : touche-la avec la main ✋.', '˚':'🛶 Le canoë d’Elias. On n’y touche pas !', L:'🗼 Le phare de Job. On n’y touche pas !', 'ï':'⛺ Quelqu’un dort sous cette tente.', 'Ȝ':'⛵ Le voilier de Gaspard. On n’y touche pas !', 'ƿ':'📜 Un plan de Margaux : ramasse-le à la main ✋.', 'ʶ':'🪵 Des débris : ramasse-les à la main ✋.'};
 
 /* peut-on poser cet outil ici ? renvoie un message si non */
 function placeWhy(id, i){
@@ -4232,7 +4233,8 @@ function placeAt(id, i){
   const t = toolOf(id);
   if (t.kind === 'ground'){ if (id === 'k' && O[i] && NATURE.has(O[i])) O[i] = null; G[i] = id; groundDirty = true; }
   else O[i] = SAPLING[id] || id;
-  if (id === 't' || id === 'P') (S.grow || (S.grow = {}))[i] = Date.now();
+  if (id === 'ǰ' && mainLandSet()[i]) S.pinsPlantes = (S.pinsPlantes || 0) + 1;   // une pomme de pin plantée chez toi
+  if (id === 't' || id === 'P' || id === 'ǰ') (S.grow || (S.grow = {}))[i] = Date.now();
   if (id === 'V') (S.veg || (S.veg = {}))[i] = Date.now();
   if (id === 'k'){ (S.ble || (S.ble = {}))[i] = Date.now(); groundDirty = true; }
   if (id === 'h'){ const w = houseBuilt(i); if (w){ heartsAt(i); setTimeout(() => w === 'toi' ? say('carnet', 'Ta maison est prête. Ce soir, tu dormiras sous un vrai toit.', {auto:6000}) : say(w, MAISON_MERCI[w] || '« Une vraie maison, rien qu’à moi… Merci ! »', {auto:6000}), 400); syncWalkers(); renderRes(true); } }
@@ -4278,7 +4280,7 @@ function etalVente(i){
   say('carnet', '…'); dessiner();
 }
 /* ramasser (à la main, ou à la pioche : ça donne pareil) */
-function ramasse(i){ const o = O[i]; const [c, lab] = RAMASSE[o]; O[i] = null; if (Object.keys(c).length) gain(c, i); else floatTxt(i, lab); S.found = S.found || {}; S.found[o] = (S.found[o] || 0) + 1; if (o === 'ȿ') coqTrouve(); if (o === 'ȸ') bouteilleLue(i); sound('ramasse'); save(); forceDraw = true; afterChange(); }
+function ramasse(i){ const o = O[i]; const [c, lab] = RAMASSE[o]; O[i] = null; if (Object.keys(c).length) gain(c, i); else floatTxt(i, lab); S.found = S.found || {}; S.found[o] = (S.found[o] || 0) + 1; if (o === 'ȿ') coqTrouve(); if (o === 'ȸ') bouteilleLue(i); if (o === 'ǰ') sacAjoute('ǰ'); sound('ramasse'); save(); forceDraw = true; afterChange(); }
 /* la pioche : couper, casser, enlever */
 function breakAt(i){
   const [x, y] = xy(i);
@@ -4290,12 +4292,15 @@ function breakAt(i){
     if (PROTEGE[o]) return hint(PROTEGE[o]);
     const who = S.homes[i];
     if (who && who !== 'toi_c' && who !== 'toi') return hint(`🏠 C’est chez ${nomDe(who)} !`);
+    if (i === S.pinsCab) return hint('🛖 La vieille cabane d’Elias. On n’y touche pas !');
     if (who === 'toi_c' && O[i] === 'Ĉ' && !hasHouse('toi')) return hint('🛖 C’est ta cabane ! Garde-la tant que tu n’as pas de maison.');
     if (o === 'ɋ'){ return hint('🧱 De l’argile : ramasse-la à la main ✋.'); }
     if (envieProtege(i)) return hint('✋ Ça appartient à quelqu’un : ramasse-le plutôt à la main.');
     if (SAC_IDS.has(o) && !unlocked(o)){ O[i] = null; sacAjoute(o); floatTxt(i, '🎒'); sound('ramasse'); save(); forceDraw = true; afterChange(); return; }   // un objet de Gaspard retourne dans le sac
     undoPush(i); O[i] = null; delete S.homes[i];
-    if (TREE.has(o)){ S.coupes = (S.coupes || 0) + 1; gain({b:(GROWN[o] ? 1 : 2) + (O.includes('Ś') ? 1 : 0)}, i); sound('bois'); }
+    if (o === 'P' && S.pinsReserve && inIsle(i, 'pins')){ S.coupes = (S.coupes || 0) + 1; gain({b:3 + (O.includes('Ś') ? 1 : 0)}, i); O[i] = 'ş'; (S.grow || (S.grow = {}))[i] = Date.now(); sound('bois'); }   // la réserve d'Elias : on coupe, et on replante toujours
+    else if (TREE.has(o)){ S.coupes = (S.coupes || 0) + 1; gain({b:(GROWN[o] ? 1 : 2) + (O.includes('Ś') ? 1 : 0)}, i); sound('bois'); }
+    else if (o === 'Č'){ gain({b:2}, i); sound('bois'); }   // un pin mort : on le rend à la terre
     else if (o === 'r'){ gain({p:inIsle(i, 'carriere') && O.some((x, j) => x === 'Ț' && inIsle(j, 'carriere')) ? 3 : 2}, i); sound('pierre'); }   // avec l'atelier du tailleur, les rochers des falaises donnent plus
     else if (o === 'ř'){ gain({p:1}, i); sound('pierre'); }
     else { const c = costOf(o); if (Object.keys(c).length) gain(c, i); sound('pierre'); }
@@ -4309,7 +4314,7 @@ function breakAt(i){
   groundDirty = true; sound('pierre'); save(); afterChange();
 }
 /* la main : ramasser ce qui traîne, toquer chez les gens */
-const RAMASSE = {'ŵ':[{b:1}, '🪵 Du bois flotté'], 'Ŝ':[{p:2}, '🪨 Une vieille pierre'], 'ʵ':[{b:2}, '🪵 Du bois flotté'], 'ȿ':[{k:1}, '🐚 Un coquillage'], 'ʶ':[{b:1}, '🪵 Des débris'], 'ƿ':[{}, '📜 Un plan de Margaux'], 'ȸ':[{}, '🍾 Une bouteille'], 'ɤ':[{w:1}, '🌾 Des épis sauvages']};
+const RAMASSE = {'ñ':[{}, '🌿 Des ronces'], 'ǰ':[{}, '🎒 Une pomme de pin'], 'ŵ':[{b:1}, '🪵 Du bois flotté'], 'Ŝ':[{p:2}, '🪨 Une vieille pierre'], 'ʵ':[{b:2}, '🪵 Du bois flotté'], 'ȿ':[{k:1}, '🐚 Un coquillage'], 'ʶ':[{b:1}, '🪵 Des débris'], 'ƿ':[{}, '📜 Un plan de Margaux'], 'ȸ':[{}, '🍾 Une bouteille'], 'ɤ':[{w:1}, '🌾 Des épis sauvages']};
 /* les coquillages : à force d'en ramasser, on apprend à en faire des décorations (comme l'ancien jeu) */
 const COQ_PALIERS = [[10, 'ȷ'], [25, 'ɖ'], [50, 'ɱ'], [100, 'Ÿ']];   // les paliers de l'ancien jeu
 function coqTrouve(){ const n = (S.found || {})['ȿ'] || 0, p = COQ_PALIERS.find(([k]) => k === n); if (p && unlock(p[1], true)) setTimeout(() => toast(`🐚 ${n} coquillage${n > 1 ? 's' : ''} ! Nouveau : ${toolOf(p[1]).name}`, 3200), 600); }
@@ -4328,6 +4333,7 @@ function handAt(i){
   if (o && RAMASSE[o]) return ramasse(i);
   if (o === 'V'){ if (vegRipe(i)){ S.veg[i] = Date.now(); S.res.v = (S.res.v || 0) + 2; floatTxt(i, '+2 🥕'); save(); return; } return hint('🌱 Les légumes poussent… patience !'); }
   if (GROWN[o]) return hint('🌱 Cette pousse grandit… patience !');
+  if (o === 'Č') return hint('⛏️ Un pin mort, tout gris : la pioche le rend à la terre.');
   if (G[i] === 'q' && pecheTap(i)) return;
   // la moisson : le blé doré se fauche à la main, et repousse (comme l'ancien jeu)
   if (G[i] === 'k' && !o){
@@ -4538,7 +4544,7 @@ function envProg(c){
   return c.s.got ? 1 : 0;
 }
 const envN = e => e.n || 1;
-const envHere = w => { const a = homeOf(w); return S.met.includes(w) && a != null && O[a] !== 'ï' && !fogAt(a % N, (a / N)|0) && !blockedAt(a); };
+const envHere = w => { const a = homeOf(w); return !(w === 'elias' && S.eliasParti) && S.met.includes(w) && a != null && O[a] !== 'ï' && !fogAt(a % N, (a / N)|0) && !blockedAt(a); };
 const envPossible = e => { const t = typeOf(e); return (t !== 'heure' || (heureBientot(e.quand) && S.envType !== 'heure' && !envSlots().some(s => s.type === 'heure'))) && (t !== 'pose' || unlocked(e.obj)) && (!e.need || e.need()) && (t !== 'message' || !e.to || (S.met.includes(e.to) && homeOf(e.to) != null)); };
 
 /* où se cache l'objet perdu : au pied d'un arbre, entre deux rochers… loin de chez la personne */
@@ -4683,6 +4689,7 @@ const heureBientot = q => { const h = tday*24; return q === 'soir' ? (h >= 16 &&
 const heureOk = q => { const h = tday*24; return q === 'soir' ? (h >= 19 || h < 5.5) :   // « ce soir » : toute la nuit, jusqu'au lever du jour
     (h >= 5.5 && h < 9.5); };
 function tapPerson(who, surPlace){
+  if (who === 'elias' && S.eliasParti && !S.pinsOk) return say('carnet', 'La cabane d’Elias est vide. Son canoë n’est plus là.', {auto:4000});
   if (villPresente(who)) return;
   // un message à transmettre : c'est à cette personne-là qu'on le dit
   const cm = surPlace && envCurs().find(c => typeOf(c.e) === 'message' && c.e.to === who);
@@ -5261,9 +5268,63 @@ const MOMENTS = [
        ['Le pain sur la table', () => Math.min(6, S.res.pain || 0), 6, null, null, '« Six pains, pour tout le monde. »']]}],
    fin:[B('carnet', 'Le soir, toute l’île s’assoit à la grande tablée. Le pain est encore tiède.'),
      B('philippe', '« À la plaine ! »', 'Philippe lève son verre.'),
-     B('carnet', 'Lina rougit jusqu’aux oreilles quand Kofi déclare que c’est le meilleur pain de l’archipel.'),
+     B('carnet', 'Lina rougit jusqu’aux oreilles quand Kofi déclare que c’est le meilleur pain de l’archipel.')],
+   apres:() => { S.res.pain = Math.max(0, (S.res.pain || 0) - 6); S.repasOn = 1; save(); renderRes(true); bouteilleR(); }},
+
+  {id:'placevide', who:'lina', kind:'moment', journal:'La place vide', heure:'matin', palier:53, quand:() => bonheur() >= 53 && S.done.includes('moisson'),
+   etapes:[
+    {dit:[B('carnet', 'Ce matin, le canoë d’Elias n’est plus amarré. Sa cabane est vide.'),
+       B('lina', '« Tu as vu Elias ? Il n’est même pas passé chercher son pain. »'),
+       B('margaux', '« Il n’a rien dit… Pas un mot. »', 'Margaux regarde vers le large.'),
+       B('tomas', '« Je l’ai vu filer à l’aube, vers le nord-est. Vers l’île aux pins. »')],
+     debut:() => { S.eliasParti = 1; syncWalkers(); addIsle('pins'); for (const f of S.fogs) if (f.key === 'pins'){ f.to = 0.55; f.sp = 0.2; } const g = S.isles.pins; if (g) glideTo(g.cx, g.cy); save(); forceDraw = true; },
+     buts:[]}],
+   fin:[B('carnet', 'Au loin, la brume se lève un peu sur l’île aux pins.'),
+     B('carnet', '🌲 Fin de la saison 2.')]},
+
+  {id:'traversee', who:'kofi', kind:'moment', journal:'La traversée', heure:'matin', palier:54, quand:() => bonheur() >= 54 && S.done.includes('placevide'),
+   etapes:[
+    {dit:[B('carnet', '🌲 Saison 3 · Retrouver Elias'),
+       B('tomas', '« Ma barque ne passera jamais entre les rochers de l’île aux pins. Il faudrait un **canoë**, comme celui d’Elias. »'),
+       B('kofi', '« Un canoë ? J’en ai jamais fait… mais une planche, c’est une planche ! Pose un **abri à canoë** au bord de l’eau, et je m’y mets. »')],
+     debut:() => unlock('˿'),
+     buts:[['L’abri à canoë, au bord de l’eau', () => abriCanoe() >= 0 ? 1 : 0, 1, null, null, '« Sur une plage de ton île, les pieds dans l’eau. »']]},
+    {dit:[B('kofi', '« Parfait ! Touche l’abri : on fabrique ton canoë. »'),
+       B('lina', '« Et moi, je prépare un **panier** pour Elias : deux pains et trois carottes. Il ne mange jamais assez. »')],
+     buts:[['Un canoë', () => O.includes('ɏ') ? 1 : 0, 1, null, null, 'Touche l’abri à canoë avec la main ✋ : « Fabriquer un canoë ».'],
+       ['Le panier de Lina', () => Math.min(2, S.res.pain || 0) + Math.min(3, S.res.v || 0), 5, null, null, '« Deux pains 🥖 et trois carottes 🥕. »']]},
+    {dit:[B('lina', '« Tout est prêt ! Touche le canoë, et en route ! »')],
+     tap:i => { if (O[i] !== 'ɏ' || S.pinsOk) return false; partirCanoe(i); return true; },
+     buts:[['La traversée', () => S.pinsOk ? 1 : 0, 1, null, null, 'Touche le canoë avec la main ✋.']]},
+    {dit:[B('carnet', 'Le canoë glisse entre les rochers, jusqu’à une petite plage. Le canoë d’Elias est là, tiré sur le sable.'),
+       B('lina', '« Regarde ! Il a gravé des petits pins dans l’écorce. Il nous montre le chemin ! »')],
+     debut:() => tracesStart(),
+     tap:i => { if (O[i] !== 'ď') return false; traceTap(i); return true; },
+     buts:[['Suis les traces', () => (S.traces || {}).n || 0, 5, null, null, 'Touche les marques dans l’écorce avec la main ✋, une par une.']]}],
+   fin:[B('carnet', 'Dans la clairière, une vieille cabane de rondins et un filet de fumée. Elias est assis devant, des pommes de pin plein les genoux.'),
+     B('elias', '« … Oh. Vous êtes venus. »'),
+     B('elias', '« Je suis venu chercher des graines de pin. Pour planter chez nous. »'),
+     B('lina', '« Tu aurais pu prévenir ! »', 'Lina lui tend le panier.'),
+     B('elias', '« … Je sais. Merci. »', 'Elias mord dans le pain, un peu gêné.')]},
+
+  {id:'foretElias', who:'elias', kind:'moment', journal:'La forêt d’Elias', quand:() => S.done.includes('traversee'),
+   etapes:[
+    {dit:[B('elias', '« Regarde ces pins… Les **ronces** les étouffent, et le **bois mort** les rend malades. »'),
+       B('elias', '« Une forêt, ça se soigne… et ça se partage. Aide-moi, et elle te donnera tout le bois que tu voudras. »')],
+     debut:() => foretStart(),
+     buts:[['Arrache les ronces', () => Math.min(8, ((S.found || {})['ñ'] || 0) - (S.ronceF0 || 0)), 8, null, null, 'Touche les ronces avec la main ✋.'],
+       ['Le bois mort', () => Math.max(0, (S.morts0 || 0) - O.filter((o, i) => o === 'Č' && inIsle(i, 'pins')).length), () => S.morts0 || 5, null, null, 'Les pins tout gris se cassent à la pioche ⛏️. Ils donnent du bois.']]},
+    {dit:[B('elias', '« Maintenant, on replante. Ramasse les **pommes de pin** sous les arbres… »'),
+       B('elias', '« … et plantes-en trois chez toi. Un pin pour chaque pin parti. »')],
+     debut:() => { S.pommeF0 = (S.found || {})['ǰ'] || 0; S.pinsPlantes0 = S.pinsPlantes || 0; spawnAround('ǰ', 6, i => inIsle(i, 'pins') && G[i] === 'g'); save(); },
+     buts:[['Les pommes de pin', () => Math.min(6, ((S.found || {})['ǰ'] || 0) - (S.pommeF0 || 0)), 6, null, null, 'Ramasse-les avec la main ✋ : elles vont dans ton sac 🎒.'],
+       ['Trois pins chez toi', () => Math.min(3, (S.pinsPlantes || 0) - (S.pinsPlantes0 || 0)), 3, null, null, 'Ouvre ton sac 🎒 et plante les pommes de pin sur ton île.']]}],
+   fin:[B('carnet', 'Les aiguilles rousses tombent une à une. Dessous, de petites pousses vertes percent déjà la mousse.'),
+     B('elias', '« Une seule règle, ici : pour chaque pin coupé, on en replante un. »'),
+     B('elias', '« Coupe un pin à la pioche, et tu verras : la forêt s’en occupe. »'),
+     B('elias', '« Allez, on rentre. Ma cabane, là-bas, elle me manque aussi. »', 'Elias pousse son canoë à l’eau.'),
      B('carnet', '🧪 Fin des chapitres écrits pour l’instant. La suite arrive bientôt… En attendant, les demandes continuent !')],
-   apres:() => { S.res.pain = Math.max(0, (S.res.pain || 0) - 6); S.repasOn = 1; save(); renderRes(true); bouteilleR(); }}
+   apres:() => { S.eliasParti = 0; S.pinsReserve = 1; syncWalkers(); save(); forceDraw = true; }}
 ];
 /* ---------- la tempête (comme l'ancien jeu) : on la voit sur la carte, puis il y a des dégâts à réparer ---------- */
 let tempeteEnCours = false;
@@ -5373,6 +5434,59 @@ function repasDuSoir(){
   if (!S.repasOn || S.repasJour === S.jour || heure() < 19 || heure() >= 22 || (S.res.pain || 0) < 2) return;
   S.repasJour = S.jour; S.res.pain -= 2; S.bonheur = (S.bonheur || 0) + 1; save(); renderRes(); renderCard(true);
   toast('🥖 ' + REPAS[(S.jour || 0) % REPAS.length] + ' +1 ☀️');
+}
+/* ---------- saison 3 : retrouver Elias ---------- */
+const abriCanoe = () => O.findIndex((o, i) => o === '˿' && !isleOf(i) && near8(i, j => G[j] === 'w'));
+function fabriqueCanoe(i){
+  const eau = []; for (const d of [N, 1, -1, -N, N + 1, N - 1, -N + 1, -N - 1]){ const j = i + d; if (j >= 0 && j < N*N && Math.abs((j % N) - (i % N)) <= 1 && G[j] === 'w' && !O[j]) eau.push(j); }
+  if (!eau.length) return hint('🛶 Il faut de l’eau juste à côté de l’abri, pour mettre le canoë à l’eau.');
+  if (!canPay({b:4})) return hint('🛶 Il te faut 4 🪵 pour fabriquer un canoë.');
+  pay({b:4}); O[eau[0]] = 'ɏ'; unlock('ɏ', true); floatTxt(eau[0], '🛶'); sound('pose'); save(); forceDraw = true; renderRes(); renderCard(true);
+}
+/* la plage d'Elias : la case d'eau de l'île aux pins la plus proche de toi */
+function pinsPlage(from){
+  let best = -1, bd = 1e9; const [fx, fy] = xy(from);
+  for (let i = 0; i < N*N; i++){ if (G[i] !== 'w' || O[i] || !near4(i, j => inIsle(j, 'pins') && G[j] !== 'w')) continue; const [x, y] = xy(i), d = (x - fx)**2 + (y - fy)**2; if (d < bd){ bd = d; best = i; } }
+  return best;
+}
+function partirCanoe(i){
+  const panier = {pain:2, v:3};
+  if (!canPay(panier)) return hint(`🧺 Le panier de Lina n’est pas prêt : il faut ${resWords(panier)}.`);
+  pay(panier); renderRes();
+  S.pinsOk = 1; revealIsle('pins', false); for (const f of S.fogs) if (f.key === 'pins'){ f.to = 0; f.sp = 0.3; }
+  const l = pinsPlage(i); if (l >= 0){ O[l] = '˚'; S.pinsAccoste = l; const [x, y] = xy(l); glideTo(x, y); }
+  sound('pose'); save(); forceDraw = true; renderCard(true);
+}
+/* les traces d'Elias : cinq petits pins gravés, de la plage jusqu'à sa cabane, au fond de l'île */
+function tracesStart(){
+  if (S.traces) return;
+  const land = i => inIsle(i, 'pins') && G[i] !== 'w', l = S.pinsAccoste ?? pinsPlage(homeOf('toi') ?? 0);
+  let b = -1; for (const d of [N, 1, -1, -N]) if (land(l + d)){ b = l + d; break; } if (b < 0) b = l;
+  const [bx, by] = xy(b); let cab = -1, cd = -1;
+  for (let i = 0; i < N*N; i++){ if (!land(i) || G[i] !== 'g') continue; const [x, y] = xy(i), d = (x - bx)**2 + (y - by)**2; if (d > cd && [1, -1, N, -N].every(dd => land(i + dd))){ cd = d; cab = i; } }
+  if (cab < 0) cab = b;
+  for (const d of [0, 1, -1, N, -N, N + 1, N - 1, -N + 1, -N - 1]){ const j = cab + d; if (land(j) && O[j] && !PROTEGE[O[j]]) O[j] = null; }   // une petite clairière
+  O[cab] = 'Ĉ'; S.pinsCab = cab;
+  const [cx, cy] = xy(cab), pts = [];
+  for (let k = 1; k <= 5; k++){ const tx = bx + (cx - bx)*k/6, ty = by + (cy - by)*k/6; let best = -1, bd = 1e9;
+    for (let i = 0; i < N*N; i++){ if (!land(i) || i === cab || pts.includes(i) || (O[i] && !TREE.has(O[i]))) continue; const [x, y] = xy(i), d = (x - tx)**2 + (y - ty)**2 + (TREE.has(O[i]) ? 0 : 0.8); if (d < bd){ bd = d; best = i; } }
+    if (best >= 0) pts.push(best); }
+  S.traces = {n:0, pts}; if (pts.length) O[pts[0]] = 'ď'; save(); forceDraw = true;
+}
+function traceTap(i){
+  const t = S.traces; if (!t || t.pts[t.n] !== i) return;
+  O[i] = 'P'; t.n++; floatTxt(i, '🌲'); sound('ramasse');
+  if (t.n < 5 && t.pts[t.n] != null){ O[t.pts[t.n]] = 'ď'; const [x, y] = xy(t.pts[t.n]); glideTo(x, y); }
+  else { t.n = 5; const [x, y] = xy(S.pinsCab); glideTo(x, y); }
+  save(); forceDraw = true; renderCard(true);
+}
+/* la forêt malade : des ronces, et quelques pins morts tout gris */
+function foretStart(){
+  S.ronceF0 = (S.found || {})['ñ'] || 0;
+  spawnAround('ñ', 8, i => inIsle(i, 'pins') && G[i] === 'g');
+  const ps = []; for (let i = 0; i < N*N; i++) if (inIsle(i, 'pins') && O[i] === 'P' && !(S.traces && S.traces.pts.includes(i)) && cheb(i, S.pinsCab ?? -99) > 1) ps.push(i);
+  for (const i of shuffle(ps).slice(0, 5)) O[i] = 'Č';
+  S.morts0 = O.filter((o, i) => o === 'Č' && inIsle(i, 'pins')).length; save(); forceDraw = true;
 }
 /* ---------- saison 2 : petits outils ---------- */
 /* après la tempête : la brume s'éclaircit un peu à l'est, on devine la plaine (elle se lève vraiment au chapitre suivant) */
@@ -6004,6 +6118,7 @@ function batPop(i){
   const t = document.createElement('b'); t.textContent = nomBat(i); el.append(t);
   const row = document.createElement('div'); row.className = 'bld-row';
   const bouton = (lab, fn, cls) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = lab; if (cls) b.className = cls; b.onclick = e => { e.stopPropagation(); batPopHide(); fn(); }; row.append(b); };
+  if (o === '˿') bouton('Fabriquer un canoë · 4 🪵', () => fabriqueCanoe(i));
   if (o === 'm') bouton('Moudre le grain', () => moulinPop(i));   // nourrir le village
   if (o === '1' && S.fournil) bouton('Cuire le pain', () => fournilPop(i));
   if ((w === 'toi' || w === 'toi_c') && (o === 'h' || o === 'Ĉ')) bouton('Entrer', () => chezToi(i));
