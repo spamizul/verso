@@ -4495,8 +4495,15 @@ const enMission = () => { const m = momentNow(); return !!m && m.def.kind !== 'd
 const envPasMaintenant = () => dialogOpen() || !$('bulle').hidden || (enMission() && Date.now() - (S.moment.t0 || 0) < 30000);
 const envOn = () => S.started && S.envOn && calmeOk();
 const typeOf = e => e.type || 'pose';
-function envCur(){
-  const s = S.env; if (!s) return null;
+/* plusieurs demandes à la fois (2 au plus, 1 pendant une mission) : S.envs */
+const envMax = () => enMission() ? 1 : 2;
+function envSlots(){ if (S.env){ (S.envs = S.envs || []).push(S.env); S.env = null; } return S.envs || (S.envs = []); }
+const envCurs = () => envSlots().map(envDe).filter(Boolean);
+/* la demande de quelqu'un (ou la plus ancienne) */
+const envCur = who => { const l = envCurs(); return who ? l.find(c => c.e.who === who) || null : l[0] || null; };
+const envOte = s => { const l = envSlots(), k = l.indexOf(s); if (k >= 0) l.splice(k, 1); };
+function envDe(s){
+  if (!s) return null;
   let e = s.id.startsWith('encore:') ? Object.assign({id:s.id, who:s.who}, ENV_ENCORE[+s.id.split(':')[1]]) : ENVIES.find(x => x.id === s.id);
   if (!e) return null;
   // le texte sur mesure (objet perdu, message) est rangé dans s.texte (s.t, c'était l'heure de départ dans les vieilles parties)
@@ -4532,7 +4539,7 @@ function envProg(c){
 }
 const envN = e => e.n || 1;
 const envHere = w => { const a = homeOf(w); return S.met.includes(w) && a != null && O[a] !== 'ï' && !fogAt(a % N, (a / N)|0) && !blockedAt(a); };
-const envPossible = e => { const t = typeOf(e); return (t !== 'heure' || (heureBientot(e.quand) && S.envType !== 'heure')) && (t !== 'pose' || unlocked(e.obj)) && (!e.need || e.need()) && (t !== 'message' || !e.to || (S.met.includes(e.to) && homeOf(e.to) != null)); };
+const envPossible = e => { const t = typeOf(e); return (t !== 'heure' || (heureBientot(e.quand) && S.envType !== 'heure' && !envSlots().some(s => s.type === 'heure'))) && (t !== 'pose' || unlocked(e.obj)) && (!e.need || e.need()) && (t !== 'message' || !e.to || (S.met.includes(e.to) && homeOf(e.to) != null)); };
 
 /* où se cache l'objet perdu : au pied d'un arbre, entre deux rochers… loin de chez la personne */
 function cachette(at){
@@ -4552,7 +4559,7 @@ function ouEst(i){
 }
 function envPick(){
   const mw = (momentNow() || {def:{}}).def.who;   // celui qui a un « ! » ne demande rien d'autre en même temps
-  const here = S.met.filter(w => PEOPLE[w] && envHere(w) && w !== mw); if (!here.length) return;
+  const occ = envSlots().map(s => s.who), here = S.met.filter(w => PEOPLE[w] && envHere(w) && w !== mw && !occ.includes(w)); if (!here.length) return;
   // à tour de rôle : celui qui n'a rien demandé depuis le plus longtemps
   const ppl = here.slice().sort((a, b) => (S.envLast[a] || 0) - (S.envLast[b] || 0));
   const who = ppl.find(w => w !== S.envLastWho) || ppl[0], at = homeOf(who);
@@ -4571,7 +4578,8 @@ function envPick(){
     O[cell] = item; extra.item = cell; extra.obj = item;
     extra.texte = (extra.texte || e.t).replace('{objet}', PERDUS[item].nom);   // pas d'indice : on cherche
   }
-  S.env = Object.assign({id, who, base:0, t0:Date.now()}, extra);   // ce qui est déjà autour compte aussi
+  envSlots().push(Object.assign({id, who, base:0, t0:Date.now(), type:typeOf(e)}, extra));   // ce qui est déjà autour compte aussi
+  S.envAt = Date.now() + 30000;   // la deuxième ne tombe pas juste derrière
   S.envLast[who] = Date.now(); S.envLastWho = who; S.envType = typeOf(e);   // jamais deux « viens à telle heure » d'affilée
   save(); forceDraw = true; renderCard(true);
   say(who, '« ' + (extra.texte || e.t) + ' »', {auto:7000});
@@ -4582,7 +4590,7 @@ function envMerci(c, silencieux){
   if (!s.id.startsWith('encore:')) S.envDone.push(s.id);
   S.envN[e.who] = (S.envN[e.who] || 0) + 1;
   if (e.fait){ const l = S.faits[e.who] || (S.faits[e.who] = []); if (!l.includes(e.fait)) l.push(e.fait); }
-  S.env = null; S.envAt = Date.now() + (enMission() ? 90000 : S.done.includes('kofi') ? 60000 : 20000);   // pendant une mission : rarement ; entre deux : vite au début, puis environ 45 s
+  envOte(s); S.envAt = Math.max(S.envAt || 0, Date.now() + (enMission() ? 45000 : S.done.includes('kofi') ? 30000 : 20000));   // la suivante arrive vite (un peu moins pendant une mission)
   let gift = '';
   if (e.unlock && !unlocked(e.unlock)){ unlock(e.unlock, true); gift = `📜 Nouveau plan : ${toolOf(e.unlock).name}`; }
   heartsAt(at); sound('merci'); save(); renderCard();
@@ -4611,25 +4619,28 @@ function phareNuit(e){
 }
 function envTick(){
   if (!envOn()) return;
-  const c = envCur();
-  if (!c){ if (S.env){ if (S.env.item != null && O[S.env.item] === S.env.obj) O[S.env.item] = null; S.env = null; save(); } if (Date.now() >= (S.envAt || 0) && envPasMaintenant() === false) envPick(); return; }
-  const t = typeOf(c.e);
-  // le moment est passé sans toi : tant pis, une autre fois (rien n'est perdu, les autres demandes reprennent)
-  if (t === 'heure'){
-    if (heureOk(c.e.quand)){ if (!S.env.fen){ S.env.fen = 1; save(); } }
-    else if (S.env.fen){
-      const who = c.e.who; S.env = null; S.envAt = Date.now() + 20000; save(); forceDraw = true; renderCard(true);
-      if ($('bulle').hidden && !dialogOpen()) say(who, '« Tant pis, une autre fois ! »', {auto:4000});
-      return;
+  // on range : les demandes qui n'ont plus de sens disparaissent (et leur objet perdu avec)
+  for (const s of envSlots().slice()) if (!envDe(s)){ if (s.item != null && O[s.item] === s.obj) O[s.item] = null; envOte(s); save(); }
+  for (const c of envCurs()){
+    const t = typeOf(c.e);
+    // le moment est passé sans toi : tant pis, une autre fois (rien n'est perdu, les autres demandes reprennent)
+    if (t === 'heure'){
+      if (heureOk(c.e.quand)){ if (!c.s.fen){ c.s.fen = 1; save(); } }
+      else if (c.s.fen){
+        envOte(c.s); S.envAt = Math.min(S.envAt || 0, Date.now() + 20000); save(); forceDraw = true; renderCard(true);
+        if ($('bulle').hidden && !dialogOpen()) say(c.e.who, '« Tant pis, une autre fois ! »', {auto:4000});
+        return;
+      }
     }
+    if ((t === 'pose' || t === 'relie') && envProg(c) >= envN(c.e) && $('bulle').hidden && !dialogOpen()){ envMerci(c); return; }   // le merci attend qu'on ait fini de lire
   }
-  if ((t === 'pose' || t === 'relie') && envProg(c) >= envN(c.e) && $('bulle').hidden && !dialogOpen()) envMerci(c);   // le merci attend qu'on ait fini de lire
+  if (envSlots().length < envMax() && Date.now() >= (S.envAt || 0) && envPasMaintenant() === false) envPick();
 }
 /* ramasser un objet perdu (la main, sur la carte) */
 function perduTap(i){
   if (!PERDUS[O[i]]) return false;
-  const c = envCur();
-  if (!c || c.s.item !== i){ hint('✋ Ce n’est pas à toi… Quelqu’un le cherche peut-être.'); return true; }
+  const c = envCurs().find(c => c.s.item === i);
+  if (!c){ hint('✋ Ce n’est pas à toi… Quelqu’un le cherche peut-être.'); return true; }
   O[i] = null; c.s.got = 1; save(); forceDraw = true; sound('ramasse');
   toast(`✋ Trouvé ! Rapporte-le à ${nomDe(c.e.who)}.`, 3200); renderCard(true);
   return true;
@@ -4639,7 +4650,7 @@ const envieProtege = i => !!PERDUS[O[i]];
 function envieMarks(){
   const out = [], has = i => out.some(o => o.at === i);
   const m = momentNow(); if (m && m.def.kind === 'envie' && !dialogOpen()){ const a = homeOf(m.def.who); if (a != null && !fogAt(a % N, (a / N)|0)) out.push({at:a, k:'mission'}); }
-  const c = envOn() ? envCur() : null; if (c && !has(c.at)) out.push({at:c.at, k:'demande'});
+  if (envOn()) for (const c of envCurs()) if (!has(c.at)) out.push({at:c.at, k:'demande'});
   for (const t of attenteMarks()) if (!has(t)) out.push({at:t, k:'maison'});
   return out;
 }
@@ -4673,12 +4684,13 @@ const heureOk = q => { const h = tday*24; return q === 'soir' ? (h >= 19 || h < 
     (h >= 5.5 && h < 9.5); };
 function tapPerson(who, surPlace){
   if (villPresente(who)) return;
-  const c = envCur();
   // un message à transmettre : c'est à cette personne-là qu'on le dit
-  if (c && typeOf(c.e) === 'message' && c.e.to === who && surPlace){
-    say(who, '« ' + c.e.rep + ' »', {auto:6000});
-    setTimeout(() => envMerci(c, true), 300); return;
+  const cm = surPlace && envCurs().find(c => typeOf(c.e) === 'message' && c.e.to === who);
+  if (cm){
+    say(who, '« ' + cm.e.rep + ' »', {auto:6000});
+    setTimeout(() => envMerci(cm, true), 300); return;
   }
+  const c = envCur(who);
   const m = momentNow();
   if (m && m.def.who === who && !dialogOpen()) return showGoals();
   if (enAttente().includes(who)) return say(who, '« Une maison, un jour, ce serait merveilleux… Où tu veux, je ne suis pas difficile ! »', {auto:7000});
@@ -4689,7 +4701,7 @@ function tapPerson(who, surPlace){
       say(who, '« ' + c.e.t + ' »');
       const box = $('bExtra'), l = document.createElement('div'); l.className = 'troc';
       const b = document.createElement('button'); b.type = 'button'; b.innerHTML = `<span>Donner</span><b>${resTxt(c.e.pay)}</b>`; b.disabled = !canPay(c.e.pay);
-      b.onclick = () => { const cc = envCur(); if (!cc || cc.s.id !== c.s.id || !canPay(c.e.pay)) return; box.innerHTML = ''; hideBulle(); pay(c.e.pay); cc.s.got = 1; envMerci(cc); };
+      b.onclick = () => { const cc = envCur(who); if (!cc || cc.s.id !== c.s.id || !canPay(c.e.pay)) return; box.innerHTML = ''; hideBulle(); pay(c.e.pay); cc.s.got = 1; envMerci(cc); };
       l.append(b); box.append(l);
       if (!canPay(c.e.pay)) setTimeout(() => hint(`Il te faut ${resWords(c.e.pay)}.`), 600);
       return;
@@ -5495,7 +5507,7 @@ function momentTick(){
     if (!nx){ S.nxPret = null; return; }
     { const now = Date.now(), dt = Math.min(5000, Math.max(0, now - (momentDernier || now))); momentDernier = now; if (S.attente > 0) S.attente -= dt; }   // le temps libre ne compte que quand on joue
     if (nx.palier && S.attente > 0) return;
-    if (nx.heure){ const c = envCur(); if (c && typeOf(c.e) === 'heure') return; }   // il attend que ton rendez-vous du soir (ou du matin) soit passé
+    if (nx.heure && envCurs().some(c => typeOf(c.e) === 'heure')) return;   // il attend que ton rendez-vous du soir (ou du matin) soit passé
     // un nouveau palier de ☀️ atteint : le personnage arrive une quinzaine de secondes après
     if (nx.palier && (!S.nxPret || S.nxPret.id !== nx.id)){ S.nxPret = {id:nx.id, at:Date.now() + 15000}; save(); }
     if (Date.now() < (S.momentAt || 0) || (nx.palier && Date.now() < S.nxPret.at)) return;
@@ -5511,8 +5523,8 @@ function momentTick(){
   // le moment est fini
   const def = m.def;
   aLHeure(def.finHeure, () => sayList(def.fin || [], () => {
-    S.done.push(def.id); S.journal.push(def.id); S.moment = null; S.momentAt = Date.now() + 15000; if (S.done.includes('kofi')) S.attente = 180000;   // après Kofi : 3 minutes de jeu libre avant le chapitre suivant
-    if (!S.env) S.envAt = Date.now() + 10000;   // entre deux missions, une demande arrive vite
+    S.done.push(def.id); S.journal.push(def.id); S.moment = null; S.momentAt = Date.now() + 15000; if (S.done.includes('kofi')) S.attente = 60000;   // après Kofi : 1 minute de jeu libre avant le chapitre suivant
+    S.envAt = Date.now() + 10000;   // entre deux missions, une demande arrive vite
     if (def.kind === 'envie'){ S.bonheur = bonheur() + 1; const a = homeOf(def.who); if (a != null) heartsAt(a); setTimeout(() => toast(`☀️ Bonheur du village : ${bonheur()}`, 3000), 800); }
     try { if (def.apres) def.apres(); } catch(e){ console.warn(e); }
     save(); renderCard(true);
@@ -5892,7 +5904,7 @@ function openCarnet(){
       const hd = el('div', 'fiche'); hd.append(faceCanvas(w)); const tt = el('div'); tt.append(el('b', '', p.name), el('span', '', p.role)); hd.append(tt);
       const ul = el('ul', 'faits'); for (const f of FAITS0[w] || []) ul.append(el('li', '', f)); for (const f of S.faits[w] || []) ul.append(el('li', '', f));
       pg.append(back, hd, ul);
-      const c = envCur(); if (c && c.e.who === w){ const b = el('div', 'boite'); b.append(el('small', '', '💭 Sa demande du moment'), el('p', '', `« ${c.e.t} »`)); pg.append(b); }
+      const c = envCur(w); if (c){ const b = el('div', 'boite'); b.append(el('small', '', '💭 Sa demande du moment'), el('p', '', `« ${c.e.t} »`)); pg.append(b); }
       const n = S.envN[w] || 0; if (n) pg.append(el('p', 'doux', `☀️ Tu as réalisé ${n} de ses demandes.`));
     } else {
       const met = S.met.filter(w => PEOPLE[w]);
