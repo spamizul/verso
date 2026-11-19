@@ -1018,10 +1018,10 @@ function drawObject(o, ox, oy, x, y, withLights){
     if (season === 'hiver') R(ox+1, oy+3, 14, 1, '#fff');
     if (ripeV){ for (let k = 0; k < 3; k++) for (let jj = 0; jj < 4; jj++){ const sx = ox+3+jj*3, sy = oy+3+k*3; R(sx-1, sy-1, 3, 2, '#7fd05a'); R(sx, sy+1, 1, 2, '#f08a2c'); } sparkle(ox, oy, x, y); }
     break; }
-  case 'Ȁ': case 'Ȃ': case 'Ȅ': case 'Ȇ': case 'Ȉ': case 'Ȋ': { // un plan de maison, dans le menu
+  case 'Ȃ': case 'Ȅ': case 'Ȇ': case 'Ȉ': case 'Ȋ': { // un plan de maison, dans le menu
     if (typeof hupDraw === 'function') hupDraw(ox, oy, x, y, L, PLAN_STYLE[o]);
     break; }
-  case 'h': {
+  case 'Ȁ': case 'h': {
     if (typeof hupDraw === 'function' && isStory() && hupDraw(ox, oy, x, y, L)) break;
     R(ox+1, oy+14, 14, 2, 'rgba(0,0,0,.14)');
     R(ox+2, oy+6, 12, 9, '#cbc4b8');
@@ -1037,6 +1037,19 @@ function drawObject(o, ox, oy, x, y, withLights){
     R(ox+2, oy+8, 1, 3, '#2e6fa8'); R(ox+6, oy+8, 1, 3, '#2e6fa8');
     if (!houseEmpty(y*N + x)){ L(ox+4.5, oy+9.5, 14, 'win'); L(ox+12, oy+9.5, 10, 'win');
     if (withLights) lights.push({x:ox+3, y:oy+8, w:3, h:3, kind:'pane'}, {x:ox+11, y:oy+8, w:2, h:3, kind:'pane'}); }
+    if (o === 'Ȁ' || (S && S.hstyle && S.hstyle[y*N + x] === 'fleurie')){
+      // la maison fleurie : volets roses, porte assortie, jardinières et fleurs grimpantes
+      const vol = '#d9677a', bois = '#8a5d35', feuille = season === 'hiver' ? '#7d8a6e' : '#5aa04a';
+      R(ox+2, oy+8, 1, 3, vol); R(ox+6, oy+8, 1, 3, vol); R(ox+10, oy+8, 1, 3, vol); R(ox+13, oy+8, 1, 3, vol);
+      R(ox+7, oy+10, 3, 5, '#c8556a'); R(ox+9, oy+12, 1, 1, '#f2c14e');
+      R(ox+2, oy+11, 5, 1, bois); R(ox+10, oy+11, 4, 1, bois);
+      R(ox+1, oy+6, 1, 9, feuille); R(ox+14, oy+6, 1, 8, feuille);
+      if (season !== 'hiver'){
+        const f1 = season === 'automne' ? '#e8862e' : '#e04878', f2 = '#f2c14e', f3 = '#f6f0f2';
+        R(ox+3, oy+10, 1, 1, f1); R(ox+5, oy+10, 1, 1, f2); R(ox+4, oy+10, 1, 1, feuille); R(ox+11, oy+10, 1, 1, f2); R(ox+12, oy+10, 1, 1, f1);
+        R(ox+1, oy+7, 1, 1, f1); R(ox+1, oy+10, 1, 1, f3); R(ox+1, oy+13, 1, 1, f1); R(ox+14, oy+8, 1, 1, f3); R(ox+14, oy+11, 1, 1, f1);
+      }
+    }
     break; }
   case 'b': {
     R(ox+3, oy+12, 10, 2, 'rgba(0,0,0,.12)');
@@ -3599,7 +3612,7 @@ const TOOLS = [
   {id:'Ć', kind:'obj', name:'Longère', group:'Campagne', story:true},
   {id:'x', kind:'erase', name:'Pioche', group:'Outils'}
 ];
-const COST = {'Ç':{b:4, p:2}, 'ȷ':{k:1}, 'ɘ':{p:1}, 'ȑ':{b:1}, 'ɷ':{m:2}, 'ɸ':{b:1}, 'ɹ':{b:2}, 'ǅ':{b:2, laine:1}, 'Ǉ':{b:2, vr:2}, 'ƽ':{b:3, m:3}, 'ƾ':{b:4, p:3}, 'ǀ':{p:1, vr:1}, 'ǁ':{p:1, vr:1}, 'ƹ':{b:2, m:2}, 'ƺ':{b:2}, 'Ƶ':{b:2, laine:1}, 'Ʒ':{b:2, w:1}, 'ƫ':{b:2, laine:1}, 'Ƭ':{b:3, vr:2}, 'Ƨ':{p:2}, 'ƣ':{a:3}, 'Ʀ':{b:3, laine:2}, 'Ƥ':{p:1}, 'Ɯ':{b:2, a:2}, 'Ɲ':{b:3}, 'Ɵ':{b:2}, 'Ơ':{m:1, vr:1}, 'Ɣ':{a:4, vr:3, b:2}, 'Ɩ':{laine:1}, 'Ɨ':{b:1, vr:1}, 'Ƅ':{b:4}, 'Ɔ':{b:3, laine:2}, 'Ƈ':{p:4}, 'Ƌ':{p:6, b:3, vr:1}, 'Ʉ':{b:2, laine:1}, 'Ǝ':{b:2}, 'ɏ':{b:4}, 'ȹ':{b:2}, '˿':{b:3, a:3}, '˻':{b:2}, '˼':{p:4}, '˽':{m:1}, '˺':{a:4, vr:2, b:2}, '˷':{b:2}, 'ʠ':{b:3, p:3, m:1}, '˴':{m:2, b:1}, '˵':{m:2}, 'ˮ':{b:4, p:2, vr:2}, '˯':{b:2}, '˲':{b:1, laine:2}, 'ˢ':{b:3}, 'ˣ':{b:1}, 'ˤ':{b:6, p:2}, '˕':{m:3, a:2}, '˝':{vr:1, b:1}, 'ʟ':{m:2, a:1}, 'ʧ':{a:6, m:3}, 'ʫ':{vr:3, m:2}, 'ʱ':{b:6, m:2}, 'ʲ':{b:5, m:1}, 'ʭ':{b:1}, 'ʬ':{b:1}, 'ʦ':{b:4, p:2}, 'ʮ':{w:1}, 'ʯ':{b:1, vr:1}, 'ʋ':{p:4, b:3}, 'à':{p:6, b:4}, 'a':{p:8, b:2}, 'Ā':{b:3}, 'ā':{p:2}, 'Ą':{b:2}, 'Ċ':{b:2}, 'Ă':{b:3, p:2}, 'Ć':{b:2}, p:{p:1}, v:{w:4}, 'Ĉ':{b:3}, h:{b:1, p:3}, F:{b:1}, b:{b:2}, B:{b:2}, q:{b:2}, n:{b:2}, X:{b:1}, 'Î':{p:1}, 'æ':{p:1}, W:{p:3}, V:{b:1}, r:{p:3}, '4':{b:1}, 'Ô':{b:3}, 'Ê':{b:1}, '8':{b:1}, l:{p:1, b:1}, '£':{b:1}, 'ŧ':{b:1}, 'Ț':{b:4, p:4}, 'ɖ':{k:3}, 'ɱ':{k:8, p:4}, k:{w:1}, 'ɟ':{b:2}, 'ɮ':{b:1}, U:{b:2}, K:{b:2, a:2}, S:{b:2, p:2}, 'î':{p:1}, o:{w:1}, 'ɥ':{b:3}, 'ɧ':{b:4, p:4}, u:{b:2}, 'è':{p:2, b:2, a:1}, '*':{a:1}, R:{p:1},
+const COST = {'Ç':{b:4, p:2}, 'ȷ':{k:1}, 'ɘ':{p:1}, 'ȑ':{b:1}, 'ɷ':{m:2}, 'ɸ':{b:1}, 'ɹ':{b:2}, 'ǅ':{b:2, laine:1}, 'Ǉ':{b:2, vr:2}, 'ƽ':{b:3, m:3}, 'ƾ':{b:4, p:3}, 'ǀ':{p:1, vr:1}, 'ǁ':{p:1, vr:1}, 'ƹ':{b:2, m:2}, 'ƺ':{b:2}, 'Ƶ':{b:2, laine:1}, 'Ʒ':{b:2, w:1}, 'ƫ':{b:2, laine:1}, 'Ƭ':{b:3, vr:2}, 'Ƨ':{p:2}, 'ƣ':{a:3}, 'Ʀ':{b:3, laine:2}, 'Ƥ':{p:1}, 'Ɯ':{b:2, a:2}, 'Ɲ':{b:3}, 'Ɵ':{b:2}, 'Ơ':{m:1, vr:1}, 'Ɣ':{a:4, vr:3, b:2}, 'Ɩ':{laine:1}, 'Ɨ':{b:1, vr:1}, 'Ƅ':{b:4}, 'Ɔ':{b:3, laine:2}, 'Ƈ':{p:4}, 'Ƌ':{p:6, b:3, vr:1}, 'Ʉ':{b:2, laine:1}, 'Ǝ':{b:2}, 'ɏ':{b:4}, 'ȹ':{b:2}, '˿':{b:3, a:3}, '˻':{b:2}, '˼':{p:4}, '˽':{m:1}, '˺':{a:4, vr:2, b:2}, '˷':{b:2}, 'ʠ':{b:3, p:3, m:1}, '˴':{m:2, b:1}, '˵':{m:2}, 'ˮ':{b:4, p:2, vr:2}, '˯':{b:2}, '˲':{b:1, laine:2}, 'ˢ':{b:3}, 'ˣ':{b:1}, 'ˤ':{b:6, p:2}, '˕':{m:3, a:2}, '˝':{vr:1, b:1}, 'ʟ':{m:2, a:1}, 'ʧ':{a:6, m:3}, 'ʫ':{vr:3, m:2}, 'ʱ':{b:6, m:2}, 'ʲ':{b:5, m:1}, 'ʭ':{b:1}, 'ʬ':{b:1}, 'ʦ':{b:4, p:2}, 'ʮ':{w:1}, 'ʯ':{b:1, vr:1}, 'ʋ':{p:4, b:3}, 'à':{p:6, b:4}, 'a':{p:8, b:2}, 'Ā':{b:3}, 'ā':{p:2}, 'Ą':{b:2}, 'Ċ':{b:2}, 'Ă':{b:3, p:2}, 'Ć':{b:2}, p:{p:1}, v:{w:4}, 'Ĉ':{b:3}, h:{b:1, p:3}, F:{b:1}, b:{b:2}, B:{b:2}, q:{b:2}, n:{b:2}, X:{b:1}, 'Î':{p:1}, 'æ':{p:1}, W:{p:3}, V:{b:1}, r:{p:3}, '4':{b:1}, 'Ô':{b:3}, 'Ê':{b:1}, '8':{b:1}, l:{p:1, b:1}, '£':{b:1}, 'ŧ':{b:1}, 'Ț':{b:4, p:4}, 'ɖ':{k:3}, 'ɱ':{k:8, p:4}, k:{w:1}, 'ɟ':{b:2}, 'ɮ':{b:1}, U:{b:2}, K:{b:2, a:2}, S:{b:2, p:2}, 'î':{p:1}, o:{w:1}, 'ɥ':{b:3}, 'ɧ':{b:4, p:4}, u:{b:2}, 'è':{p:2, b:2, a:1}, 'Ȁ':{b:2, a:1}, '*':{a:1}, R:{p:1},
   N:{b:1}, G:{b:4}, 'Ç':{p:2, b:4}, 'Ƀ':{p:6}, 'Ś':{b:4, p:2}, 'Ƒ':{p:4, a:4},
   '1':{p:2, a:3}, m:{b:3, a:2}, '9':{b:3}, '2':{b:2, a:2}, Q:{p:4}, A:{a:4, p:6}, E:{p:2, a:4}, I:{a:6, m:2}, i:{a:4, m:3}, O:{b:3, m:1}, L:{p:8, b:1}, 'ê':{p:6}, e:{p:2, m:2}};
 const WATER_OBJ = new Set(['ǃ', 'ƻ', 'Ƹ', 'Ɛ', 'Ɓ', 'Ƃ', 'ɏ', 'ȹ', '˰', 'ˠ', 'ˡ', '˙', '˚', '˒', 'ˬ', '˭', '˄', 'ˑ', 'ʸ', 'ʷ', 'ʞ','ʟ','ʱ','ʲ','B','G','J','6','Û','Ý','ý','ɓ','Ā','Ċ']);
@@ -4203,6 +4216,8 @@ function voileCree(key, libres){
   const out = []; for (let i = 0; i < N*N; i++) if (isleOf(i) === key && G[i] !== 'w' && !libres.some(j => j != null && cheb(i, j) <= 2)) out.push(i);
   S.voile = out; save(); forceDraw = true;
 }
+/* tout le voile se lève, en fondu */
+function voileLeve(){ const v = voileCases(), now = performance.now(); for (const j of v) voileFond.set(j, now + Math.random()*300); S.voile = []; voileRef = null; save(); forceDraw = true; }
 function voileOuvre(i, r = 2){
   const v = voileCases(); if (!v.size) return false; let k = 0; const now = performance.now();
   for (const j of [...v]) if (cheb(i, j) <= r){ v.delete(j); voileFond.set(j, now); k++; }
@@ -4240,6 +4255,7 @@ const PROTEGE = {'ď':'🌲 Une marque dans l’écorce : touche-la avec la main
 function placeWhy(id, i){
   const [x, y] = xy(i), t = toolOf(id); if (!t) return '…';
   if (fogAt(x, y)) return '🌫️ La brume est trop épaisse par ici…';
+  if (id === 'Ȁ') return O[i] !== 'h' ? '🏠 La maison fleurie se pose sur une maison.' : (S.hstyle || {})[i] ? '🌸 Cette maison est déjà fleurie.' : null;   /* un style de maison : sur une maison existante */
   if (voileAt(i)) return '🌫️ Un voile de brume… touche-le pour le dissiper.';
   if (blockedAt(i) && !(id === 'q' || id === 'n')) return '🌊 On ne peut rien faire sur cette île sans quai ni pont.';
   if (id === 'ʃ' && !O.includes('ʃ') && !heureOk('soir')) return '🌙 Pas maintenant, Lina pourrait te voir ! Attends la nuit.';   // l'enseigne de Kofi : une surprise
@@ -4269,6 +4285,7 @@ function placeAt(id, i){
   undoPush(i); pay(c);
   const t = toolOf(id);
   if (t.kind === 'ground'){ if (id === 'k' && O[i] && NATURE.has(O[i])) O[i] = null; G[i] = id; groundDirty = true; }
+  else if (id === 'Ȁ'){ (S.hstyle || (S.hstyle = {}))[i] = 'fleurie'; heartsAt(i); }
   else O[i] = SAPLING[id] || id;
   if (id === 'ǰ' && mainLandSet()[i]) S.pinsPlantes = (S.pinsPlantes || 0) + 1;   // une pomme de pin plantée chez toi
   if (id === 't' || id === 'P' || id === 'ǰ') (S.grow || (S.grow = {}))[i] = Date.now();
@@ -4341,7 +4358,7 @@ function breakAt(i){
     if (o === 'ɋ'){ return hint('🧱 De l’argile : ramasse-la à la main ✋.'); }
     if (envieProtege(i)) return hint('✋ Ça appartient à quelqu’un : ramasse-le plutôt à la main.');
     if (SAC_IDS.has(o) && !unlocked(o)){ O[i] = null; sacAjoute(o); floatTxt(i, '🎒'); sound('ramasse'); save(); forceDraw = true; afterChange(); return; }   // un objet de Gaspard retourne dans le sac
-    undoPush(i); O[i] = null; delete S.homes[i];
+    undoPush(i); O[i] = null; delete S.homes[i]; if (S.hstyle) delete S.hstyle[i];
     if (o === 'P' && S.pinsReserve && inIsle(i, 'pins')){ S.coupes = (S.coupes || 0) + 1; gain({b:3 + (O.includes('Ś') ? 1 : 0)}, i); O[i] = 'ş'; (S.grow || (S.grow = {}))[i] = Date.now(); sound('bois'); }   // la réserve d'Elias : on coupe, et on replante toujours
     else if (TREE.has(o)){ S.coupes = (S.coupes || 0) + 1; gain({b:(GROWN[o] ? 1 : 2) + (O.includes('Ś') ? 1 : 0)}, i); sound('bois'); }
     else if (o === 'Č'){ gain({b:2}, i); sound('bois'); }   // un pin mort : on le rend à la terre
@@ -5570,7 +5587,9 @@ const MOMENTS = [
      B('elias', '« … Oh. Vous êtes venus. »'),
      B('elias', '« Je suis venu chercher des graines de pin. Pour planter chez nous. »'),
      B('lina', '« Tu aurais pu prévenir ! »', 'Lina lui tend le panier.'),
-     B('elias', '« … Je sais. Merci. »', 'Elias mord dans le pain, un peu gêné.')]},
+     B('elias', '« … Je sais. Merci. »', 'Elias mord dans le pain, un peu gêné.'),
+     B('carnet', 'La brume se lève sur toute l’île aux pins.')],
+   apres:() => voileLeve()},
 
   {id:'foretElias', who:'elias', kind:'moment', journal:'La forêt d’Elias', quand:() => S.done.includes('traversee'),
    etapes:[
@@ -5777,7 +5796,8 @@ function tracesStart(){
 /* une trace mal placée (sur un quai de pierre) dans une partie déjà commencée : on la remet dans l'herbe */
 function tracesRepare(){
   // une partie déjà sur l'île aux pins : le voile revient, sauf là où l'on est déjà passé
-  if (S.pinsOk && S.voile == null){ const lib = [S.pinsAccoste, S.pinsCab, ...((S.traces || {}).pts || []).slice(0, (S.traces || {}).n || 0)]; for (const k of Object.keys(S.grow || {})) if (inIsle(+k, 'pins')) lib.push(+k); voileCree('pins', lib); }
+  if (S.done.includes('traversee')){ if (S.voile && S.voile.length) S.voile = []; }
+  else if (S.pinsOk && S.voile == null){ const lib = [S.pinsAccoste, S.pinsCab, ...((S.traces || {}).pts || []).slice(0, (S.traces || {}).n || 0)]; for (const k of Object.keys(S.grow || {})) if (inIsle(+k, 'pins')) lib.push(+k); voileCree('pins', lib); }
   const t = S.traces; if (!t) return;
   t.pts.forEach((i, k) => {
     if (G[i] === 'g' || G[i] === 's') return;
@@ -6203,12 +6223,16 @@ function renderRech(){
   if (!found.length){ const h = document.createElement('p'); h.className = 'hint'; h.textContent = 'Rien trouvé… essaie un autre mot.'; res.append(h); return; }
   for (const t of found) res.append(toolBtn(t));
 }
+/* l'onglet Nouveautés : les 8 derniers objets débloqués (S.unlocked garde l'ordre), du plus récent au plus ancien */
+const NOUV = 'Nouveautés';
+const nouveautes = () => { const out = []; for (let k = S.unlocked.length - 1; k >= 0 && out.length < 8; k--){ const id = S.unlocked[k]; if (toolOf(id) && !out.includes(id)) out.push(id); } return out; };
+const dansTab = (id, k) => k === NOUV ? nouveautes().includes(id) : dansOnglet(id, k);
 function renderPanel(){
   const have = TOOLS.filter(t => unlocked(t.id));
-  const tabs = Object.keys(ONGLETS).filter(k => have.some(t => dansOnglet(t.id, k)));
-  const neuf = k => have.some(t => dansOnglet(t.id, k) && S.fresh.includes(t.id) && !vusIci.has(t.id));
+  const tabs = [NOUV, ...Object.keys(ONGLETS)].filter(k => have.some(t => dansTab(t.id, k)));
+  const neuf = k => have.some(t => dansTab(t.id, k) && S.fresh.includes(t.id) && !vusIci.has(t.id));
   if (ongletCur !== '__rech' && !tabs.includes(ongletCur)) ongletCur = tabs.find(neuf) || tabs[0];
-  if (ongletCur !== '__rech') for (const t of have) if (dansOnglet(t.id, ongletCur) && S.fresh.includes(t.id)) vusIci.add(t.id);
+  if (ongletCur !== '__rech') for (const t of have) if (dansTab(t.id, ongletCur) && S.fresh.includes(t.id)) vusIci.add(t.id);
   $('tabs').innerHTML = '';
   const sb = document.createElement('button'); sb.type = 'button'; sb.className = 'tab-rech' + (ongletCur === '__rech' ? ' on' : ''); sb.setAttribute('aria-label', 'Rechercher un objet');
   sb.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>';
@@ -6223,6 +6247,7 @@ function renderPanel(){
     const res = document.createElement('div'); res.id = 'rechRes'; res.className = 'rech-res';
     g.append(inp, res); defile(res); renderRech(); return;
   }
+  if (ongletCur === NOUV){ for (const id of nouveautes()){ const t = toolOf(id); if (t) g.append(toolBtn(t)); } return; }
   for (const t of have.filter(t => dansOnglet(t.id, ongletCur))) g.append(toolBtn(t));
 }
 /* à la souris (sur ordinateur) : la molette et le cliquer-glisser font défiler les rangées, comme le doigt sur téléphone */
@@ -6237,7 +6262,7 @@ function defile(el){
 }
 defile($('tabs')); defile($('tools'));
 /* les pastilles : celle du bouton s'éteint dès qu'on ouvre le panneau ; celles des objets, quand on referme après les avoir vus */
-function openPanel(){ closePops(); vusIci.clear(); S.freshVu = S.fresh.slice(); save(); renderPanel(); $('panel').hidden = false; $('bar').hidden = true; renderBar(); }
+function openPanel(){ closePops(); vusIci.clear(); if (S.fresh.some(id => unlocked(id) && !(S.freshVu || []).includes(id))) ongletCur = NOUV; S.freshVu = S.fresh.slice(); save(); renderPanel(); $('panel').hidden = false; $('bar').hidden = true; renderBar(); }
 function closePanel(){
   $('panel').hidden = true; $('bar').hidden = false;
   if (vusIci.size){ S.fresh = S.fresh.filter(id => !vusIci.has(id)); vusIci.clear(); save(); }
@@ -6249,8 +6274,8 @@ function closePops(){ batPopHide(); if (!$('panel').hidden) closePanel(); if (!s
 
 /* annuler : la dernière pose ou le dernier coup de pioche */
 let undoList = [], undoGroup = 0;
-function undoPush(i){ undoList.push({i, g:G[i], o:O[i], res:Object.assign({}, S.res), homes:JSON.stringify(S.homes), sac:JSON.stringify(S.sac || {}), tents:JSON.stringify(S.tents || {}), wait:JSON.stringify(S.waitHouse || []), bh:S.bonheur, grp:undoGroup}); if (undoList.length > 400) undoList.shift(); }
-function undoOne(){ const u = undoList.pop(); if (!u) return; G[u.i] = u.g; O[u.i] = u.o; S.res = u.res; S.homes = JSON.parse(u.homes);
+function undoPush(i){ undoList.push({i, g:G[i], o:O[i], res:Object.assign({}, S.res), homes:JSON.stringify(S.homes), hst:JSON.stringify(S.hstyle || {}), sac:JSON.stringify(S.sac || {}), tents:JSON.stringify(S.tents || {}), wait:JSON.stringify(S.waitHouse || []), bh:S.bonheur, grp:undoGroup}); if (undoList.length > 400) undoList.shift(); }
+function undoOne(){ const u = undoList.pop(); if (!u) return; G[u.i] = u.g; O[u.i] = u.o; S.res = u.res; S.homes = JSON.parse(u.homes); if (u.hst) S.hstyle = JSON.parse(u.hst);
   if (u.sac) S.sac = JSON.parse(u.sac); if (u.tents) S.tents = JSON.parse(u.tents); if (u.wait) S.waitHouse = JSON.parse(u.wait); if (u.bh != null) S.bonheur = u.bh;   // le sac, les tentes, le bonheur : tout revient comme avant
   groundDirty = true; forceDraw = true; }
 /* annuler défait tout le dernier geste (un glissé entier d'un coup) */
@@ -6480,6 +6505,7 @@ function moveTo(j){
   if (!canPay({b:1})){ moveCancel(); return hint('📦 Il te faut 1 🪵 pour les cartons.'); }
   pay({b:1}); O[j] = o; O[i] = null;
   if (S.homes[i] != null){ S.homes[j] = S.homes[i]; delete S.homes[i]; }
+  if (S.hstyle && S.hstyle[i]){ S.hstyle[j] = S.hstyle[i]; delete S.hstyle[i]; }
   if (S.abime && S.abime.includes(i)) S.abime = S.abime.map(k => k === i ? j : k);
   moveCancel(); floatTxt(j, '📦 Déménagé !'); sound('pose'); syncWalkers(); save(); forceDraw = true; afterChange(); renderCard(true);
 }
