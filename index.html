@@ -417,6 +417,8 @@ html.oh .oh-col .bagBtn{width:46px;height:46px;border-radius:50%;font-size:22px;
 .mur-carte canvas{width:150px;height:auto;image-rendering:pixelated;border:4px solid #f3e9d2;box-shadow:0 2px 5px rgba(0,0,0,.3);transform:rotate(-1.5deg)}
 .mur-carte::after,.mur-papier::after{content:'';position:absolute;top:-4px;left:50%;width:9px;height:9px;margin-left:-4px;border-radius:50%;background:var(--pun,#d9534f);box-shadow:0 1px 2px rgba(0,0,0,.4)}
 .mur-papier{position:relative;width:52px;height:62px;border:0;border-radius:2px;background:#fbf6e9;background-image:repeating-linear-gradient(transparent 0 9px, rgba(70,110,170,.18) 9px 10px);box-shadow:0 2px 4px rgba(0,0,0,.3);transform:rotate(var(--rot,0deg));font-family:'Caveat', cursive;font-size:20px;color:#3a3a6a;padding:0;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 6px 4px 0}
+/* l'intérieur des maisons, dans la bulle */
+canvas.interieur{display:block;width:min(100%, 300px);height:auto;aspect-ratio:3/2;image-rendering:pixelated;border-radius:8px;margin:8px auto 4px;box-shadow:inset 0 0 0 3px #e3d6b8}
 
 </style>
 </head>
@@ -4928,7 +4930,7 @@ function tapPerson(who, surPlace){
     }
     return say(who, '« ' + c.e.t + ' »', {auto:7000});
   }
-  amiParle(who);   
+  amiParle(who, surPlace);
 }
 
 /* ---------- les nouveaux venus ----------
@@ -5303,13 +5305,14 @@ function amiTick(){
 }
 
 /* quand on touche quelqu'un sans demande : il te parle, et tu peux lui offrir quelque chose */
-function amiParle(w){
+function amiParle(w, chez){
   if (!amiOk(w)){ say(w, amiPhrase(w), {auto:4000}); return; }
   const pj = S.amiParle || (S.amiParle = {}); if (pj[w] !== S.jour){ pj[w] = S.jour; amiGagne(w, 1); }
+  if (chez && !marcheOuvert() && cafeDe(w) == null && interieurVisite(w)){ amiBoutons(w, true); return; }   /* on entre un instant chez lui */
   say(w, marcheMot(w) || cafeMot(w) || amiPhrase(w)); amiBoutons(w);
 }
-function amiBoutons(w){
-  const box = $('bExtra'); box.innerHTML = ''; const l = document.createElement('div'); l.className = 'troc';
+function amiBoutons(w, garder){
+  const box = $('bExtra'); if (!garder) box.innerHTML = ''; const l = document.createElement('div'); l.className = 'troc';
   const b = document.createElement('button'); b.type = 'button';
   if ((S.amiOffert || {})[w] === S.jour){ b.disabled = true; b.innerHTML = '<span>Tu lui as déjà offert quelque chose aujourd’hui</span>'; }
   else { b.innerHTML = '<span>🎁 Offrir…</span>'; b.onclick = () => amiOffrir(w); }
@@ -5489,6 +5492,140 @@ const MARCHE_MOTS = {
   job:['« Il y avait un marché comme ça, autrefois. Je m’en souviens… un peu. »']};
 const MARCHE_TOUS = ['« Le pain de Lina part toujours en premier ! »', '« Ondine m’a fait goûter son miel. J’en ai acheté trois pots. »', '« Tomas crie plus fort que les mouettes ! »', '« J’adore le marché. On croise tout le monde ! »', '« Tu as entendu la cloche ? On l’entendait jusqu’à la plaine ! »'];
 function marcheMot(w){ if (!marcheOuvert() || Math.random() < 0.3) return null; const l = (MARCHE_MOTS[w] || []).concat(MARCHE_TOUS); return l[(Math.random()*l.length)|0]; }
+
+/* ---------- l'intérieur des maisons : en toquant, parfois, une petite scène de chez la personne ----------
+   Une même pièce (mur à lattes, plancher, fenêtre sur la mer) + les objets de l'habitant + l'habitant lui-même. 60 × 40 pixels. */
+const INT_W = 60, INT_H = 40;
+const INT_MOTS = {
+  job:['« Entre. Ne touche pas aux cartes, elles sont plus vieilles que moi. »', '« Tu veux regarder dans la longue-vue ? On voit jusqu’au continent. Presque. »'],
+  tomas:['« Entre, entre ! Fais attention au filet, il mord. »', '« Tu as vu ma maquette ? Je l’ai faite en un hiver. Un long hiver. »'],
+  kofi:['« Pardon pour les copeaux. Il y en a partout. Même dans mon lit. »', '« Entre ! Assieds-toi… non, pas là, la colle n’est pas sèche. »'],
+  lina:['« Tu tombes bien, la fournée sort du four ! »', '« Ferme vite la porte, la pâte n’aime pas les courants d’air. »'],
+  elias:['« … Entre. Le feu est allumé. »', '« Ça sent le pin, ici. C’est fait exprès. »'],
+  margaux:['« Ne regarde pas mes brouillons ! … Bon, d’accord, regarde. »', '« Excuse le désordre. C’est un désordre très organisé. »'],
+  philippe:['« Hm. Entre. Essuie tes bottes. »', '« Du fromage ? C’est la vache qui l’a fait. Enfin, avec moi. »'],
+  annick:['« Attention aux semis, ils sont partout ! Même sur la chaise. »', '« Tu veux une tomate ? Il y en a quarante sur la table. »'],
+  ondine:['« Chut… celles-là dorment. Les autres, elles chantent. »', '« Ça sent le miel, hein ? Moi, je ne le sens plus du tout. »'],
+  germaine:['« Entrez. Ne marchez pas sur le courrier, il est trié. »', '« Mon vélo dort à l’intérieur. Il a ses habitudes. »'],
+  paloma:['« Bienvenue dans mon petit musée du monde ! »', '« Ma valise est toujours prête. Mais je ne pars plus. »'],
+  yuna:['« Désolée, tout est mouillé. C’est toujours mouillé, chez moi. »', '« Regarde mes coquillages ! Non, pas pour les échanger. Pour les regarder. »']};
+const INT_TOUS = ['« Entre ! Tu veux un café ? »', '« Oh, de la visite ! Fais comme chez toi. »', '« Ne fais pas attention au désordre. »'];
+
+function intPiece(R, mur, mur2, rondins){
+  R(0, 0, INT_W, INT_H, mur);
+  if (rondins) for (let y = 0; y < 28; y += 4){ R(0, y + 3, INT_W, 1, mur2); }
+  else for (let x = 0; x < INT_W; x += 6) R(x, 0, 1, 28, mur2);
+  R(0, 28, INT_W, 12, '#9a7448'); for (let x = 0; x < INT_W; x += 10) R(x, 28, 1, 12, '#7a5636'); R(0, 27, INT_W, 2, '#6e5232');
+  R(36, 6, 14, 11, '#e9e2d4'); R(37, 7, 12, 9, '#9cd0ee'); R(37, 12, 12, 4, '#4a8fc8'); R(42, 7, 1, 9, '#e9e2d4'); R(37, 11, 12, 1, '#e9e2d4'); R(39, 13, 2, 1, '#e4f2fa');
+}
+function intPerso(R, x, y, p){
+  R(x+2, y, 4, 1, p.hair); R(x+1, y+1, 6, 4, p.skin); R(x+1, y+1, 6, 1, p.hair);
+  if (p.long){ R(x+1, y+1, 1, 5, p.hair); R(x+6, y+1, 1, 5, p.hair); }
+  R(x+2, y+3, 1, 1, '#1e1e24'); R(x+5, y+3, 1, 1, '#1e1e24'); if (p.beard) R(x+2, y+4, 4, 1, p.beard);
+  if (p.glasses){ R(x+1, y+3, 3, 1, '#3a3a3a'); R(x+4, y+3, 3, 1, '#3a3a3a'); }
+  if (p.hat === 'cire') R(x, y-1, 8, 2, '#f2c14e');
+  if (p.hat === 'cap'){ R(x+1, y-1, 6, 2, '#1f3550'); R(x+3, y-1, 2, 1, '#f2c14e'); }
+  if (p.hat === 'beret') R(x+1, y-1, 6, 1, '#1e1e24');
+  if (p.hat === 'mask'){ R(x+1, y+2, 6, 1, '#1e1e24'); R(x+2, y+2, 1, 1, '#7cc4e8'); R(x+5, y+2, 1, 1, '#7cc4e8'); }
+  R(x+1, y+5, 6, 5, p.clothes); R(x, y+6, 1, 3, p.skin); R(x+7, y+6, 1, 3, p.skin); R(x+2, y+10, 1, 3, '#2a2d31'); R(x+5, y+10, 1, 3, '#2a2d31');
+}
+const table = (R, x) => { R(x, 21, 16, 2, '#7a5636'); R(x+1, 23, 1, 5, '#6e5232'); R(x+14, 23, 1, 5, '#6e5232'); };
+const INTERIEURS = {
+  job: R => { intPiece(R, '#d6dde3', '#c6cfd6');
+    R(4, 5, 16, 11, '#e8dcbc'); R(5, 6, 14, 9, '#f0e6c8'); R(7, 8, 6, 3, '#c9b48a'); R(13, 10, 4, 2, '#c9b48a'); R(9, 12, 1, 1, '#cf453a');
+    R(52, 15, 1, 13, '#5e4228'); R(50, 27, 5, 1, '#5e4228'); R(48, 12, 9, 3, '#c9963a'); R(47, 13, 1, 1, '#3a3a3a');
+    table(R, 10); R(14, 17, 3, 4, '#3b434b'); R(15, 18, 1, 2, '#ffe28a'); R(20, 19, 5, 2, '#f6f1e6');
+    intPerso(R, 28, 15, PEOPLE.job); },
+  tomas: R => { intPiece(R, '#cfdde6', '#bfcfd9');
+    for (let k = 0; k < 5; k++) R(4, 4 + k*3, 16, 1, '#8a7a5a'); for (let k = 0; k < 6; k++) R(4 + k*3, 4, 1, 13, '#8a7a5a'); R(9, 9, 2, 2, '#f2c14e'); R(15, 6, 2, 2, '#cf453a');
+    R(22, 12, 12, 1, '#7a5636'); R(24, 9, 8, 3, '#cf453a'); R(25, 11, 6, 1, '#8a2e28'); R(27, 4, 1, 5, '#5e4228'); R(28, 5, 3, 3, '#f6f1e6');
+    R(52, 6, 6, 6, '#f6f1e6'); R(53, 7, 4, 4, '#cfdde6'); R(52, 8, 2, 2, '#cf453a'); R(56, 8, 2, 2, '#cf453a');
+    table(R, 14); R(18, 19, 6, 2, '#c8d4e0'); R(24, 19, 1, 2, '#8fa4b8'); R(19, 19, 1, 1, '#1e2a33');
+    intPerso(R, 32, 15, PEOPLE.tomas); },
+  kofi: R => { intPiece(R, '#e8d6bc', '#dcc7a8');
+    R(3, 19, 22, 3, '#a8743f'); R(3, 22, 2, 6, '#7a5636'); R(23, 22, 2, 6, '#7a5636'); R(6, 16, 8, 3, '#d9b07a'); R(15, 17, 6, 1, '#8d9298'); R(15, 16, 1, 1, '#5e4228');
+    for (let k = 0; k < 4; k++) R(4 + k*3, 6, 1, 8, '#6e5232'); R(4, 9, 11, 1, '#6e5232');
+    R(52, 8, 2, 20, '#c9935a'); R(55, 10, 2, 18, '#b8834a'); R(30, 30, 2, 1, '#e3c08a'); R(38, 33, 2, 1, '#e3c08a'); R(12, 31, 2, 1, '#e3c08a');
+    intPerso(R, 28, 15, PEOPLE.kofi); },
+  lina: R => { intPiece(R, '#f0e2c4', '#e6d4b0');
+    R(3, 8, 18, 20, '#b8553e'); for (let y = 10; y < 28; y += 3) R(3, y, 18, 1, '#9a4232'); R(6, 14, 12, 10, '#3a2420'); R(7, 15, 10, 9, '#2a1814'); R(8, 19, 8, 4, '#f2a43a'); R(10, 18, 4, 2, '#f6d36a'); R(3, 6, 18, 2, '#9a4232');
+    R(24, 20, 12, 2, '#c9935a'); R(24, 22, 12, 6, '#a8743f'); R(25, 17, 4, 3, '#d9a060'); R(26, 17, 1, 1, '#f0c890'); R(30, 17, 4, 3, '#d9a060'); R(31, 17, 1, 1, '#f0c890'); R(28, 15, 3, 2, '#c98a4a');
+    R(51, 21, 7, 7, '#efe8d8'); R(52, 20, 5, 1, '#efe8d8'); R(53, 23, 3, 2, '#c8bfa8');
+    intPerso(R, 41, 15, PEOPLE.lina); R(42, 20, 6, 1, '#f6f1e6'); },
+  elias: R => { intPiece(R, '#b89a72', '#9a7e58', true);
+    R(3, 10, 14, 18, '#8d9298'); R(5, 16, 10, 12, '#2a1814'); R(7, 22, 6, 4, '#f2a43a'); R(8, 21, 4, 2, '#f6d36a'); R(3, 8, 14, 2, '#737a82');
+    for (let k = 0; k < 4; k++) R(19, 20 + k*2, 8, 2, k % 2 ? '#8a5d35' : '#a8743f');
+    R(52, 20, 5, 8, '#8a5d35'); R(53, 13, 3, 7, '#3f7a36'); R(52, 16, 5, 3, '#3f7a36'); R(54, 11, 1, 2, '#3f7a36');
+    R(22, 13, 2, 2, '#8a5d35'); R(26, 13, 2, 2, '#8a5d35'); R(22, 15, 6, 1, '#6e5232');
+    intPerso(R, 30, 15, PEOPLE.elias); },
+  margaux: R => { intPiece(R, '#e6e0f0', '#d8d0e6');
+    R(4, 12, 18, 10, '#2e6fa8'); R(5, 13, 16, 8, '#4a8fc8'); R(7, 15, 6, 4, '#cfe4f4'); R(14, 14, 5, 1, '#cfe4f4'); R(14, 17, 4, 1, '#cfe4f4'); R(6, 22, 1, 6, '#7a5636'); R(19, 22, 1, 6, '#7a5636');
+    R(5, 3, 6, 6, '#f6f1e6'); R(13, 4, 6, 5, '#fbf6e9'); R(22, 3, 5, 6, '#f6f1e6'); R(7, 5, 2, 2, '#c9963a'); R(15, 6, 2, 1, '#cf453a'); R(23, 5, 3, 1, '#2e6fa8');
+    R(53, 19, 4, 4, '#cf453a'); R(53, 16, 1, 3, '#f2c14e'); R(55, 15, 1, 4, '#2e6fa8'); R(52, 23, 6, 5, '#7a5636');
+    intPerso(R, 28, 15, PEOPLE.margaux); },
+  philippe: R => { intPiece(R, '#e9dcc0', '#dccca8');
+    R(5, 5, 12, 9, '#7a5636'); R(6, 6, 10, 7, '#9cd0a0'); R(8, 9, 6, 3, '#f6f1e6'); R(9, 10, 2, 1, '#2a2d31'); R(12, 10, 1, 1, '#2a2d31');
+    table(R, 6); R(9, 18, 6, 3, '#f2c14e'); R(12, 18, 3, 1, '#d99a2b');
+    R(51, 18, 6, 10, '#c8d4e0'); R(52, 16, 4, 2, '#c8d4e0'); R(51, 21, 6, 1, '#8d9298'); R(24, 25, 3, 3, '#3f6e3a'); R(27, 25, 3, 3, '#3f6e3a');
+    intPerso(R, 32, 15, PEOPLE.philippe); },
+  annick: R => { intPiece(R, '#e3ecd0', '#d4e0bc');
+    R(4, 3, 1, 12, '#5aa04a'); for (let k = 0; k < 4; k++) R(3, 5 + k*3, 3, 2, '#cf453a'); R(9, 3, 1, 12, '#5aa04a'); for (let k = 0; k < 4; k++) R(8, 4 + k*3, 3, 2, '#3a2a2a');
+    R(14, 12, 20, 1, '#7a5636'); for (let k = 0; k < 5; k++){ R(15 + k*4, 9, 3, 3, ['#f2c14e', '#e04878', '#5aa04a', '#e8862e', '#5b9bd5'][k]); }
+    table(R, 6); R(8, 19, 3, 2, '#cf453a'); R(11, 19, 3, 2, '#cf453a'); R(14, 19, 3, 2, '#3a2a2a');
+    R(52, 23, 6, 5, '#8d9298'); R(57, 21, 2, 2, '#8d9298'); R(51, 22, 1, 3, '#8d9298');
+    intPerso(R, 30, 15, PEOPLE.annick); },
+  ondine: R => { intPiece(R, '#f3e7b8', '#e8d9a0');
+    for (const y of [8, 15]){ R(3, y + 4, 22, 1, '#7a5636'); for (let k = 0; k < 5; k++){ R(4 + k*4, y, 3, 4, '#e8a83a'); R(4 + k*4, y, 3, 1, '#6b4a1e'); R(5 + k*4, y + 2, 1, 1, '#f6d36a'); } }
+    R(4, 21, 10, 7, '#c9935a'); R(5, 22, 8, 5, '#e8b84a'); for (let k = 0; k < 4; k++) R(5 + k*2, 22 + (k % 2), 1, 1, '#c98a1e');
+    R(52, 22, 4, 6, '#5b86a8'); R(53, 19, 1, 3, '#5aa04a'); R(55, 18, 1, 4, '#5aa04a'); R(52, 18, 2, 2, '#e04878'); R(55, 17, 2, 2, '#f6f0f2');
+    R(30, 9, 1, 1, '#2a2d31'); R(31, 9, 1, 1, '#f2c14e'); R(46, 20, 1, 1, '#2a2d31'); R(47, 20, 1, 1, '#f2c14e');
+    intPerso(R, 38, 15, PEOPLE.ondine); },
+  germaine: R => { intPiece(R, '#d9e0ea', '#c9d2de');
+    R(4, 22, 5, 5, '#1e1e24'); R(5, 23, 3, 3, '#d9e0ea'); R(16, 22, 5, 5, '#1e1e24'); R(17, 23, 3, 3, '#d9e0ea'); R(6, 21, 13, 1, '#1e1e24'); R(10, 18, 1, 4, '#1e1e24'); R(9, 17, 4, 1, '#3a2a1e'); R(18, 18, 1, 4, '#1e1e24'); R(17, 17, 3, 1, '#1e1e24');
+    for (let k = 0; k < 4; k++) R(24, 26 - k*2, 7, 2, k % 2 ? '#fbf6e9' : '#efe6d0'); for (let k = 0; k < 3; k++) R(51, 26 - k*2, 7, 2, k % 2 ? '#fbf6e9' : '#efe6d0');
+    R(6, 6, 10, 7, '#8a5d35'); R(7, 7, 8, 5, '#a8743f'); R(10, 8, 2, 2, '#f2c14e');
+    intPerso(R, 33, 15, PEOPLE.germaine); },
+  paloma: R => { intPiece(R, '#f2dccf', '#e6cbbb');
+    R(4, 19, 14, 9, '#8a5d35'); R(4, 19, 14, 1, '#6e5232'); R(9, 17, 4, 2, '#6e5232'); R(6, 21, 3, 2, '#e04878'); R(11, 23, 4, 2, '#5b9bd5'); R(15, 20, 2, 2, '#f2c14e');
+    R(5, 5, 5, 4, '#fbf6e9'); R(12, 4, 5, 4, '#9cd0ee'); R(19, 6, 5, 4, '#f2c14e'); R(6, 6, 3, 1, '#cf453a'); R(13, 6, 3, 1, '#2e6fa8');
+    R(52, 14, 6, 6, '#4a8fc8'); R(53, 15, 2, 2, '#5aa04a'); R(55, 17, 2, 2, '#5aa04a'); R(54, 20, 2, 6, '#7a5636'); R(52, 26, 6, 2, '#7a5636');
+    intPerso(R, 30, 15, PEOPLE.paloma); },
+  yuna: R => { intPiece(R, '#cfe6e8', '#bcd8dc');
+    R(5, 6, 10, 5, '#1e1e24'); R(6, 7, 3, 3, '#7cc4e8'); R(11, 7, 3, 3, '#7cc4e8'); R(4, 7, 1, 1, '#1e1e24'); R(15, 7, 1, 1, '#1e1e24');
+    R(18, 5, 3, 10, '#2e6fa8'); R(22, 5, 3, 10, '#2e6fa8'); R(18, 15, 3, 2, '#1e4f78'); R(22, 15, 3, 2, '#1e4f78');
+    R(4, 17, 5, 11, '#e8862e'); R(5, 15, 3, 2, '#8d9298'); R(5, 18, 1, 8, '#f2a45a');
+    R(51, 24, 7, 1, '#7a5636'); R(51, 22, 2, 2, '#f6e0d0'); R(54, 22, 2, 2, '#e8b4c8'); R(57, 21, 1, 3, '#f2d4a0'); R(52, 27, 2, 1, '#5b86a8'); R(31, 31, 3, 1, '#7cc4e8');
+    intPerso(R, 32, 15, PEOPLE.yuna); }
+};
+/* les nouveaux venus : une pièce qui varie un peu d'une maison à l'autre */
+function intGenerique(R, w, home){
+  const h = [...String(w) + home].reduce((a, c) => (a*31 + c.charCodeAt(0)) >>> 0, 7);
+  const murs = [['#e8e0d0', '#dcd2c0'], ['#dfe8e0', '#d0dcd2'], ['#ece0e6', '#e0d0d8'], ['#e2e6f0', '#d4d9e6'], ['#f0e8cc', '#e4d8b4']], [m1, m2] = murs[h % murs.length];
+  intPiece(R, m1, m2);
+  const objets = [
+    () => { R(6, 20, 6, 8, '#b8553e'); R(7, 15, 1, 5, '#3f7a36'); R(9, 13, 1, 7, '#3f7a36'); R(5, 14, 3, 2, '#5aa04a'); R(9, 12, 3, 2, '#5aa04a'); },
+    () => { R(8, 5, 8, 8, '#7a5636'); R(9, 6, 6, 6, '#f6f1e6'); R(12, 7, 1, 3, '#2a2d31'); R(12, 9, 2, 1, '#2a2d31'); R(11, 13, 2, 8, '#7a5636'); R(10, 21, 4, 2, '#c9963a'); },
+    () => { R(4, 5, 14, 10, '#8a5d35'); R(5, 6, 12, 8, '#9cd0ee'); R(5, 10, 12, 4, '#5aa04a'); R(12, 7, 3, 3, '#f2c14e'); },
+    () => { R(6, 25, 9, 3, '#e8862e'); R(14, 23, 3, 3, '#e8862e'); R(14, 22, 1, 1, '#e8862e'); R(16, 22, 1, 1, '#e8862e'); R(7, 26, 1, 1, '#c86a1e'); R(10, 26, 1, 1, '#c86a1e'); },
+    () => { R(4, 6, 14, 22, '#7a5636'); for (const y of [10, 16, 22]) R(4, y, 14, 1, '#5e4228'); for (let k = 0; k < 6; k++){ R(5 + k*2, 7, 1, 3, ['#cf453a', '#2e6fa8', '#5aa04a', '#f2c14e', '#e8862e', '#8a5d35'][k]); R(5 + k*2, 13, 1, 3, ['#2e6fa8', '#f2c14e', '#cf453a', '#5aa04a', '#8a5d35', '#e04878'][k]); } },
+    () => { R(14, 32, 30, 6, '#cf6a5a'); R(16, 33, 26, 4, '#e8a090'); R(18, 34, 22, 2, '#cf6a5a'); }];
+  objets[h % objets.length](); objets[(h >>> 3) % objets.length]();
+  table(R, 22); R(25, 19, 3, 2, '#f6f1e6'); R(26, 18, 1, 1, '#f6f1e6');
+  if (PEOPLE[w]) intPerso(R, 44, 15, PEOPLE[w]);
+}
+function interieurCanvas(w){
+  const cv = document.createElement('canvas'); cv.width = INT_W; cv.height = INT_H; cv.className = 'interieur';
+  const g = cv.getContext('2d'), R = (x, y, ww, hh, col) => { g.fillStyle = col; g.fillRect(x, y, ww, hh); };
+  (INTERIEURS[w] || (R2 => intGenerique(R2, w, homeOf(w))))(R);
+  return cv;
+}
+/* une fois sur trois environ, quand on toque chez quelqu'un : on entre un instant */
+function interieurVisite(w){
+  if (!PEOPLE[w] || w === 'gaspard' || Math.random() > 0.34) return false;
+  const l = INT_MOTS[w] || INT_TOUS; say(w, l[(Math.random()*l.length)|0]);
+  const box = $('bExtra'); box.innerHTML = ''; box.append(interieurCanvas(w));
+  return true;
+}
 
 /* ---------- les moments de l'histoire ----------
    Un moment = quelqu'un arrive ou demande quelque chose, en quelques étapes.
