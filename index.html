@@ -399,6 +399,24 @@ html.oh .oh-col .bagBtn{width:46px;height:46px;border-radius:50%;font-size:22px;
 .boite.souvenir p{font-family:'Caveat', cursive; font-size:19px; line-height:1.2}
 .troc.offres{display:grid; grid-template-columns:1fr 1fr; gap:6px}
 .troc.offres button{margin:0}
+/* les vignettes des bâtiments (maquette A) */
+.bld-pop{max-width:min(94vw, 360px);padding:10px 12px 12px;border-radius:14px}
+.bld-hd{display:flex;align-items:center;gap:8px}
+.bld-hd .bld-ic{width:30px;height:38px;image-rendering:pixelated;background:#e8dfca;border-radius:8px;padding:2px 5px;object-fit:contain}
+.bld-hd b{font-size:15px;font-weight:700;display:block}
+.bld-hd small{display:block;color:#7a7060;font-size:12px}
+.bld-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
+.bld-pop .bld-row button.vig{position:relative;flex:0 0 auto;width:70px;height:70px;padding:6px 2px 4px;border-radius:12px;background:#ece3cf;color:#2a2d31;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:700;box-shadow:inset 0 -3px 0 rgba(0,0,0,.08);white-space:nowrap}
+.bld-pop .bld-row button.vig.main{background:#cfe1f3;box-shadow:inset 0 -3px 0 rgba(46,111,168,.25)}
+.bld-pop .bld-row button.vig canvas{width:28px;height:28px;image-rendering:pixelated}
+.bld-pop .bld-row button.vig i{position:absolute;top:-6px;right:-6px;background:#2a2d31;color:#fff;font-style:normal;font-size:10.5px;font-weight:600;padding:2px 6px;border-radius:9px}
+.bld-pop .bld-row button.vig:active{transform:translateY(1px)}
+/* le mur du café : un tableau de liège */
+.liege{position:relative;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin:10px auto 4px;padding:14px 12px;max-width:310px;border-radius:6px;border:6px solid #8a5d35;background:#c99a62;background-image:radial-gradient(rgba(90,55,25,.35) 1px, transparent 1.5px),radial-gradient(rgba(255,240,200,.25) 1px, transparent 1.5px);background-size:7px 7px, 11px 11px;background-position:0 0, 3px 4px;box-shadow:inset 0 2px 6px rgba(0,0,0,.25)}
+.mur-carte{flex:0 0 100%;border:0;background:none;padding:0;display:flex;justify-content:center;position:relative}
+.mur-carte canvas{width:150px;height:auto;image-rendering:pixelated;border:4px solid #f3e9d2;box-shadow:0 2px 5px rgba(0,0,0,.3);transform:rotate(-1.5deg)}
+.mur-carte::after,.mur-papier::after{content:'';position:absolute;top:-4px;left:50%;width:9px;height:9px;margin-left:-4px;border-radius:50%;background:var(--pun,#d9534f);box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.mur-papier{position:relative;width:52px;height:62px;border:0;border-radius:2px;background:#fbf6e9;background-image:repeating-linear-gradient(transparent 0 9px, rgba(70,110,170,.18) 9px 10px);box-shadow:0 2px 4px rgba(0,0,0,.3);transform:rotate(var(--rot,0deg));font-family:'Caveat', cursive;font-size:20px;color:#3a3a6a;padding:0;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 6px 4px 0}
 
 </style>
 </head>
@@ -1066,14 +1084,40 @@ function drawObject(o, ox, oy, x, y, withLights){
     if (withLights) lights.push({x:ox+7, y:oy+1, w:2, h:2, kind:'pane'});
     break; }
   case 'L': {
-    R(ox+4, oy+14, 8, 2, 'rgba(0,0,0,.15)');
-    R(ox+5, oy+12, 6, 3, '#8d9298');
-    R(ox+6, oy+2, 4, 11, '#f3f1ec'); R(ox+6, oy+4, 4, 2, '#cf453a'); R(ox+6, oy+8, 4, 2, '#cf453a');
-    R(ox+9, oy+2, 1, 11, 'rgba(0,0,0,.1)');
-    R(ox+5, oy+1, 6, 1, '#3b434b'); R(ox+6, oy-2, 4, 3, '#3b434b'); R(ox+7, oy-1, 2, 2, '#ffe28a'); R(ox+6, oy-3, 4, 1, '#cf453a');
-    if (glob.story.v === 2 && !glob.story.lit && isStory()){ R(ox+7, oy-1, 2, 2, '#5b6168'); break; }
-    L(ox+8, oy-1, 22, 'lamp');
-    if (withLights) lights.push({x:ox+8, y:oy-0.5, kind:'beam'});
+    // le phare : un socle de pierres, une tour trapue à deux grosses bandes rouges, la galerie, la lanterne et son dôme noir arrondi
+    const blanc = '#f3f1ec', rouge = '#cf453a', fer = '#3b434b', pierre = '#8d9298', hiv = season === 'hiver';
+    const eteint = typeof glob !== 'undefined' && glob.story && glob.story.v === 2 && !glob.story.lit && isStory();
+    const nuit = !eteint && typeof curDark !== 'undefined' && curDark > 0.35;
+    R(ox, oy+14, 16, 2, 'rgba(0,0,0,.16)');
+    R(ox+1, oy+11, 14, 4, pierre); R(ox+1, oy+11, 14, 1, '#a5aab0'); R(ox+3, oy+13, 2, 1, '#737a82'); R(ox+9, oy+12, 3, 1, '#737a82');
+    R(ox+3, oy+1, 10, 10, blanc); R(ox+4, oy-10, 8, 11, blanc);
+    R(ox+3, oy+4, 10, 3, rouge); R(ox+4, oy-6, 8, 3, rouge);
+    R(ox+11, oy+1, 2, 10, 'rgba(0,0,0,.10)'); R(ox+10, oy-10, 2, 11, 'rgba(0,0,0,.10)');
+    R(ox+7, oy+7, 2, 4, '#5a3c28'); R(ox+7, oy-1, 2, 2, nuit ? '#ffe28a' : fer);
+    R(ox+2, oy-12, 12, 2, fer); for (const k of [2, 5, 10, 13]) R(ox+k, oy-14, 1, 2, fer); R(ox+2, oy-14, 12, 1, fer);
+    R(ox+5, oy-17, 6, 5, eteint ? '#8a9096' : '#d6ecf5'); R(ox+5, oy-17, 1, 5, fer); R(ox+10, oy-17, 1, 5, fer); R(ox+7, oy-17, 2, 5, eteint ? '#5b6168' : '#ffe28a');
+    R(ox+4, oy-18, 8, 1, fer); R(ox+5, oy-19, 6, 1, fer); R(ox+6, oy-20, 4, 1, fer); R(ox+7, oy-21, 2, 1, fer);
+    if (hiv){ R(ox+5, oy-19, 6, 1, '#fff'); R(ox+4, oy-18, 8, 1, '#fff'); R(ox+2, oy-12, 12, 1, '#fff'); R(ox+1, oy+11, 14, 1, '#fff'); }
+    if (eteint) break;
+    L(ox+8, oy-14.5, 26, 'lamp'); L(ox+8, oy, 6, 'win');
+    if (withLights) lights.push({x:ox+8, y:oy-14.5, kind:'beam'});
+    break; }
+  case 'ǯ': {
+    // la maisonnette du gardien : toute petite, blottie contre le phare, sur son rocher plat
+    const nuit = typeof curDark !== 'undefined' && curDark > 0.35, hiv = season === 'hiver';
+    // un rocher plus sombre et irrégulier, qui ne se confond pas avec le socle du phare
+    const roc = '#6f757c', rocC = '#858b92', rocF = '#575c62';
+    R(ox, oy+12, 13, 3, roc); R(ox+1, oy+15, 10, 1, roc); R(ox+11, oy+11, 3, 4, roc); R(ox+13, oy+13, 2, 2, roc);
+    R(ox, oy+12, 4, 1, rocC); R(ox+6, oy+12, 3, 1, rocC); R(ox+11, oy+11, 2, 1, rocC); R(ox+3, oy+14, 3, 1, rocF); R(ox+9, oy+13, 2, 1, rocF); R(ox+12, oy+14, 2, 1, rocF);
+    // la cabane, adossée à la tour (elle mord d'un pixel sur le socle)
+    R(ox-1, oy+12, 10, 1, 'rgba(0,0,0,.16)');
+    R(ox-1, oy+6, 9, 7, '#e9e2d4'); R(ox+7, oy+6, 1, 7, 'rgba(0,0,0,.08)');
+    R(ox-1, oy+5, 10, 1, '#46525e'); R(ox-1, oy+4, 9, 1, '#46525e'); R(ox, oy+3, 7, 1, '#46525e');
+    R(ox+5, oy+1, 1, 3, '#8a8178');
+    R(ox+4, oy+8, 2, 2, nuit ? '#ffe28a' : '#9cc8e8');
+    R(ox, oy+9, 2, 4, '#2e6fa8');
+    if (hiv){ R(ox-1, oy+4, 9, 1, '#fff'); R(ox, oy+3, 7, 1, '#fff'); R(ox+5, oy+1, 1, 1, '#fff'); }
+    if (nuit) L(ox+5, oy+9, 7, 'win');
     break; }
   case 'B': {
     const bob = Math.round(Math.sin(now/600 + x*1.7 + y) * 0.6);
@@ -1667,13 +1711,16 @@ function drawObject(o, ox, oy, x, y, withLights){
     break; }
   case 'Ą': { // un étal du marché
     shadow(ox, oy, 14);
-    const p = isStory() ? ((glob.story && glob.story.stalls) || {})[y*N + x] : 'v';
+    const p = (typeof S !== 'undefined' && S && S.etals || {})[y*N + x];
     R(ox+2, oy+3, 1, 11, '#6e5232'); R(ox+13, oy+3, 1, 11, '#6e5232');
     for (let k = 0; k < 7; k++) R(ox+1 + k*2, oy+2, 2, 3, k % 2 ? '#f6f1e6' : '#2e6fa8');
     R(ox+1, oy+5, 14, 1, 'rgba(0,0,0,.12)');
     R(ox+2, oy+9, 12, 2, '#9a7448'); R(ox+2, oy+11, 12, 1, '#7a5636'); R(ox+3, oy+12, 1, 2, '#6e5232'); R(ox+12, oy+12, 1, 2, '#6e5232');
-    const goods = {oeuf:['#f8f2e4', '#efe4cc'], w:['#d9a85a', '#c08a3a'], lait:['#f4f4f4', '#c8d4e0'], miel:['#e8a83a', '#c98a1e'], v:['#e07b2a', '#4f9a3a']}[p];
-    if (goods && typeof pixMk === 'function') pixMk(p, ox+5, oy+3, R); else if (goods) for (let k = 0; k < 4; k++) R(ox+3 + k*3, oy+7 + (k % 2), 2, 2, goods[k % 2]);   // le produit, dessiné en grand sur le comptoir
+    const goods = {poisson:['#8fb4d0', '#5b86a8'], pain:['#d9a060', '#a8743f'], oeuf:['#f8f2e4', '#efe4cc'], w:['#d9a85a', '#c08a3a'], lait:['#f4f4f4', '#c8d4e0'], miel:['#e8a83a', '#c98a1e'], v:['#e07b2a', '#4f9a3a']}[p];
+    if (p === 'poisson') for (let k = 0; k < 3; k++){ R(ox+2 + k*4, oy+7, 3, 2, '#dbe8f0'); R(ox+2 + k*4, oy+7, 1, 1, '#1e2a33'); R(ox+5 + k*4, oy+7, 1, 2, '#4a6f8c'); }
+    else if (p === 'pain') for (let k = 0; k < 3; k++){ R(ox+3 + k*4, oy+7, 3, 2, '#d9a060'); R(ox+4 + k*4, oy+7, 1, 1, '#f0c890'); }
+    else if (p === 'miel') for (let k = 0; k < 3; k++){ R(ox+3 + k*4, oy+6, 2, 3, '#e8a83a'); R(ox+3 + k*4, oy+6, 2, 1, '#6b4a1e'); }
+    else if (goods) for (let k = 0; k < 4; k++) R(ox+3 + k*3, oy+7 + (k % 2), 2, 2, goods[k % 2]);   // le produit, dessiné en grand sur le comptoir
     break; }
   case 'Ć': { // la longère (sur trois cases), ou son chantier
     if (iconMode){ R(ox+1, oy+6, 14, 7, '#c9bfae'); R(ox, oy+3, 16, 4, '#d9b85a'); R(ox+2, oy+1, 12, 2, '#e3c46a'); R(ox+7, oy+9, 2, 4, '#6b4a2e'); R(ox+3, oy+8, 2, 2, '#4a6a8a'); R(ox+11, oy+8, 2, 2, '#4a6a8a'); break; }
@@ -3056,6 +3103,11 @@ function drawObject(o, ox, oy, x, y, withLights){
     R(ox+6, oy+6, 4, 4, `rgba(255,240,180,${a})`); R(ox+7, oy+7, 2, 2, '#ffffff');
     L(ox+8, oy+8, 10, 'win');
     break; }
+  case 'Ǫ': { // les vieilles pierres de l'ancien port, sous l'eau
+    const k = 'rgba(20,45,70,.38)', c = 'rgba(160,200,225,.22)';
+    R(ox+1, oy+3, 14, 10, k); R(ox+1, oy+3, 14, 1, c); R(ox+5, oy+3, 1, 5, 'rgba(20,45,70,.25)'); R(ox+10, oy+8, 1, 5, 'rgba(20,45,70,.25)'); R(ox+1, oy+8, 14, 1, 'rgba(20,45,70,.25)');
+    R(ox+3, oy+5, 2, 1, c); R(ox+8, oy+10, 3, 1, c);
+    break; }
   case 'ý': { // des bulles qui remontent : Yuna peut plonger là
     const tb = reduce ? 0.3 : now/600;
     R(ox+3, oy+9, 10, 3, 'rgba(200,240,250,.35)'); R(ox+5, oy+8, 6, 1, 'rgba(200,240,250,.25)');
@@ -3336,6 +3388,7 @@ const TOOLS = [
   {id:'~', kind:'ground', name:'Gravier', group:'Sol'},
   {id:'ɘ', kind:'ground', name:'Remblai', group:'Sol', story:true},
   {id:'Ȁ', kind:'obj', name:'Maison fleurie', group:'Habitations', story:true},
+  {id:'ǯ', kind:'obj', name:'Maison du gardien', group:'Habitations', story:true},
   {id:'Ȃ', kind:'obj', name:'Maison de mer', group:'Habitations', story:true},
   {id:'Ȅ', kind:'obj', name:'Maison de pierre', group:'Habitations', story:true},
   {id:'Ȇ', kind:'obj', name:'Maison du verrier', group:'Habitations', story:true},
@@ -3606,6 +3659,7 @@ const TOOLS = [
   {id:'ʘ', kind:'obj', name:'Casque de scaphandrier', group:'Port', story:true},
   {id:'Ā', kind:'obj', name:'Ponton de plongée', group:'Port', story:true},
   {id:'ā', kind:'obj', name:'Cloche du port', group:'Port', story:true},
+  {id:'Ǫ', kind:'obj', name:'Vieilles pierres sous l’eau', group:'Port', story:true},
   {id:'Ą', kind:'obj', name:'Étal', group:'Port', story:true},
   {id:'Ċ', kind:'obj', name:'Balise', group:'Port', story:true},
   {id:'Ă', kind:'obj', name:'Poulailler', group:'Campagne', story:true},
@@ -3615,7 +3669,7 @@ const TOOLS = [
 const COST = {'Ç':{b:4, p:2}, 'ȷ':{k:1}, 'ɘ':{p:1}, 'ȑ':{b:1}, 'ɷ':{m:2}, 'ɸ':{b:1}, 'ɹ':{b:2}, 'ǅ':{b:2, laine:1}, 'Ǉ':{b:2, vr:2}, 'ƽ':{b:3, m:3}, 'ƾ':{b:4, p:3}, 'ǀ':{p:1, vr:1}, 'ǁ':{p:1, vr:1}, 'ƹ':{b:2, m:2}, 'ƺ':{b:2}, 'Ƶ':{b:2, laine:1}, 'Ʒ':{b:2, w:1}, 'ƫ':{b:2, laine:1}, 'Ƭ':{b:3, vr:2}, 'Ƨ':{p:2}, 'ƣ':{a:3}, 'Ʀ':{b:3, laine:2}, 'Ƥ':{p:1}, 'Ɯ':{b:2, a:2}, 'Ɲ':{b:3}, 'Ɵ':{b:2}, 'Ơ':{m:1, vr:1}, 'Ɣ':{a:4, vr:3, b:2}, 'Ɩ':{laine:1}, 'Ɨ':{b:1, vr:1}, 'Ƅ':{b:4}, 'Ɔ':{b:3, laine:2}, 'Ƈ':{p:4}, 'Ƌ':{p:6, b:3, vr:1}, 'Ʉ':{b:2, laine:1}, 'Ǝ':{b:2}, 'ɏ':{b:4}, 'ȹ':{b:2}, '˿':{b:3, a:3}, '˻':{b:2}, '˼':{p:4}, '˽':{m:1}, '˺':{a:4, vr:2, b:2}, '˷':{b:2}, 'ʠ':{b:3, p:3, m:1}, '˴':{m:2, b:1}, '˵':{m:2}, 'ˮ':{b:4, p:2, vr:2}, '˯':{b:2}, '˲':{b:1, laine:2}, 'ˢ':{b:3}, 'ˣ':{b:1}, 'ˤ':{b:6, p:2}, '˕':{m:3, a:2}, '˝':{vr:1, b:1}, 'ʟ':{m:2, a:1}, 'ʧ':{a:6, m:3}, 'ʫ':{vr:3, m:2}, 'ʱ':{b:6, m:2}, 'ʲ':{b:5, m:1}, 'ʭ':{b:1}, 'ʬ':{b:1}, 'ʦ':{b:4, p:2}, 'ʮ':{w:1}, 'ʯ':{b:1, vr:1}, 'ʋ':{p:4, b:3}, 'à':{p:6, b:4}, 'a':{p:8, b:2}, 'Ā':{b:3}, 'ā':{p:2}, 'Ą':{b:2}, 'Ċ':{b:2}, 'Ă':{b:3, p:2}, 'Ć':{b:2}, p:{p:1}, v:{w:4}, 'Ĉ':{b:3}, h:{b:1, p:3}, F:{b:1}, b:{b:2}, B:{b:2}, q:{b:2}, n:{b:2}, X:{b:1}, 'Î':{p:1}, 'æ':{p:1}, W:{p:3}, V:{b:1}, r:{p:3}, '4':{b:1}, 'Ô':{b:3}, 'Ê':{b:1}, '8':{b:1}, l:{p:1, b:1}, '£':{b:1}, 'ŧ':{b:1}, 'Ț':{b:4, p:4}, 'ɖ':{k:3}, 'ɱ':{k:8, p:4}, k:{w:1}, 'ɟ':{b:2}, 'ɮ':{b:1}, U:{b:2}, K:{b:2, a:2}, S:{b:2, p:2}, 'î':{p:1}, o:{w:1}, 'ɥ':{b:3}, 'ɧ':{b:4, p:4}, u:{b:2}, 'è':{p:2, b:2, a:1}, 'Ȁ':{b:2, a:1}, '*':{a:1}, R:{p:1},
   N:{b:1}, G:{b:4}, 'Ç':{p:2, b:4}, 'Ƀ':{p:6}, 'Ś':{b:4, p:2}, 'Ƒ':{p:4, a:4},
   '1':{p:2, a:3}, m:{b:3, a:2}, '9':{b:3}, '2':{b:2, a:2}, Q:{p:4}, A:{a:4, p:6}, E:{p:2, a:4}, I:{a:6, m:2}, i:{a:4, m:3}, O:{b:3, m:1}, L:{p:8, b:1}, 'ê':{p:6}, e:{p:2, m:2}};
-const WATER_OBJ = new Set(['ǃ', 'ƻ', 'Ƹ', 'Ɛ', 'Ɓ', 'Ƃ', 'ɏ', 'ȹ', '˰', 'ˠ', 'ˡ', '˙', '˚', '˒', 'ˬ', '˭', '˄', 'ˑ', 'ʸ', 'ʷ', 'ʞ','ʟ','ʱ','ʲ','B','G','J','6','Û','Ý','ý','ɓ','Ā','Ċ']);
+const WATER_OBJ = new Set(['Ǫ', 'ǃ', 'ƻ', 'Ƹ', 'Ɛ', 'Ɓ', 'Ƃ', 'ɏ', 'ȹ', '˰', 'ˠ', 'ˡ', '˙', '˚', '˒', 'ˬ', '˭', '˄', 'ˑ', 'ʸ', 'ʷ', 'ʞ','ʟ','ʱ','ʲ','B','G','J','6','Û','Ý','ý','ɓ','Ā','Ċ']);
 const ICON_OY = {I:7, T:20, A:5, a:13, e:12, d:16, 'é':7, 'À':6, 'œ':6, 'â':6, 'Ê':6, 'Ô':6, 'Â':7, 'Æ':8};
 function drawIconTo(t, cv){
   const c = cv.getContext('2d'), prevC = C; C = c; c.clearRect(0, 0, 16, 20);
@@ -3657,7 +3711,7 @@ function makeWorld(){
     if (G[i] === 'g' && dc > 3.5) O[i] = r < 0.08 ? 't' : r < 0.12 ? 'P' : r > 0.17 && r < 0.19 ? 'r' : null;
     else if (G[i] === 's') O[i] = r < 0.06 ? 'r' : null;
   }
-  if (bi >= 0){ O[bi] = 'L'; for (const d of [1, -1, N, -N, N + 1, N - 1]) if (O[bi + d] === 'r' || O[bi + d] === 't' || O[bi + d] === 'P') O[bi + d] = null; }
+  if (bi >= 0){ O[bi] = 'L'; for (const d of [1, -1, N, -N, N + 1, N - 1]) if (O[bi + d] === 'r' || O[bi + d] === 't' || O[bi + d] === 'P') O[bi + d] = null; const j = [bi + 1, bi - 1].find(j => G[j] !== 'q' && !O[j]); if (j != null){ G[j] = 's'; O[j] = 'ǯ'; } }   /* Job a déjà sa maisonnette, à côté du phare */
   // ta barque, échouée sur la plage du sud
   let bb = -1, by = -1;
   for (let i = 0; i < N*N; i++){ const [x, y] = xy(i); if (G[i] === 'w' && Math.abs(x - cx) < 4 && near8(i, j => G[j] === 's') && y > by){ by = y; bb = i; } }
@@ -3757,6 +3811,7 @@ const PEOPLE = {
   lina:   {name:'Lina', role:'boulangère', skin:'#a86f4b', hair:'#1e1e24', clothes:'#e9e2d0', long:true},
   elias:  {name:'Elias', role:'l’ermite', skin:'#e8b48e', hair:'#6a4a2a', clothes:'#4a5a3a'},
   margaux:{name:'Margaux', role:'architecte', skin:'#f1c9a5', hair:'#a85a2a', clothes:'#c8553d', long:true},
+  yuna:{name:'Yuna', role:'plongeuse', skin:'#a86f4b', hair:'#1e1e24', clothes:'#2b5a7a', hat:'mask', long:true},
   germaine:{name:'Germaine', role:'factrice', skin:'#e8b48e', hair:'#e8e8e8', clothes:'#1f3550', glasses:true},
   ondine: {name:'Ondine', role:'apicultrice', skin:'#f1c9a5', hair:'#d9c27a', clothes:'#e8c86a', long:true},
   paloma: {name:'Paloma', role:'arrivée en bateau', skin:'#c98d66', hair:'#2a1a12', clothes:'#e8c86a', long:true},
@@ -3778,6 +3833,7 @@ function drawPortrait(cv, p){
   if (p.glasses){ R(5, 8, 2, 1, '#2b2b30'); R(8, 8, 3, 1, '#2b2b30'); R(6, 8, 1, 1, '#9cc8e8'); R(9, 8, 1, 1, '#9cc8e8'); }
   if (p.hat === 'cap'){ R(4, 3, 8, 2, '#1f3550'); R(4, 5, 8, 1, '#1e1e24'); R(7, 3, 2, 1, '#f2c14e'); }
   if (p.hat === 'cire'){ R(4, 2, 8, 3, '#f2c14e'); R(3, 4, 2, 7, '#f2c14e'); R(11, 4, 2, 7, '#f2c14e'); }
+  if (p.hat === 'mask'){ R(4, 4, 8, 1, '#1e1e24'); R(5, 5, 2, 2, '#7cc4e8'); R(9, 5, 2, 2, '#7cc4e8'); R(7, 5, 2, 1, '#1e1e24'); }
   if (p.hat === 'beret'){ R(4, 3, 8, 2, '#1e1e24'); R(10, 2, 2, 1, '#1e1e24'); }
   C = prevC;
 }
@@ -3797,7 +3853,7 @@ function faceCanvas(w){
 /* ---------- où vit chacun ---------- */
 /* S.homes : {case : qui} pour les maisons et cabanes ; S.tents : {qui : case} pour ceux qui attendent une maison */
 function homeOf(w){
-  if (w === 'job'){ const l = O.indexOf('L'); return l >= 0 ? l : null; }
+  if (w === 'job'){ const g = O.indexOf('ǯ'); if (g >= 0) return g; const l = O.indexOf('L'); return l >= 0 ? l : null; }   /* Job vit dans sa maisonnette, au pied du phare */
   for (const [k, v] of Object.entries(S.homes)) if (v === w && O[+k] === 'h') return +k;   // une vraie maison d'abord
   for (const [k, v] of Object.entries(S.homes)) if (v === w && O[+k] === 'Ĉ') return +k;
   const t = S.tents[w]; if (t != null && O[t] === 'ï') return t;
@@ -3838,7 +3894,7 @@ function syncWalkers(){
   for (const who of here){
     let w = walkers.find(v => v.who === who);
     if (!w){ const h = homeOf(who), [x, y] = xy(h); w = {who, cx:x, cy:y + 1, tx:x, ty:y + 1, px:x*T + 8, py:(y + 1)*T + 10, step:0, pause:Math.random()*3}; walkers.push(w); }
-    w.home = homeOf(who);
+    w.home = marcheDe(who) ?? cafeDe(who) ?? homeOf(who);   // un habitué du café va s'asseoir en terrasse
   }
 }
 const walkOk = (x, y, w) => { const i = idx(x, y); if (i < 0) return false; const g = G[i]; if (g === 'w' || fogAt(x, y)) return false; if (O[i] && !'fŦ'.includes(O[i])) return false; return cheb(i, w.home) <= 3; };
@@ -4031,7 +4087,7 @@ function drawVoile(c2){
   c2.restore();
 }
 /* les petits cœurs : au-dessus de chez ceux qui ont une envie, et quand on dit merci */
-const HEART_UP = {L:5, h:6, 'Ĉ':3, 'ï':1};
+const HEART_UP = {'ǯ':2, L:24, h:6, 'Ĉ':3, 'ï':1};
 /* le contour sombre du cœur, pour qu'on le voie sur l'herbe comme sur l'eau */
 function heartOut(hx, hy){ const k = 'rgba(40,20,30,.75)'; R(hx - 1, hy - 1, 3, 1, k); R(hx + 2, hy - 1, 3, 1, k); R(hx + 2, hy, 1, 1, k); R(hx - 2, hy, 1, 1, k); R(hx + 5, hy, 1, 1, k); R(hx - 2, hy + 1, 1, 2, k); R(hx + 6, hy + 1, 1, 2, k); R(hx - 1, hy + 3, 1, 1, k); R(hx + 5, hy + 3, 1, 1, k); R(hx, hy + 4, 1, 1, k); R(hx + 4, hy + 4, 1, 1, k); R(hx + 1, hy + 5, 1, 1, k); R(hx + 3, hy + 5, 1, 1, k); R(hx + 2, hy + 6, 1, 1, k); }
 function heartPx(hx, hy, col, dark){
@@ -4050,6 +4106,11 @@ function markBulle(hx, hy){ const k = 'rgba(30,34,44,.75)', w = '#ffffff';
   R(hx, hy, 9, 6, w); R(hx + 1, hy + 3, 1, 1, '#555b6a'); R(hx + 4, hy + 3, 1, 1, '#555b6a'); R(hx + 7, hy + 3, 1, 1, '#555b6a');
   R(hx + 1, hy + 7, 3, 2, w); R(hx + 1, hy + 9, 0, 0, w); R(hx, hy + 8, 1, 1, k); R(hx + 4, hy + 8, 1, 1, k); R(hx + 1, hy + 9, 3, 1, k); R(hx + 1, hy + 7, 3, 2, w);
   R(hx - 1, hy + 11, 2, 2, w); }
+/* une petite enveloppe, au-dessus de qui attend son courrier */
+function markLettre(hx, hy){ const k = 'rgba(30,34,44,.75)', w = '#fbf6e9';
+  R(hx - 1, hy - 1, 12, 1, k); R(hx - 1, hy + 7, 12, 1, k); R(hx - 1, hy, 1, 7, k); R(hx + 10, hy, 1, 7, k); R(hx, hy, 10, 7, w);
+  R(hx + 1, hy + 1, 1, 1, '#c9b48a'); R(hx + 2, hy + 2, 1, 1, '#c9b48a'); R(hx + 3, hy + 3, 1, 1, '#c9b48a'); R(hx + 4, hy + 4, 2, 1, '#c9b48a'); R(hx + 6, hy + 3, 1, 1, '#c9b48a'); R(hx + 7, hy + 2, 1, 1, '#c9b48a'); R(hx + 8, hy + 1, 1, 1, '#c9b48a');
+  R(hx + 4, hy + 5, 2, 1, '#d9534f'); }
 function markFanion(fx, fy){ const k = 'rgba(40,24,10,.75)';
   R(fx, fy, 1, 11, '#7a4a2a'); R(fx + 1, fy, 5, 1, '#d8483c'); R(fx + 1, fy + 1, 4, 1, '#d8483c'); R(fx + 1, fy + 2, 3, 1, '#e86a5a'); R(fx + 1, fy + 3, 2, 1, '#d8483c'); R(fx + 1, fy + 4, 1, 1, '#d8483c'); R(fx - 1, fy + 11, 3, 1, k); }
 function drawHearts(){
@@ -4059,6 +4120,7 @@ function drawHearts(){
     const at = mk.at, [x, y] = xy(at), up = HEART_UP[O[at]] ?? 6, bob = reduce ? 0 : Math.round(Math.sin(now/420)*1.2);
     if (mk.k === 'mission') markExcl(x*T + 6, y*T - up - 10 + bob);
     else if (mk.k === 'demande') markBulle(x*T + 4, y*T - up - 10 + bob);
+    else if (mk.k === 'courrier') markLettre(x*T + 3, y*T - up - 8 + bob);
     else markFanion(x*T + 13, y*T - 6);
   }
   fxHearts = fxHearts.filter(f => performance.now() - f.t0 < 2600);
@@ -4206,7 +4268,16 @@ function drawWeather(c2, vx, vy, s, sh){
 }
 
 /* ---------- poser, casser, ramasser ---------- */
-const RES = {b:['🪵', 'bois', 'bois'], p:['🪨', 'pierre', 'pierres'], poisson:['🐟', 'poisson', 'poissons'], k:['🐚', 'coquillage', 'coquillages'], v:['🥕', 'carotte', 'carottes'], a:['🧱', 'brique', 'briques'], w:['🌾', 'grain de blé', 'grains de blé'], farine:['🥣', 'sac de farine', 'sacs de farine'], pain:['🥖', 'pain', 'pains'], miel:['🍯', 'pot de miel', 'pots de miel'], gateau:['🍰', 'gâteau', 'gâteaux']};
+const RES = {b:['🪵', 'bois', 'bois'], p:['🪨', 'pierre', 'pierres'], poisson:['🐟', 'poisson', 'poissons'], k:['🐚', 'coquillage', 'coquillages'], v:['🥕', 'carotte', 'carottes'], a:['🧱', 'brique', 'briques'], w:['🌾', 'grain de blé', 'grains de blé'], farine:['🥣', 'sac de farine', 'sacs de farine'], pain:['🥖', 'pain', 'pains'], miel:['🍯', 'pot de miel', 'pots de miel'], gateau:['🍰', 'gâteau', 'gâteaux'], 'ǰ':['🌰', 'pomme de pin', 'pommes de pin']};
+/* Job a déjà sa maisonnette, sur un petit rocher collé au phare */
+function maisonGardien(){
+  const l = O.indexOf('L'); if (l < 0 || O.includes('ǯ')) return;
+  // à droite du phare (sinon à gauche) : l'eau devient un petit rocher plat, et la maisonnette s'y pose
+  const ok = j => j >= 0 && j < N*N && Math.abs((j % N) - (l % N)) === 1 && G[j] !== 'q' && (!O[j] || NATURE.has(O[j]) || TREE.has(O[j]) || G[j] === 'w');
+  const j = [l + 1, l - 1].find(ok); if (j == null) return;
+  if (G[j] === 'w' || G[j] === 'g'){ G[j] = 's'; groundDirty = true; gVer++; }
+  O[j] = 'ǯ'; save(); forceDraw = true; try { syncWalkers(); } catch(e){}
+}
 /* le léger voile (île aux pins) : S.voile = liste des cases encore voilées */
 const voileFond = new Map();   // les cases qui viennent de se dégager : elles s'effacent en douceur
 let voileMemo = null, voileRef = null;
@@ -4230,8 +4301,10 @@ const costOf = id => {
 };
 const resTxt = c => Object.entries(c).filter(([, n]) => n).map(([k, n]) => `${n} ${RES[k][0]}`).join(' + ');
 const resWords = c => { const l = Object.entries(c).filter(([, n]) => n).map(([k, n]) => `${n} ${RES[k][n > 1 ? 2 : 1]}`); return l.length > 1 ? l.slice(0, -1).join(', ') + ' et ' + l[l.length - 1] : l[0] || ''; };
-const canPay = c => Object.entries(c).every(([k, n]) => (S.res[k] || 0) >= n);
-function pay(c){ for (const [k, n] of Object.entries(c)) S.res[k] = (S.res[k] || 0) - n; renderRes(); }
+/* les pommes de pin se donnent depuis le sac à dos */
+const avoir = k => k === 'ǰ' ? ((S.sac || {})['ǰ'] || 0) : (S.res[k] || 0);
+const canPay = c => Object.entries(c).every(([k, n]) => avoir(k) >= n);
+function pay(c){ for (const [k, n] of Object.entries(c)){ if (k === 'ǰ'){ const s = S.sac || {}; s['ǰ'] = (s['ǰ'] || 0) - n; if (s['ǰ'] <= 0) delete s['ǰ']; try { sacBouton(); } catch(e){} } else S.res[k] = (S.res[k] || 0) - n; } renderRes(); }
 function gain(c, at){ for (const [k, n] of Object.entries(c)) S.res[k] = (S.res[k] || 0) + n; renderRes(true); if (at != null) floatTxt(at, '+' + resTxt(c)); }
 const toolOf = id => TOOLS.find(t => t.id === id);
 const unlocked = id => S.unlocked.includes(id);
@@ -4249,7 +4322,7 @@ const SUR_EAU = new Set(['B', 'N']), NATURE = new Set(['t', 'P', 'f', 'ʯ', 'V',
 const SAPLING = {t:'ţ', P:'ş', 'ǰ':'ş'}, GROWN = {'ţ':'t', 'ş':'P'};
 const TREE = new Set(['t', 'P', 'ţ', 'ş']);
 /* on ne touche pas à ces objets-là avec la pioche */
-const PROTEGE = {'ď':'🌲 Une marque dans l’écorce : touche-la avec la main ✋.', '˚':'🛶 Le canoë d’Elias. On n’y touche pas !', L:'🗼 Le phare de Job. On n’y touche pas !', 'ï':'⛺ Quelqu’un dort sous cette tente.', 'Ȝ':'⛵ Le voilier de Gaspard. On n’y touche pas !', 'ƿ':'📜 Un plan de Margaux : ramasse-le à la main ✋.', 'ʶ':'🪵 Des débris : ramasse-les à la main ✋.'};
+const PROTEGE = {'Ǫ':'🌊 Les vieilles pierres de l’ancien port, sous l’eau.', 'ď':'🌲 Une marque dans l’écorce : touche-la avec la main ✋.', '˚':'🛶 Le canoë d’Elias. On n’y touche pas !', L:'🗼 Le phare de Job. On n’y touche pas !', 'ǯ':'🏠 La maisonnette de Job, au pied du phare. On n’y touche pas !', 'ï':'⛺ Quelqu’un dort sous cette tente.', 'Ȝ':'⛵ Le voilier de Gaspard. On n’y touche pas !', 'ƿ':'📜 Un plan de Margaux : ramasse-le à la main ✋.', 'ʶ':'🪵 Des débris : ramasse-les à la main ✋.'};
 
 /* peut-on poser cet outil ici ? renvoie un message si non */
 function placeWhy(id, i){
@@ -4402,7 +4475,8 @@ function handAt(i){
     (S.ble || (S.ble = {}))[i] = Date.now(); gain({w:3}, i); if (inIsle(i, 'champs')) S.moissonN = (S.moissonN || 0) + 1; groundDirty = true; sound('ramasse'); save(); return;
   }
   if (o === 'm' && !BATIMENTS.has('m')) return moulinPop(i);   // le moulin : moudre le grain
-  if (o === 'Ą') return etalVente(i);   // l'étal du marché : on y vend ses poissons
+  if (o === 'Ą') return etalChoix(i);   /* l'étal : ce qu'il vend */
+  if (o === 'ā') return sonnerCloche(i);   /* la cloche du port */
   if (o && o !== 'L' && BATIMENTS.has(o)) return batPop(i);   // un bâtiment : son nom, et des boutons (comme l'ancien jeu)
   const proprio = S.homes[i];
   if ((proprio === 'toi' || proprio === 'toi_c') && (O[i] === 'h' || O[i] === 'Ĉ')) return chezToi(i);
@@ -4412,6 +4486,7 @@ function handAt(i){
   if (o){ const t = toolOf(o); if (t && t.name) toast('🏷️ ' + t.name, 2000); }   // un décor : on affiche juste son nom
 }
 function whoLivesAt(i){
+  if (O[i] === 'ǯ') return S.met.includes('job') ? 'job' : null;   /* la maisonnette du gardien */
   if (O[i] === 'L' || (O.indexOf('L') >= 0 && cheb(i, O.indexOf('L')) <= 0)) return S.met.includes('job') ? 'job' : null;
   const h = S.homes[i]; if (h && PEOPLE[h]) return h;
   for (const [w, t] of Object.entries(S.tents)) if (t === i) return w;
@@ -4463,7 +4538,15 @@ function rochersMaree(){
   for (const i of shuffle(c).slice(0, Math.min(3, 8 - n))) O[i] = 'r';
   forceDraw = true;
 }
-function newDay(){ S.jour = (S.jour || 1) + 1; save(); try { bouteilleMatin(); } catch(e){} }
+function newDay(){ S.jour = (S.jour || 1) + 1; save(); try { bouteilleMatin(); } catch(e){} try { pommesDuMatin(); } catch(e){} }
+/* chaque matin, après la forêt d'Elias, quelques pommes de pin tombent sous les pins de l'île aux pins */
+function pommesDuMatin(){
+  if (!S.done.includes('foretElias')) return;
+  const deja = O.filter((o, i) => o === 'ǰ' && inIsle(i, 'pins')).length; if (deja >= 6) return;
+  const c = []; for (let i = 0; i < N*N; i++) if (inIsle(i, 'pins') && G[i] === 'g' && !O[i] && near8(i, j => O[j] === 'P')) c.push(i);
+  for (const i of shuffle(c).slice(0, 2 + ((Math.random()*2)|0))) O[i] = 'ǰ';
+  forceDraw = true; save();
+}
 function spawnAround(id, n, ok){
   const cand = []; for (let i = 0; i < N*N; i++) if (!O[i] && ok(i) && !fogAt(i % N, (i / N)|0)) cand.push(i);
   const got = shuffle(cand).slice(0, n); for (const i of got) O[i] = id; save(); forceDraw = true; return got;
@@ -4521,7 +4604,55 @@ const ENVIES = [
   {id:'margaux_carnet', who:'margaux', type:'perdu', item:'ꜳ', t:'Mon carnet de croquis ! Je l’ai posé quelque part… mais où ?', merci:'Tous mes dessins ! Tu viens de sauver une rue entière.', res:{p:5}, fait:'Pose son carnet partout. Et l’oublie.'},
   {id:'margaux_soir', who:'margaux', type:'heure', quand:'soir', t:'Ce soir, viens voir les lampadaires s’allumer avec moi. C’est mon moment préféré.', pasla:'Pas encore ! Ce soir, quand les lampadaires s’allument.', merci:'Tu vois ? Une rue, c’est vivant, le soir.', res:{b:4}, fait:'Regarde les lampadaires s’allumer, le soir.'},
   {id:'margaux_relie', who:'margaux', type:'relie', vers:'2', need:() => unlocked('c') && O.includes('2') && hasHouse('margaux'), t:'Un chemin de chez moi jusqu’au café ? Je veux y aller sans me salir les pieds.', merci:'Parfait. Une vraie petite rue !', res:{b:5}, fait:'Va au café par sa petite rue.'},
-  {id:'margaux_kofi', who:'margaux', type:'message', to:'kofi', t:'Tu peux dire à Kofi que j’ai dessiné une nouvelle charpente pour lui ?', rep:'Encore ? Bon… Qu’elle me la montre demain.', res:{p:4}, fait:'Dessine des charpentes pour Kofi.'}
+  {id:'margaux_kofi', who:'margaux', type:'message', to:'kofi', t:'Tu peux dire à Kofi que j’ai dessiné une nouvelle charpente pour lui ?', rep:'Encore ? Bon… Qu’elle me la montre demain.', res:{p:4}, fait:'Dessine des charpentes pour Kofi.'},
+  // ---- les nouvelles : un coin à aménager, un choix, un pli à porter, l'île de quelqu'un à embellir ----
+  // Paloma
+  {id:'paloma_lanterne', who:'paloma', obj:'æ', n:1, r:3, t:'Une lanterne ancienne devant chez moi ? J’en ai vu de pareilles à Venise.', merci:'Oh… comme à Venise. En mieux, parce qu’ici, il y a la mer.', res:{b:4}, fait:'A vu des lanternes pareilles à Venise.'},
+  {id:'paloma_coin', who:'paloma', type:'coin', objs:['b', 'ʬ'], r:3, t:'Un petit coin pour écrire mes cartes postales : un banc et un pot fleuri, devant chez moi ?', merci:'Parfait ! Je vais écrire à tout le monde. Même à ceux que je n’ai jamais rencontrés.', res:{p:4}, fait:'Écrit ses cartes postales sur son petit banc fleuri.'},
+  {id:'paloma_ondine', who:'paloma', type:'message', to:'ondine', t:'Tu peux porter cette carte postale à Ondine ? Je l’ai trouvée au fond de ma valise : il y a des ruches dessus !', rep:'Des ruches de l’autre bout du monde ! Je vais l’accrocher au-dessus des miennes.', res:{b:4}, fait:'Garde des cartes postales pour tout le monde.'},
+  {id:'paloma_choix', who:'paloma', type:'choix', objs:['l', 'ɮ'], r:3, t:'Un lampadaire ou des lampions devant chez moi ? Je n’arrive pas à choisir. Décide pour moi !', mercis:['Un lampadaire ! Comme dans les grandes villes. Mais en plus calme.', 'Des lampions ! On dirait une fête tous les soirs.'], res:{b:4}, fait:'Te laisse choisir quand elle hésite.'},
+  // Philippe
+  {id:'philippe_banc', who:'philippe', obj:'b', n:1, r:2, t:'Hm. Un banc. Devant chez moi. Pour regarder les vaches.', merci:'Hm. Bien. Très bien.', res:{b:4}, fait:'Regarde ses vaches depuis son banc.'},
+  {id:'philippe_cloture', who:'philippe', obj:'F', n:3, r:3, t:'Hm. Une clôture. Trois morceaux. Les vaches se promènent.', merci:'Les vaches restent. Moi aussi. Merci.', res:{b:5}, fait:'Ses vaches se promènent un peu trop.'},
+  {id:'philippe_annick', who:'philippe', type:'message', to:'annick', t:'Porte ce panier d’œufs à Annick. Elle les a oubliés. Encore.', rep:'Mes œufs ! Philippe les cache toujours au même endroit. Je ne sais pas pourquoi je ne les trouve jamais.', res:{p:4}, fait:'Rapporte les œufs qu’Annick oublie.'},
+  {id:'philippe_champ', who:'philippe', obj:'t', n:1, ile:'champs', t:'Hm. Un arbre dans le champ. Pour l’ombre des vaches.', merci:'Les vaches dorment dessous. Elles disent merci. Moi aussi.', res:{b:5}, fait:'Les vaches font la sieste sous l’arbre du champ.'},
+  {id:'philippe_carottes', who:'philippe', type:'apporte', pay:{v:3}, t:'Trois carottes. Pour les vaches. Elles aiment ça.', merci:'Hm. Elles sont contentes. Ça se voit à leurs oreilles.', res:{p:4}, fait:'Gâte ses vaches avec des carottes.'},
+  // Annick
+  {id:'annick_potager', who:'annick', obj:'V', n:1, r:3, t:'Un deuxième potager près de chez nous ? J’ai des graines plein les poches !', merci:'Des courgettes, des tomates, des haricots… et des tomates noires. Chut.', res:{b:4}, fait:'A toujours des graines plein les poches.'},
+  {id:'annick_choix', who:'annick', type:'choix', objs:['f', 'î'], r:3, t:'Des fleurs ou un bac à fleurs devant chez moi ? Philippe dit « Non » aux deux. Choisis, toi !', mercis:['Des fleurs en pleine terre ! Comme dans le jardin de ma grand-mère.', 'Un bac à fleurs ! Philippe ne pourra pas marcher dessus.'], res:{b:4}, fait:'Choisit ses fleurs malgré les « Non » de Philippe.'},
+  {id:'annick_lina', who:'annick', type:'message', to:'lina', t:'Tu peux porter ce panier de tomates à Lina ? Pour une tarte !', rep:'Des tomates ! Une tarte aux tomates, alors. Pourquoi pas, après tout ?', res:{p:4}, fait:'Envoie des tomates à Lina pour ses tartes.'},
+  {id:'annick_coin', who:'annick', type:'coin', objs:['b', 'f', 't'], r:3, t:'Un coin pour se reposer près de chez nous : un banc, des fleurs et un arbre ?', merci:'Philippe s’est assis tout de suite. Sans rien dire. C’est bon signe !', res:{b:5}, fait:'Se repose avec Philippe dans leur petit coin.'},
+  // Ondine
+  {id:'ondine_fleurs', who:'ondine', obj:'f', n:3, r:3, t:'Des fleurs près de mes ruches ? Trois touffes. Les abeilles feront le reste.', merci:'Écoute… elles bourdonnent plus fort. Elles sont contentes.', res:{b:4}, fait:'Plante des fleurs pour ses abeilles.'},
+  {id:'ondine_lina', who:'ondine', type:'message', to:'lina', t:'Tu peux porter ce pot de miel à Lina ? Pour ses brioches.', rep:'Du miel d’Ondine ! Mes brioches vont être les meilleures de l’archipel.', res:{p:4}, fait:'Garde son meilleur miel pour les brioches de Lina.'},
+  {id:'ondine_arbre', who:'ondine', obj:'t', n:1, r:3, t:'Un arbre près de chez moi ? Les abeilles aiment se reposer à l’ombre.', merci:'Elles ont déjà trouvé la meilleure branche.', res:{b:4}, fait:'Ses abeilles se reposent à l’ombre de son arbre.'},
+  {id:'ondine_gateau', who:'ondine', type:'apporte', pay:{gateau:1}, need:() => !!S.fournil, t:'Un gâteau ? Je voudrais savoir si mon miel est encore meilleur cuit.', merci:'Encore meilleur. Je le savais. Les abeilles aussi.', res:{b:4}, fait:'A goûté son miel dans un gâteau.'},
+  {id:'ondine_choix', who:'ondine', type:'choix', objs:['ʬ', 'î'], r:3, t:'Un pot fleuri ou un bac à fleurs ? Les abeilles s’en fichent, mais moi pas. Choisis !', mercis:['Un pot fleuri ! Petit et joli, comme une ruche.', 'Un bac à fleurs ! Les abeilles vont faire la queue.'], res:{p:4}, fait:'Ne se décide jamais entre deux fleurs.'},
+  // Germaine
+  {id:'germaine_relie', who:'germaine', type:'relie', vers:'è', need:() => O.includes('è'), t:'Un chemin de chez moi jusqu’à la poste ? Mon vélo n’aime pas l’herbe.', merci:'Mon vélo te remercie. Moi aussi. Dans cet ordre.', res:{p:4}, fait:'Va à la poste à vélo, par le chemin.'},
+  {id:'germaine_lampadaire', who:'germaine', obj:'l', n:1, r:2, t:'Un lampadaire devant chez moi ? Je trie le courrier tôt le matin, dans le noir.', merci:'Je vais enfin pouvoir lire les adresses mal écrites.', res:{b:4}, fait:'Trie le courrier avant le lever du jour.'},
+  {id:'germaine_boite', who:'germaine', obj:'ȑ', n:1, ou:i => { const c = O.indexOf('2'); return c >= 0 && cheb(i, c) <= 2; }, need:() => O.includes('2'), t:'Une boîte aux lettres près du café ? Les gens oublient de passer à la poste.', merci:'Plus d’excuse, maintenant. Je surveille.', res:{p:4}, fait:'A posé une boîte aux lettres près du café.'},
+  {id:'germaine_tomas', who:'germaine', type:'message', to:'tomas', t:'Tu peux dire à Tomas que sa sœur a encore écrit ? Trois enveloppes. Elle exagère.', rep:'Encore ?! Je n’ai même pas fini de lire la dernière !', res:{b:4}, fait:'Livre les lettres de la sœur de Tomas. Beaucoup de lettres.'},
+  {id:'germaine_banc', who:'germaine', obj:'b', n:1, ou:i => { const c = O.indexOf('è'); return c >= 0 && cheb(i, c) <= 2; }, need:() => O.includes('è'), t:'Un banc devant la poste ? Les gens attendent leur courrier debout. C’est indigne.', merci:'Voilà. Une poste digne de ce nom.', res:{b:4}, fait:'A fait poser un banc devant la poste.'},
+  // de quoi en faire un peu plus pour les premiers venus
+  {id:'job_coin', who:'job', type:'coin', objs:['b', 'æ'], r:3, t:'Un coin pour veiller, au pied du phare : un banc et une lanterne ancienne ?', merci:'Je veillerai mieux. Assis, et avec de la lumière.', res:{p:4}, fait:'Veille au pied du phare, sur son banc.'},
+  {id:'job_choix', who:'job', type:'choix', objs:['f', 'ʬ'], r:3, t:'Des fleurs ou un pot fleuri au pied du phare ? Choisis, toi. Moi, je ne sais plus.', mercis:['Des fleurs en pleine terre. Comme avant.', 'Un pot fleuri. Je pourrai le rentrer les jours de tempête.'], res:{b:4}, fait:'Te laisse choisir les fleurs du phare.'},
+  {id:'job_poisson', who:'job', type:'apporte', pay:{poisson:1}, need:() => S.done.includes('tomas'), t:'Un poisson pour mon dîner ? Comme quand j’étais marin.', merci:'Ah… ça sent la mer. Le bon vieux temps.', res:{p:4}, fait:'Mange du poisson comme quand il était marin.'},
+  {id:'tomas_ilot', who:'tomas', obj:'f', n:3, ile:'ilot', t:'Mon îlot est tout gris… Trois touffes de fleurs, pour que les mouettes aient quelque chose à regarder ?', merci:'Les mouettes n’en reviennent pas. Moi non plus !', res:{b:5}, fait:'A un îlot fleuri, pour les mouettes.'},
+  {id:'tomas_ilot_banc', who:'tomas', obj:'b', n:1, ile:'ilot', t:'Un banc sur mon îlot ? Pour attendre que ça morde.', merci:'Ça ne mord toujours pas. Mais je suis bien assis !', res:{b:4}, fait:'Attend que ça morde, assis sur son îlot.'},
+  {id:'tomas_choix', who:'tomas', type:'choix', objs:['ŧ', 'l'], r:3, t:'Une torche ou un lampadaire devant chez moi ? Choisis, toi. Moi, je suis pêcheur, pas décorateur !', mercis:['Une torche ! Ça sent le feu de camp, j’adore.', 'Un lampadaire ! Je me sens en ville. Une toute petite ville.'], res:{p:4}, fait:'Pêcheur, pas décorateur.'},
+  {id:'kofi_carriere', who:'kofi', obj:'ŧ', n:1, ile:'carriere', t:'Une torche sur l’île aux cailloux ? Je vais y chercher des pierres le soir.', merci:'Plus besoin de chercher les cailloux à tâtons !', res:{p:5}, fait:'Va chercher des pierres le soir, à la torche.'},
+  {id:'kofi_coin', who:'kofi', type:'coin', objs:['ɟ', 'b'], r:3, t:'Un coin pour travailler dehors : une table et un banc, devant chez moi ?', merci:'Mon atelier en plein air ! Je vais faire des copeaux partout.', res:{b:5}, fait:'Travaille le bois dehors, à sa table.'},
+  {id:'kofi_lina', who:'kofi', type:'message', to:'lina', t:'Tu peux porter cette cuillère en bois à Lina ? Je l’ai taillée pour sa pâte à pain.', rep:'Une cuillère… Elle est parfaite. Dis-lui merci. Non, ne lui dis rien. Si, dis-lui.', res:{b:4}, fait:'A taillé une cuillère en bois pour Lina.'},
+  {id:'lina_coin', who:'lina', type:'coin', objs:['ɟ', 'U'], r:3, t:'Une petite terrasse près de chez moi : une table et un parasol ?', merci:'Une terrasse ! Les gens vont rester pour le goûter. J’adore.', res:{b:5}, fait:'Sert le goûter sur sa petite terrasse.'},
+  {id:'lina_choix', who:'lina', type:'choix', objs:['f', 'ʬ'], r:2, t:'Des fleurs ou un pot fleuri sous ma fenêtre ? Décide, toi !', mercis:['Des fleurs ! Elles sentent presque aussi bon que le pain.', 'Un pot fleuri ! Je pourrai l’arroser en ouvrant les volets.'], res:{b:4}, fait:'A des fleurs sous sa fenêtre.'},
+  {id:'lina_miel', who:'lina', type:'apporte', pay:{miel:1}, need:() => O.includes('u'), t:'Un pot de miel ? Pour mes brioches du dimanche.', merci:'Les brioches du dimanche seront dorées comme jamais.', res:{p:4}, fait:'Met du miel dans ses brioches du dimanche.'},
+  {id:'elias_pommes', who:'elias', type:'apporte', pay:{'ǰ':3}, need:() => S.done.includes('foretElias'), t:'Trois pommes de pin ? Pour ma cheminée. Ça sent bon la forêt.', merci:'… Ça sent comme là-bas. Merci.', res:{b:5}, fait:'Fait sentir la forêt dans sa cheminée.'},
+  {id:'elias_banc', who:'elias', obj:'b', n:1, ile:'pins', need:() => S.done.includes('foretElias'), t:'Un banc sur l’île aux pins ? Pour s’asseoir entre les arbres.', merci:'On entend tout, d’ici. Même le silence.', res:{b:5}, fait:'S’assoit entre les pins, sur son banc.'},
+  {id:'elias_torche', who:'elias', obj:'ŧ', n:1, ile:'pins', need:() => S.done.includes('foretElias'), t:'Une torche près de ma vieille cabane, sur l’île aux pins ? Pour les soirs où je dors là-bas.', merci:'Je ne me perdrai plus en rentrant. Pas que je me perde. Jamais.', res:{p:4}, fait:'Dort parfois dans sa vieille cabane.'},
+  {id:'margaux_coin', who:'margaux', type:'coin', objs:['Q', 'b'], r:3, t:'Une petite place devant chez moi : une fontaine et un banc ? Je la dessine depuis des semaines !', merci:'C’est exactement mon dessin ! Enfin… en mieux.', res:{p:5}, fait:'Avait dessiné sa petite place avant qu’elle existe.'},
+  {id:'margaux_choix', who:'margaux', type:'choix', objs:['ˣ', 'ɮ'], r:3, t:'Des fanions ou des lampions devant chez moi ? J’hésite depuis trois jours. Choisis !', mercis:['Des fanions ! Ça bouge, ça vit. Parfait.', 'Des lampions ! Le soir, ce sera magique.'], res:{b:4}, fait:'Hésite trois jours avant de choisir une décoration.'},
+  {id:'margaux_kofi', who:'margaux', type:'message', to:'kofi', t:'Tu peux porter ce plan à Kofi ? C’est une nouvelle chaise. Il va râler, c’est sûr.', rep:'Une chaise à trois pieds ?! … Bon. Je vais essayer.', res:{b:4}, fait:'Dessine des meubles que Kofi trouve impossibles.'}
 ];
 /* quand tout est fait (ou pour les nouveaux venus), on tire au hasard parmi celles-ci */
 const ENV_ENCORE = [
@@ -4540,7 +4671,12 @@ const ENV_ENCORE = [
   {type:'heure', quand:'matin', t:'Passe me voir au lever du jour ? On boira quelque chose de chaud.', pasla:'Au lever du jour, plutôt !', merci:'Tiens, c’est chaud. Bonne journée !'},
   {type:'apporte', pay:{pain:2}, need:() => !!S.repasOn, t:'Tu aurais 2 pains ? J’ai des amis à dîner ce soir.', merci:'Merci ! Ils sentent encore le four.', res:{k:2}, fait:'Reçoit des amis à dîner, avec ton pain.'},
   {type:'apporte', pay:{gateau:1}, need:() => !!S.fournil && O.includes('u'), t:'Tu aurais un gâteau ? J’ai envie de faire une surprise à quelqu’un.', merci:'Merci ! Chut, c’est un secret.', res:{k:3}, fait:'A fait une surprise avec ton gâteau.'},
-  {type:'apporte', pay:{miel:2}, need:() => O.includes('u'), t:'Deux pots de miel ? Pour mon thé, le soir.', merci:'Merci ! Ça sent les fleurs de toute l’île.', res:{b:4}, fait:'Met ton miel dans son thé, le soir.'}
+  {type:'apporte', pay:{miel:2}, need:() => O.includes('u'), t:'Deux pots de miel ? Pour mon thé, le soir.', merci:'Merci ! Ça sent les fleurs de toute l’île.', res:{b:4}, fait:'Met ton miel dans son thé, le soir.'},
+  {type:'apporte', pay:{'ǰ':2}, need:() => S.done.includes('foretElias'), t:'Deux pommes de pin ? Pour décorer ma cheminée.', merci:'Merci ! Ça sent la forêt, maintenant.', res:{b:3}, fait:'Décore sa cheminée avec des pommes de pin.'},
+  {type:'coin', objs:['b', 'f'], r:3, t:'Un petit coin devant chez moi : un banc et des fleurs ?', merci:'Mon petit coin à moi ! Merci.', res:{b:4}, fait:'A un petit coin à lui devant chez lui.'},
+  {type:'choix', objs:['ŧ', 'ɮ'], r:3, t:'Une torche ou un lampion devant chez moi ? Choisis pour moi !', mercis:['Une torche ! Ça réchauffe, en plus.', 'Un lampion ! C’est tout doux.'], res:{p:3}, fait:'T’a laissé choisir sa lumière du soir.'},
+  {type:'choix', objs:['t', 'ʬ'], r:3, t:'Un arbre ou un pot fleuri près de chez moi ? Je te laisse décider.', mercis:['Un arbre ! Je vais le regarder grandir.', 'Un pot fleuri ! Petit, mais joli.'], res:{b:3}, fait:'T’a laissé décider pour son jardin.'},
+  {obj:'f', n:2, ile:'ilot', need:() => S.done.includes('tomas'), t:'Tu as vu l’îlot de Tomas ? Deux touffes de fleurs, là-bas, ce serait joli.', merci:'Tomas ne m’a rien dit, mais il sourit tout le temps, maintenant.', res:{b:3}, fait:'Voulait fleurir l’îlot de Tomas.'}
 ];
 /* les objets perdus : posés discrètement, sans scintiller */
 const PERDUS = {
@@ -4587,12 +4723,12 @@ function envDe(s){
 function envCount(e, at){
   const ok = o => o === e.obj || GROWN[o] === e.obj || (e.obj === 't' && TREE.has(o));
   // une demande « sur l'île » (e.ou) : n'importe où sur ton île, du moment que l'endroit va bien
-  const land = e.ou ? mainLandSet() : null, here = i => e.ou ? land[i] && e.ou(i) : cheb(i, at) <= e.r;
+  const land = e.ou && !e.ile ? mainLandSet() : null, here = i => e.ile ? inIsle(i, e.ile) && G[i] !== 'w' && (!e.ou || e.ou(i)) : e.ou ? land[i] && e.ou(i) : cheb(i, at) <= e.r;
   let n = 0; for (let i = 0; i < N*N; i++) if (O[i] && ok(O[i]) && here(i)) n++; return n;
 }
 /* un chemin continu de la porte jusqu'à… (le port, le phare, la boulangerie, le café) */
 function relieOk(at, vers){
-  const cible = i => vers === 'port' ? G[i] === 'q' && !isleOf(i) : vers === 'phare' ? O[i] === 'L' : O[i] === vers;
+  const cible = i => vers === 'port' ? G[i] === 'q' && !isleOf(i) : vers === 'phare' ? O[i] === 'L' : vers === 'maison' ? (O[i] === 'h' || !!(S.homes || {})[i]) : O[i] === vers;
   const V8 = [1, -1, N, -N, N + 1, N - 1, -N + 1, -N - 1], pres = (i, d) => i + d >= 0 && i + d < N*N && Math.abs(((i + d) % N) - (i % N)) <= 1;   // en coin, ça compte aussi
   const touche = i => cible(i) || V8.some(d => pres(i, d) && cible(i + d));
   const start = V8.filter(d => pres(at, d)).map(d => at + d).filter(j => walkable(G[j]));
@@ -4600,15 +4736,19 @@ function relieOk(at, vers){
   while (q.length){ const i = q.pop(); if (touche(i)) return true; for (const d of [1, -1, N, -N]){ const j = i + d; if (j < 0 || j >= N*N || seen.has(j) || Math.abs((j % N) - (i % N)) > 1 || !walkable(G[j])) continue; seen.add(j); q.push(j); } }
   return false;
 }
+/* un coin à aménager (e.objs : tous) ou un choix (e.objs : l'un ou l'autre) */
+const envObjs = (e, at) => e.objs.map(o => envCount(Object.assign({}, e, {obj:o}), at));
 function envProg(c){
   const t = typeOf(c.e);
+  if (t === 'coin') return envObjs(c.e, c.at).filter(n => n > 0).length;
+  if (t === 'choix') return envObjs(c.e, c.at).some(n => n > 0) ? 1 : 0;
   if (t === 'pose') return Math.max(0, envCount(c.e, c.at) - (c.s.base || 0));
   if (t === 'relie') return relieOk(c.at, c.e.vers) ? 1 : 0;
   return c.s.got ? 1 : 0;
 }
-const envN = e => e.n || 1;
+const envN = e => typeOf(e) === 'coin' ? e.objs.length : e.n || 1;
 const envHere = w => { const a = homeOf(w); return !(w === 'elias' && S.eliasParti) && S.met.includes(w) && a != null && O[a] !== 'ï' && !fogAt(a % N, (a / N)|0) && !blockedAt(a); };
-const envPossible = e => { const t = typeOf(e); return (t !== 'heure' || (heureBientot(e.quand) && S.envType !== 'heure' && !envSlots().some(s => s.type === 'heure'))) && (t !== 'pose' || unlocked(e.obj)) && (!e.need || e.need()) && (t !== 'message' || !e.to || (S.met.includes(e.to) && homeOf(e.to) != null)); };
+const envPossible = e => { const t = typeOf(e); return (t !== 'heure' || (heureBientot(e.quand) && S.envType !== 'heure' && !envSlots().some(s => s.type === 'heure'))) && (t !== 'pose' || unlocked(e.obj)) && (!e.objs || e.objs.every(o => unlocked(o))) && (!e.ile || (S.isles[e.ile] && isleOpen(e.ile))) && (!e.need || e.need()) && (t !== 'message' || !e.to || (S.met.includes(e.to) && homeOf(e.to) != null)); };
 
 /* où se cache l'objet perdu : au pied d'un arbre, entre deux rochers… loin de chez la personne */
 function cachette(at){
@@ -4632,13 +4772,15 @@ function envPick(){
   // à tour de rôle : celui qui n'a rien demandé depuis le plus longtemps
   const ppl = here.slice().sort((a, b) => (S.envLast[a] || 0) - (S.envLast[b] || 0));
   const who = ppl.find(w => w !== S.envLastWho) || ppl[0], at = homeOf(who);
-  const dejaLa = x => typeOf(x) === 'pose' && at != null && envCount(x, at) >= (x.n || 1);   // c'est déjà fait : inutile de le demander
+  const dejaLa = x => at != null && (typeOf(x) === 'pose' ? envCount(x, at) >= (x.n || 1) : typeOf(x) === 'coin' ? envObjs(x, at).every(n => n > 0) : typeOf(x) === 'choix' ? envObjs(x, at).some(n => n > 0) : false);   // c'est déjà fait : inutile de le demander
   for (const x of ENVIES) if (x.who === who && !S.envDone.includes(x.id) && envPossible(x) && dejaLa(x)) S.envDone.push(x.id);
-  let e = ENVIES.find(x => x.who === who && !S.envDone.includes(x.id) && envPossible(x)), id, extra = {};
+  const siens = ENVIES.filter(x => x.who === who && !S.envDone.includes(x.id) && envPossible(x)), pareil = x => typeOf(x) === S.envType || (x.obj && x.obj === S.envObj);
+  let e = siens.find(x => !pareil(x)) || siens[0], id, extra = {};
   if (e) id = e.id;
   else {
     const autres = here.filter(w => w !== who);
-    const pool = ENV_ENCORE.map((x, k) => [x, k]).filter(([x]) => envPossible(x) && !dejaLa(x) && (typeOf(x) !== 'message' || autres.length)); if (!pool.length) return;
+    const pool0 = ENV_ENCORE.map((x, k) => [x, k]).filter(([x]) => envPossible(x) && !dejaLa(x) && (typeOf(x) !== 'message' || autres.length) && (!x.to || (x.to !== who && autres.includes(x.to)))); if (!pool0.length) return;
+    const pool = pool0.filter(([x]) => !pareil(x)).length ? pool0.filter(([x]) => !pareil(x)) : pool0;
     const [x, k] = pool[(Math.random()*pool.length)|0]; e = x; id = 'encore:' + k;
     if (typeOf(x) === 'message'){ const to = pick(autres), [phrase, rep] = pick(MESSAGES); extra = {to, rep, texte:x.t.replace('{nom}', nomDe(to)).replace('{phrase}', phrase)}; }
   }
@@ -4649,7 +4791,7 @@ function envPick(){
   }
   envSlots().push(Object.assign({id, who, base:0, t0:Date.now(), type:typeOf(e)}, extra));   // ce qui est déjà autour compte aussi
   S.envAt = Date.now() + 30000;   // la deuxième ne tombe pas juste derrière
-  S.envLast[who] = Date.now(); S.envLastWho = who; S.envType = typeOf(e);   // jamais deux « viens à telle heure » d'affilée
+  S.envLast[who] = Date.now(); S.envLastWho = who; S.envType = typeOf(e); S.envObj = e.obj || null;   // jamais deux fois le même genre (ni le même objet) d'affilée
   save(); forceDraw = true; renderCard(true);
   say(who, '« ' + (extra.texte || e.t) + ' »', {auto:7000});
 }
@@ -4664,6 +4806,7 @@ function envMerci(c, silencieux){
   if (e.unlock && !unlocked(e.unlock)){ unlock(e.unlock, true); gift = `📜 Nouveau plan : ${toolOf(e.unlock).name}`; }
   heartsAt(at); sound('merci'); save(); renderCard();
   if (!silencieux && e.id === 'job_soir') phareNuit(e);
+  else if (!silencieux && e.mercis){ const n = envObjs(e, at), k = n.findIndex(x => x > 0); say(e.who, '« ' + (e.mercis[k] || e.merci) + ' »', {auto:6500}); }
   else if (!silencieux && e.merci) say(e.who, '« ' + e.merci + ' »', {auto:6500});
   const bh = `☀️ ${bonheur()}`;
   setTimeout(() => toast(gift ? `${gift} · ${bh}` : bh, 3000), silencieux ? 300 : 1500);
@@ -4701,7 +4844,7 @@ function envTick(){
         return;
       }
     }
-    if ((t === 'pose' || t === 'relie') && envProg(c) >= envN(c.e) && $('bulle').hidden && !dialogOpen()){ envMerci(c); return; }   // le merci attend qu'on ait fini de lire
+    if ((t === 'pose' || t === 'relie' || t === 'coin' || t === 'choix') && envProg(c) >= envN(c.e) && $('bulle').hidden && !dialogOpen()){ envMerci(c); return; }   // le merci attend qu'on ait fini de lire
   }
   if (envSlots().length < envMax() && Date.now() >= (S.envAt || 0) && envPasMaintenant() === false) envPick();
 }
@@ -4720,6 +4863,7 @@ function envieMarks(){
   const out = [], has = i => out.some(o => o.at === i);
   const m = momentNow(); if (m && m.def.kind === 'envie' && !dialogOpen()){ const a = homeOf(m.def.who); if (a != null && !fogAt(a % N, (a / N)|0)) out.push({at:a, k:'mission'}); }
   if (envOn()) for (const c of envCurs()) if (!has(c.at)) out.push({at:c.at, k:'demande'});
+  for (const p of S.courrier || []){ const h = homeOf(p.w); if (h != null && !has(h)) out.push({at:h, k:'courrier'}); }
   for (const t of attenteMarks()) if (!has(t)) out.push({at:t, k:'maison'});
   return out;
 }
@@ -4754,6 +4898,7 @@ const heureOk = q => { const h = tday*24; return q === 'soir' ? (h >= 19 || h < 
 function tapPerson(who, surPlace){
   if (who === 'elias' && S.eliasParti && !S.pinsOk) return say('carnet', 'La cabane d’Elias est vide. Son canoë n’est plus là.', {auto:4000});
   if (villPresente(who)) return;
+  if (courrierDonne(who)) return;   /* le courrier de la poste */
   // un message à transmettre : c'est à cette personne-là qu'on le dit
   const cm = surPlace && envCurs().find(c => typeOf(c.e) === 'message' && c.e.to === who);
   if (cm){
@@ -4972,8 +5117,8 @@ function sacRemplir(){
 function sansBouee(){ if (S && S.unlocked && S.unlocked.includes('J')){ S.unlocked = S.unlocked.filter(x => x !== 'J'); S.recent = (S.recent || []).filter(x => x !== 'J'); if (tool === 'J') tool = 'main'; save(); } }
 
 /* ---------- l'amitié avec les villageois, et ce qu'ils te racontent ---------- */
-// les paliers : connaissance (0), copain (4), ami (10), proche (18)
-const AMI_SEUILS = [0, 4, 10, 18];
+// les paliers : connaissance (0), copain (6), ami (15), proche (30)
+const AMI_SEUILS = [0, 6, 15, 30];
 const AMI_FEM = new Set(['lina', 'margaux', 'germaine', 'ondine', 'paloma', 'annick']);
 const amiLabel = (w, n) => AMI_FEM.has(w) ? ['Connaissance', 'Copine', 'Amie', 'Proche'][n] : ['Connaissance', 'Copain', 'Ami', 'Proche'][n];
 const amiPts = w => (S.ami || {})[w] || 0;
@@ -5161,7 +5306,7 @@ function amiTick(){
 function amiParle(w){
   if (!amiOk(w)){ say(w, amiPhrase(w), {auto:4000}); return; }
   const pj = S.amiParle || (S.amiParle = {}); if (pj[w] !== S.jour){ pj[w] = S.jour; amiGagne(w, 1); }
-  say(w, amiPhrase(w)); amiBoutons(w);
+  say(w, marcheMot(w) || cafeMot(w) || amiPhrase(w)); amiBoutons(w);
 }
 function amiBoutons(w){
   const box = $('bExtra'); box.innerHTML = ''; const l = document.createElement('div'); l.className = 'troc';
@@ -5189,6 +5334,161 @@ function amiOffrir(w){
   }
   box.append(l);
 }
+
+
+/* ---------- le café : les habitués, la tournée, le mur ---------- */
+// le matin (8 h – 11 h) et en fin d'après-midi (16 h – 19 h), 1 à 3 villageois vont s'asseoir au café
+const cafeAt = () => O.indexOf('2');
+const cafeCreneau = () => { const h = tday*24; return h >= 8 && h < 11 ? 'm' : h >= 16 && h < 19 ? 'a' : null; };
+const cafeDe = w => { const c = S.cafeHab, i = cafeAt(); return c && i >= 0 && c.jour === S.jour && c.k === cafeCreneau() && c.qui.includes(w) ? i : null; };
+const habitues = () => { const c = S.cafeHab; return c && cafeAt() >= 0 && c.jour === S.jour && c.k === cafeCreneau() ? c.qui.filter(w => walkers.some(v => v.who === w)) : []; };
+function cafeTick(){
+  const k = cafeCreneau(), i = cafeAt(), c = S.cafeHab;
+  const cle = k && i >= 0 ? S.jour + k : null, avant = c ? c.jour + c.k : null;
+  if (cle === avant || (!cle && !c)) return;
+  if (!cle){ S.cafeHab = null; save(); syncWalkers(); return; }
+  const qui = shuffle(S.met.filter(w => amiOk(w) && homeOf(w) != null && !(w === 'elias' && S.eliasParti) && !(S.waitHouse || []).includes(w))).slice(0, 1 + ((Math.random()*3)|0));
+  S.cafeHab = {jour:S.jour, k, qui}; save(); syncWalkers();
+}
+const CAFE_MOTS = {
+  job:['« Un café noir, comme la nuit en mer. »', '« Je viens ici pour le café. Et pour les nouvelles. Surtout pour les nouvelles. »'],
+  tomas:['« Un petit café avant la marée ! »', '« Tu sais ce qui va bien avec le café ? Une bonne histoire de pêche. J’en ai une. »'],
+  kofi:['« Le café est trop fort. Je le bois quand même. »', '« Cette table est bancale. Je la réparerai. Demain. Peut-être. »'],
+  lina:['« Je n’ai que cinq minutes, mon pain cuit ! Bon… dix. »', '« Le café, avec une tranche de brioche, c’est le bonheur. »'],
+  elias:['« … Le café, c’est comme la forêt. Il faut le prendre lentement. »'],
+  margaux:['« D’ici, on voit toute la place. Je dessine les gens qui passent. Ne bouge pas ! »', '« Un café, une idée. Deux cafés, deux idées. Trois cafés… trop d’idées. »'],
+  philippe:['« Hm. Bon café. »', '« Annick parle. Moi, je bois mon café. Chacun son métier. »'],
+  annick:['« Philippe ne parle pas le matin. Ni l’après-midi. Mais il vient au café ! »', '« Un café et une tomate. Si, si, ça se fait. »'],
+  ondine:['« J’ai mis du miel dans mon café. Les abeilles sont jalouses. »'],
+  germaine:['« Cinq minutes de pause. Pas une de plus. Bon, six. »', '« Un café noir, sans sucre. Comme en 1974. »'],
+  paloma:['« Dans chaque pays, je cherche le meilleur café. Celui-ci est dans mon top trois. »', '« Regarde-les tous… On dirait une grande famille. »']};
+const CAFE_TOUS = ['« Ah, le café en terrasse… Il n’y a rien de mieux. »', '« Tu t’assois avec nous ? »', '« On parlait justement de toi ! En bien, évidemment. »'];
+function cafeMot(w){ if (cafeDe(w) == null || Math.random() < 0.35) return null; const l = (CAFE_MOTS[w] || []).concat(CAFE_TOUS); return l[(Math.random()*l.length)|0]; }
+/* offrir une tournée : un café pour chaque habitué, une fois par jour */
+function cafeTournee(){
+  const h = habitues(); if (!h.length) return hint('☕ Personne en terrasse pour l’instant. Reviens le matin, ou en fin d’après-midi.');
+  if (S.tourneeJour === S.jour) return hint('☕ Tu as déjà offert une tournée aujourd’hui.');
+  S.tourneeJour = S.jour; for (const w of h){ amiGagne(w, 1); const v = walkers.find(x => x.who === w); if (v) floatTxt(idx(v.cx, v.cy), '☕'); }
+  sound('merci'); save();
+  const qui = h.map(w => PEOPLE[w].name), noms = qui.length === 1 ? qui[0] : qui.slice(0, -1).join(', ') + ' et ' + qui[qui.length - 1];
+  sayList([B('carnet', `Tu offres une tournée. ${noms} ${qui.length > 1 ? 'lèvent leur tasse' : 'lève sa tasse'} !`), B(h[0], '« À notre île ! »')]);
+}
+/* le mur du café : un tableau de liège, la carte de Margaux au milieu, les lettres de R. punaisées autour */
+function cafeMur(){
+  if (dialogOpen()) return;
+  const L = (S.lettres || []).filter(k => R_LETTRES[k]), carte = S.done.includes('belvedere');
+  say('carnet', L.length || carte ? 'Sur le mur du café, un grand tableau de liège. Touche un papier pour le relire.' : 'Le mur du café est encore vide. Un jour, il se remplira de souvenirs.');
+  if (!L.length && !carte) return;
+  const box = $('bExtra'); box.innerHTML = ''; const m = document.createElement('div'); m.className = 'liege';
+  if (carte){ const c = document.createElement('button'); c.type = 'button'; c.className = 'mur-carte'; const cv = carteMargaux(); cv.className = ''; c.append(cv); c.onclick = () => { hideBulle(); setTimeout(() => montreCarte('« Ma grande carte, sur le mur du café. Tu as vu, j’ai ajouté tes derniers chemins. »'), 200); }; m.append(c); }
+  const PUN = ['#d9534f', '#f2c14e', '#5b9bd5', '#6cbf55', '#e8862e'];
+  L.forEach((k, n) => {
+    const p = document.createElement('button'); p.type = 'button'; p.className = 'mur-papier';
+    p.style.setProperty('--rot', ((hs(n, 7, 3) - 0.5)*14).toFixed(1) + 'deg'); p.style.setProperty('--pun', PUN[n % PUN.length]);
+    p.textContent = 'R.'; p.onclick = () => { hideBulle(); setTimeout(() => lireLettreR(k, 'Tu décroches la lettre du mur, le temps de la relire.', 'La remettre au mur'), 200); };
+    m.append(p);
+  });
+  box.append(m);
+}
+
+
+/* ---------- le courrier de la poste : une fois par jour, Germaine confie 1 à 3 plis à distribuer ---------- */
+const PLIS = {
+  job:[['✉️', '« Une lettre de l’ancien gardien du phare de la pointe. On s’écrit depuis quarante ans. Il ne répond jamais à mes questions. Moi non plus. »'], ['📦', '« Des mèches neuves pour le phare ! Enfin. »'], ['🏞️', '« Une carte postale… d’un phare. Ils sont drôles, sur le continent. »']],
+  tomas:[['✉️', '« Ma sœur ! Encore trois pages. Elle dit que je parle trop, mais elle écrit plus que moi. »'], ['📦', '« Des hameçons neufs ! Les poissons n’ont qu’à bien se tenir. »'], ['🏞️', '« Une carte du continent. Ils ont des montagnes, là-bas. Pas de mer. Les pauvres. »']],
+  kofi:[['✉️', '« Une commande ! Quelqu’un du continent veut une chaise. Une seule. Il a dû entendre parler de moi. »'], ['📦', '« Mes nouveaux rabots ! Je les attendais depuis des semaines. »'], ['🏞️', '« Une carte de mon cousin. Il dit que ma table tient toujours debout. Évidemment. »']],
+  lina:[['✉️', '« Une lettre de ma tante. Elle me donne une recette… et elle la barre à la fin. Typique. »'], ['📦', '« De la farine de châtaigne ! Je vais faire des essais. Beaucoup d’essais. »'], ['🏞️', '« Une carte d’une boulangerie de la ville. Ils veulent mon secret. Jamais ! »']],
+  elias:[['✉️', '« … Une lettre. Pour moi ? … Merci. Je la lirai plus tard. Seul. »'], ['📦', '« Des graines d’arbres. Je ne sais pas qui me les envoie. C’est très bien comme ça. »'], ['🏞️', '« Une forêt, sur la carte. Belle. Pas autant que la nôtre. »']],
+  margaux:[['✉️', '« Une lettre de l’école d’architecture ! Ils veulent que je leur parle de l’île. »'], ['📦', '« Mes crayons ! J’en avais commandé quarante. Il n’y en a que trente-neuf. Je vais enquêter. »'], ['🏞️', '« Une carte d’un vieux pont de pierre. Il faut que je dessine ça. »']],
+  philippe:[['✉️', '« Hm. Le journal agricole. »'], ['📦', '« Une cloche pour la vache. Elle va être contente. Moi aussi. »'], ['🏞️', '« Une carte. Une vache dessus. Bien. »']],
+  annick:[['✉️', '« Le catalogue de graines du printemps ! Philippe, regarde ! … Il fait semblant de ne pas entendre. »'], ['📦', '« Des bulbes de tulipes ! Cent ! Où vais-je les mettre ? Partout ! »'], ['🏞️', '« Une carte de ma cousine. Elle a un jardin minuscule. Je vais lui envoyer des courgettes. »']],
+  ondine:[['✉️', '« Une lettre de l’association des apiculteurs. Ils me demandent mes secrets. Ce sont les abeilles qui savent, pas moi. »'], ['📦', '« Des pots en verre, pour le miel. Ils tintent comme des clochettes. »'], ['🏞️', '« Un champ de lavande, sur la carte. Les abeilles vont être jalouses. »']],
+  paloma:[['✉️', '« Une lettre d’une amie de voyage. Elle est au bout du monde. Et elle me demande comment est l’île. »'], ['📦', '« Mes affaires, enfin ! Je les avais laissées dans un port, il y a deux ans. »'], ['🏞️', '« Une carte postale… de moi-même. Je me l’étais envoyée il y a longtemps. Elle a mis le temps ! »']]};
+const PLI_NOM = {'✉️':'une lettre', '📦':'un colis', '🏞️':'une carte postale'};
+const courrierPour = w => (S.courrier || []).find(p => p.w === w);
+function courrierPoste(){
+  if (dialogOpen()) return;
+  if ((S.courrier || []).length){
+    const l = S.courrier.map(p => `${PLI_NOM[p.ic]} pour ${PEOPLE[p.w].name}`);
+    return sayList([B('germaine', `« Il te reste ${l.join(', ')}. Ils attendent ! »`)]);
+  }
+  if (S.courrierJour === S.jour) return sayList([B('germaine', '« Plus rien pour aujourd’hui ! Repasse demain, il y aura du nouveau. »')]);
+  const qui = shuffle(S.met.filter(w => PLIS[w] && amiOk(w) && homeOf(w) != null && !(w === 'elias' && S.eliasParti))).slice(0, 1 + ((Math.random()*3)|0));
+  if (!qui.length) return sayList([B('germaine', '« Pas de courrier aujourd’hui. Ça arrive aussi aux meilleures. »')]);
+  S.courrierJour = S.jour; S.courrier = qui.map(w => { const l = PLIS[w], [ic, t] = l[(Math.random()*l.length)|0]; return {w, ic, t}; }); save(); forceDraw = true;
+  const l = S.courrier.map(p => `${PLI_NOM[p.ic]} pour **${PEOPLE[p.w].name}**`);
+  sayList([B('germaine', `« Le courrier du jour : ${l.join(', ')}. En route ! »`, 'Germaine te tend une petite pile, bien rangée.')]);
+}
+/* on remet le pli : une petite réaction, +1 d'amitié et deux coquillages */
+function courrierDonne(w){
+  const p = courrierPour(w); if (!p) return false;
+  S.courrier = S.courrier.filter(x => x !== p); save(); forceDraw = true;
+  const h = homeOf(w); amiGagne(w, 1); gain({k:2}, h ?? 0); sound('merci');
+  sayList([B('carnet', `Tu remets ${PLI_NOM[p.ic]} à ${PEOPLE[w].name}.`), B(w, p.t)], () => { if (!S.courrier.length) toast('📮 Tout le courrier est distribué !', 2600); });
+  return true;
+}
+
+
+/* ---------- le marché du port : trois étals (poissons, pain, miel), la cloche sonne l'ouverture le matin ---------- */
+const ETAL = {poisson:['🐟', 'Poissons', 'tomas', 1], pain:['🥖', 'Pain', 'lina', 1], miel:['🍯', 'Miel', 'ondine', 2]};
+const etalsPoses = () => O.map((o, i) => o === 'Ą' ? i : -1).filter(i => i >= 0);
+const etalsGarnis = () => { const e = S.etals || {}; return [...new Set(etalsPoses().map(i => e[i]).filter(k => ETAL[k]))]; };
+const surQuai = i => { const L = (S.ruines || {}).lever || []; return L.includes(i) || near8(i, j => G[j] === 'q' || L.includes(j)); };
+function etalChoix(i){
+  if (dialogOpen()) return;
+  const marche = S.done.includes('marcheport') || (S.moment && S.moment.id === 'marcheport');
+  if (!marche) return toast('🏷️ Un étal… Il attend un marché.');
+  const k = (S.etals || {})[i], cur = ETAL[k];
+  say(cur ? cur[2] : 'lina', cur ? `« L’étal de ${cur[1].toLowerCase()} ! Il te reste ${S.res[k] || 0} ${cur[0]} à vendre. »` : '« Qu’est-ce qu’il vend, cet étal ? »');
+  const box = $('bExtra'); box.innerHTML = ''; const l = document.createElement('div'); l.className = 'troc offres';
+  for (const [kk, [ic, nom, qui]] of Object.entries(ETAL)){
+    const b = document.createElement('button'); b.type = 'button'; b.innerHTML = `<span>${ic} ${nom}</span>`; if (kk === k) b.disabled = true;
+    b.onclick = () => { (S.etals || (S.etals = {}))[i] = kk; save(); forceDraw = true; renderCard(true); box.innerHTML = ''; say(qui, kk === 'poisson' ? '« Mes poissons, sur le plus bel étal du port ! »' : kk === 'pain' ? '« Mon pain au marché ! Je vais devoir me lever encore plus tôt. »' : '« Le miel de l’île, au marché ! Les abeilles vont être fières. »'); };
+    l.append(b);
+  }
+  box.append(l);
+}
+/* la cloche : une fois par jour, le matin */
+const marcheOuvert = () => { const m = S.marche, h = tday*24; return !!m && m.jour === S.jour && h >= m.h0 && h < m.h0 + 1.5; };
+function sonnerCloche(i){
+  const chap = S.moment && S.moment.id === 'marcheport' && S.moment.k === 2;
+  if (!chap && !S.done.includes('marcheport')) return toast('🔔 La vieille cloche du port. Elle a assez dormi au fond.');
+  const h = tday*24;
+  if (h < 6 || h >= 11) return hint('🔔 Le marché ouvre le matin. Reviens sonner la cloche demain, entre 6 h et 11 h !');
+  if (S.marche && S.marche.jour === S.jour) return hint('🔔 La cloche a déjà sonné ce matin. Le marché est ' + (marcheOuvert() ? 'ouvert !' : 'fini pour aujourd’hui.'));
+  if (!etalsGarnis().length) return hint('🔔 Aucun étal n’est garni… Touche un étal pour choisir ce qu’il vend.');
+  S.marche = {jour:S.jour, h0:h, ventes:0, gain:0, faits:{}}; S.marcheFait = 1; save();
+  floatTxt(i, '🔔'); sound('merci'); toast('🔔 Ding… ding… Le marché ouvre !', 2800); syncWalkers(); renderCard(true);
+}
+/* pendant le marché : les marchands à leur étal, tout le monde flâne autour ; les étals vendent jusqu'à 3 produits chacun */
+function marcheDe(w){
+  if (!marcheOuvert()) return null;
+  const e = S.etals || {}, ps = etalsPoses();
+  const mien = ps.find(i => ETAL[e[i]] && ETAL[e[i]][2] === w); if (mien != null) return mien;
+  return ps.length ? ps[(w.length + (S.jour || 0)) % ps.length] : null;
+}
+let marcheVu = null, marcheVente = 0;
+function marcheTick(){
+  const ouvert = marcheOuvert(), m = S.marche;
+  if (ouvert !== marcheVu){ marcheVu = ouvert; syncWalkers();
+    if (!ouvert && m && m.jour === S.jour && !m.fini){ m.fini = 1; if (m.ventes){ S.bonheur = bonheur() + 1; renderCard(true); } save();
+      toast(m.ventes ? `🔔 Le marché ferme : ${m.ventes} vente${m.ventes > 1 ? 's' : ''}, +${m.gain} 🐚 et +1 ☀️` : '🔔 Le marché ferme. Rien à vendre aujourd’hui… Pense à garnir ton panier !', 3600); } }
+  if (!ouvert || Date.now() - marcheVente < 6000) return;
+  marcheVente = Date.now();
+  const e = S.etals || {};
+  for (const i of shuffle(etalsPoses())){
+    const k = e[i]; if (!ETAL[k] || (m.faits[i] || 0) >= 3 || (S.res[k] || 0) <= 0) continue;
+    S.res[k]--; m.faits[i] = (m.faits[i] || 0) + 1; m.ventes++; m.gain += ETAL[k][3]; gain({k:ETAL[k][3]}, i); renderRes(); save(); break;
+  }
+}
+const MARCHE_MOTS = {
+  tomas:['« Poissons frais ! Pêchés ce matin ! Enfin… ce matin ou hier. »', '« Approchez, approchez ! Le maquereau est roi, aujourd’hui ! »'],
+  lina:['« Le pain est encore tiède ! Ne traînez pas, il part vite ! »', '« J’ai gardé la plus belle miche pour toi. Chut. »'],
+  ondine:['« Goûtez, goûtez ! C’est le miel des fleurs de toute l’île. »', '« Les abeilles ont travaillé dur. Moi, je fais juste la vente. »'],
+  gaspard:['« Un marché ?! Je vais devoir baisser mes prix. »'],
+  job:['« Il y avait un marché comme ça, autrefois. Je m’en souviens… un peu. »']};
+const MARCHE_TOUS = ['« Le pain de Lina part toujours en premier ! »', '« Ondine m’a fait goûter son miel. J’en ai acheté trois pots. »', '« Tomas crie plus fort que les mouettes ! »', '« J’adore le marché. On croise tout le monde ! »', '« Tu as entendu la cloche ? On l’entendait jusqu’à la plaine ! »'];
+function marcheMot(w){ if (!marcheOuvert() || Math.random() < 0.3) return null; const l = (MARCHE_MOTS[w] || []).concat(MARCHE_TOUS); return l[(Math.random()*l.length)|0]; }
 
 /* ---------- les moments de l'histoire ----------
    Un moment = quelqu'un arrive ou demande quelque chose, en quelques étapes.
@@ -5276,7 +5576,7 @@ const MOMENTS = [
      debut:() => { unlock('W'); },
      buts:[['Un puits près du potager', () => O.some((o, i) => o === 'W' && !isleOf(i) && O.some((v, j) => v === 'V' && !isleOf(j) && cheb(i, j) <= 3)) ? 1 : 0, 1, null, null, '« Un puits, tout près du potager. »']]},
     {dit:[B('tomas', '« Parfait ! Allez, monte dans ma barque : je t’emmène sur mon îlot. Le meilleur coin de pêche, c’est au bout de mon petit quai ! »')],
-     debut:() => { revealIsle('ilot', false); const q = (S.quaiTomas || [])[S.quaiTomas.length - 1]; if (q != null) setTimeout(() => glideTo(q % N, (q / N)|0), 300);
+     debut:() => { revealIsle('ilot', false); unlock('!'); const q = (S.quaiTomas || [])[S.quaiTomas.length - 1]; if (q != null) setTimeout(() => glideTo(q % N, (q / N)|0), 300);
        setTimeout(() => sayList([B('carnet', 'La brume se lève sur un petit **îlot** : une cabane, un vieux quai… Bienvenue chez Tomas !')]), 1800); },
      peche:true,
      buts:[['La pêche avec Tomas', () => pecheSt().essai ? 1 : 0, 1, null, () => (S.quaiTomas || [])[S.quaiTomas.length - 1], '« Touche mon petit quai, sur l’îlot ! »']]}],
@@ -5302,7 +5602,7 @@ const MOMENTS = [
   {id:'falaises', who:'kofi', kind:'envie', journal:'Les falaises rouges', palier:7, quand:() => bonheur() >= 7,
    etapes:[
     {dit:[B('kofi', '« Tu as vu ces **falaises rouges**, au large ? De la pierre à volonté. Il faudrait un **pont** pour y aller, et un **atelier** pour la tailler. »', 'Kofi regarde la mer, la main en visière.')],
-     debut:() => { addIsle('carriere'); revealIsle('carriere', false); unlock('n'); unlock('Ț'); },
+     debut:() => { addIsle('carriere'); revealIsle('carriere', false); unlock('n'); unlock('Ț'); unlock('~', true); },
      buts:[['Un pont jusqu’aux falaises rouges', () => pontVers('carriere') ? 1 : 0, 1, null, null, '« Un pont, jusqu’aux falaises rouges ! »'],
        ['L’atelier du tailleur', () => O.some((o, i) => o === 'Ț' && inIsle(i, 'carriere')) ? 1 : 0, 1, null, null, '« L’atelier, sur l’île aux pierres ! »']]}],
    fin:[B('kofi', '« Avec l’atelier, chaque rocher d’ici donnera plus de pierres. Et cette **argile rouge**… un jour, on en fera des briques ! »', 'Kofi soupèse un premier bloc, tout content.')]},
@@ -5606,9 +5906,52 @@ const MOMENTS = [
    fin:[B('carnet', 'Les aiguilles rousses tombent une à une. Dessous, de petites pousses vertes percent déjà la mousse.'),
      B('elias', '« Une seule règle, ici : pour chaque pin coupé, on en replante un. »'),
      B('elias', '« Coupe un pin à la pioche, et tu verras : la forêt s’en occupe. »'),
-     B('elias', '« Allez, on rentre. Ma cabane, là-bas, elle me manque aussi. »', 'Elias pousse son canoë à l’eau.'),
+     B('elias', '« Allez, on rentre. Ma cabane, là-bas, elle me manque aussi. »', 'Elias pousse son canoë à l’eau.')],
+   apres:() => { S.eliasParti = 0; S.pinsReserve = 1; syncWalkers(); save(); forceDraw = true; }},
+
+  {id:'plongeuse', who:'yuna', kind:'moment', journal:'La plongeuse', heure:'matin', palier:58, quand:() => bonheur() >= 58 && S.done.includes('foretElias'),
+   etapes:[
+    {dit:[B('carnet', 'Tomas pêche au bout du quai. Soudain, une tête jaillit de l’eau juste devant lui, lampe frontale allumée. Tomas manque de tomber à la renverse.'),
+       B('yuna', '« Salut ! C’est bien ici, l’ancien port ? Celui de la vieille photo ? »'),
+       B('yuna', '« Je m’appelle Yuna, je plonge. Gaspard m’a déposée au large, j’ai fini à la nage. Les ports engloutis, c’est ma passion ! »'),
+       B('yuna', '« Regarde, là : les **vieilles pierres sous l’eau**. Il me faudrait un **ponton** juste à côté… et une petite **maison**, pas trop loin de l’eau. »')],
+     debut:() => { ruinesPlace(); meet('yuna'); pitchTent('yuna'); wantHouse('yuna', true); unlock('Ā'); syncWalkers(); const r = (S.ruines || {}).lever || []; if (r.length){ const [x, y] = xy(r[0]); glideTo(x, y); } },
+     buts:[['Un ponton de plongée', () => O.some((o, i) => o === 'Ā' && ruinesPres(i)) ? 1 : 0, 1, null, () => ((S.ruines || {}).lever || [])[0], '« Sur l’eau, juste à côté des vieilles pierres ! »'],
+       ['Une maison pour Yuna', () => hasHouse('yuna') ? 1 : 0, 1, null, null, '« Une maison où je peux dégouliner tranquille ! »']]},
+    {dit:[B('carnet', 'Yuna ajuste sa lampe… et plonge sans prévenir.'), B('tomas', '« Elle n’a même pas fini sa phrase ! »')],
+     debut:() => { S.tresors = S.tresors || 0; bullesRuines(); },
+     tap:i => { if (O[i] !== 'ý') return false; tresorTap(i); return true; },
+     buts:[['Les trésors de l’ancien port', () => Math.min(3, S.tresors || 0), 3, null, () => O.indexOf('ý'), 'Là où ça fait des bulles, touche avec la main ✋ : Yuna plonge.']]},
+    {dit:[B('yuna', '« Les vieux quais sont juste sous la surface ! Avec quelques pierres pour les caler, on pourrait les **remonter**. »'),
+       B('kofi', '« Remonter un port entier ? … J’adore. »')],
+     tap:i => { if (O[i] !== 'Ǫ' || !((S.ruines || {}).lever || []).includes(i)) return false; ruineLeve(i); return true; },
+     buts:[['Les vieux quais', () => ((S.ruines || {}).lever || []).filter(i => O[i] !== 'Ǫ').length, () => ((S.ruines || {}).lever || []).length || 1, null, () => ((S.ruines || {}).lever || []).find(i => O[i] === 'Ǫ'), 'Touche les vieilles pierres avec la main ✋. Chacune demande 2 🪨 pour la caler.']]}],
+   fin:[B('carnet', 'Kofi frotte la vieille cloche jusqu’à ce qu’elle brille. Yuna donne un petit coup : le son s’en va loin, très loin, sur la mer.'),
+     B('carnet', 'Là-haut, à la fenêtre du phare, la silhouette de Job ne bouge plus.'),
+     B('job', '« Cette cloche… elle sonnait les soirs de brume, pour que les bateaux retrouvent le port. »'),
+     B('job', '« Gardez-la bien. Elle a assez dormi au fond. »', 'Job se tait un long moment.')],
+   apres:() => { unlock('ā'); bouteilleR(); }},
+
+  {id:'marcheport', who:'lina', kind:'moment', journal:'Le marché du port', heure:'matin', palier:61, quand:() => bonheur() >= 61 && S.done.includes('plongeuse'),
+   etapes:[
+    {dit:[B('carnet', 'Yuna remonte de plongée, une poignée de petites pièces vertes dans la main.'),
+       B('yuna', '« Des sous de l’ancien marché ! Le matin, tout le quai sentait le pain chaud et le poisson grillé. On venait de toutes les îles. »'),
+       B('lina', '« Et si on le refaisait, ce marché ? Sur les vieux quais ! »'),
+       B('tomas', '« Un marché ! Je vendrai mes poissons en criant très fort. Je sais très bien crier. »')],
+     debut:() => { unlock('Ą'); unlock('ā', true); },
+     buts:[['Trois étals sur les quais', () => Math.min(3, etalsPoses().filter(surQuai).length), 3, null, () => ((S.ruines || {}).lever || [])[0], '« Sur les vieux quais, ou au bord d’un quai ! »'],
+       ['Un chemin jusqu’au marché', () => etalsPoses().some(i => relieOk(i, 'maison')) ? 1 : 0, 1, null, null, '« Il faut que tout le monde puisse venir ! »'],
+       ['La cloche, près des étals', () => O.some((o, i) => o === 'ā' && etalsPoses().some(j => cheb(i, j) <= 3)) ? 1 : 0, 1, null, null, '« Et la cloche tout près, pour annoncer l’ouverture ! »']]},
+    {dit:[B('lina', '« Maintenant, on garnit les étals ! Touche-les pour choisir ce qu’ils vendent. »'),
+       B('ondine', '« Il faut un étal de miel ! Les abeilles insistent. »')],
+     buts:[['Poissons, pain et miel', () => etalsGarnis().length, 3, null, () => etalsPoses()[0], 'Touche chaque étal avec la main ✋ : un pour les poissons, un pour le pain, un pour le miel.']]},
+    {dit:[B('lina', '« Tout est prêt ! Le matin, on sonne la cloche… et on ouvre ! »')],
+     buts:[['Sonner la cloche, le matin', () => S.marcheFait ? 1 : 0, 1, null, () => O.indexOf('ā'), 'Le matin (entre 6 h et 11 h), touche la cloche avec la main ✋.']]}],
+   fin:[B('carnet', 'Ding… ding… Le son de la cloche roule sur toute l’île. Les volets s’ouvrent, les portes claquent : tout le monde descend au port.'),
+     B('gaspard', '« Un marché ?! Je vais devoir baisser mes prix. »', 'Gaspard accoste au milieu de la foule.'),
+     B('lina', '« Chaque matin, tu peux sonner la cloche. Pense à remplir ton panier : ce que tu as, on le vend ! »'),
      B('carnet', '🧪 Fin des chapitres écrits pour l’instant. La suite arrive bientôt… En attendant, les demandes continuent !')],
-   apres:() => { S.eliasParti = 0; S.pinsReserve = 1; syncWalkers(); save(); forceDraw = true; }}
+   apres:() => { S.marcheOn = 1; save(); }}
 ];
 /* ---------- la tempête (comme l'ancien jeu) : on la voit sur la carte, puis il y a des dégâts à réparer ---------- */
 let tempeteEnCours = false;
@@ -5824,6 +6167,44 @@ function foretStart(){
   for (const i of shuffle(ps).slice(0, 5)) O[i] = 'Č';
   S.morts0 = O.filter((o, i) => o === 'Č' && inIsle(i, 'pins')).length; save(); forceDraw = true;
 }
+/* ---------- saison 3 : la plongeuse et l'ancien port ---------- */
+/* les vieilles pierres : deux quais et un bout de digue, au sud de ton île (comme sur la vieille photo) ; quelques-unes restent sous l'eau */
+function ruinesPlace(){
+  if (S.ruines) return;
+  const land = mainLandSet(), P = CARTE.principale; let best = -1, bd = -1;
+  for (let i = 0; i < N*N; i++){ if (!land[i] || G[i] === 'w') continue; const [x, y] = xy(i); if (Math.abs(x - P.cx) > 5) continue; const j = i + N; if (j < N*N && G[j] === 'w' && y > bd){ bd = y; best = j; } }
+  if (best < 0) return;
+  const [bx, by] = xy(best), ok = (x, y) => { const i = y*N + x; return x >= 0 && y >= 0 && x < N && y < N && G[i] === 'w' && !O[i] && !isleOf(i) ? i : -1; };
+  const lever = [], rester = [];
+  // chaque quai part bien de la côte (la côte n'est pas droite)
+  const depart = x => { let y = by - 6; while (y < by + 3 && !(land[y*N + x] && G[y*N + x] !== 'w' && G[(y + 1)*N + x] === 'w')) y++; return y + 1; };
+  const ys = [-2, 2].map(dx => depart(bx + dx)), fond = Math.max(...ys) + 3;
+  [-2, 2].forEach((dx, k) => { for (let y = ys[k]; y <= fond + 1; y++){ const i = ok(bx + dx, y); if (i >= 0) (y <= fond ? lever : rester).push(i); } });
+  for (let dx = -1; dx <= 1; dx++){ const i = ok(bx + dx, fond); if (i >= 0) lever.push(i); }
+  const by2 = fond - 3;
+  for (const [dx, dy] of [[-4, 5], [4, 6], [0, 6], [-1, 7]]){ const i = ok(bx + dx, by2 + dy); if (i >= 0) rester.push(i); }
+  for (const i of lever.concat(rester)) O[i] = 'Ǫ';
+  S.ruines = {lever, rester}; save(); forceDraw = true;
+}
+const ruinesPres = i => { const r = S.ruines; return !!r && r.lever.concat(r.rester).some(j => cheb(i, j) <= 2); };
+function bullesRuines(){
+  if (O.includes('ý') || (S.tresors || 0) >= 3) return;
+  const r = S.ruines || {lever:[], rester:[]}, all = r.lever.concat(r.rester);
+  const c = []; for (let i = 0; i < N*N; i++) if (G[i] === 'w' && !O[i] && all.some(j => cheb(i, j) === 1)) c.push(i);
+  const i = shuffle(c)[0]; if (i == null) return; O[i] = 'ý'; save(); forceDraw = true;
+}
+const TRESORS = [
+  [B('carnet', 'Les bulles s’arrêtent. Puis Yuna remonte, une vieille clé rouillée entre les dents.'), B('yuna', '« La clé de quelque chose. On ne saura sans doute jamais quoi. C’est ça qui est beau ! »')],
+  [B('carnet', 'Yuna remonte avec une assiette ébréchée, peinte de petites fleurs bleues.'), B('yuna', '« Quelqu’un a mangé là-dessus, il y a très longtemps. Face à la mer, j’espère. »')],
+  [B('carnet', 'Cette fois, Yuna remonte lentement. Elle tire une corde… et quelque chose de lourd, tout vert-de-gris.'), B('yuna', '« Une **cloche** ! La cloche du port ! »'), B('tomas', '« Elle est plus grosse que ma barque ! … Presque. »')]];
+function tresorTap(i){
+  O[i] = null; const k = Math.min(2, S.tresors || 0); S.tresors = (S.tresors || 0) + 1; save(); forceDraw = true; sound('ramasse'); renderCard(true);
+  sayList(TRESORS[k], () => { if (S.tresors < 3) setTimeout(bullesRuines, 400); });
+}
+function ruineLeve(i){
+  if (!canPay({p:2})) return hint('🪨 Il te faut 2 pierres pour caler chaque vieille pierre.');
+  pay({p:2}); O[i] = null; G[i] = 'p'; groundDirty = true; gVer++; floatTxt(i, '🪨'); sound('pose'); save(); forceDraw = true; renderCard(true);
+}
 /* ---------- saison 2 : petits outils ---------- */
 /* après la tempête : la brume s'éclaircit un peu à l'est, on devine la plaine (elle se lève vraiment au chapitre suivant) */
 function entrevoirPlaine(dire){
@@ -5955,7 +6336,7 @@ let momentDernier = 0;
 function momentTick(){
   if (nightOn) return;   // le temps est en train de passer : on attend la fin
   if (dialogOpen() || document.getElementById('pecheBox')) return;
-  repasDuSoir(); amiTick();
+  repasDuSoir(); amiTick(); cafeTick(); marcheTick();
   let m = momentNow();
   if (!m){
     if (!S.started) return;
@@ -6083,7 +6464,7 @@ function act(i, inStroke){
   playerGo(i);   // ton petit personnage y va à pied
 }
 /* les objets hauts (maisons, arbres, phare…) dépassent sur la case du dessus : on y renvoie (comme l'ancien jeu) */
-const HAUT1 = new Set(['ǅ', 'ƽ', 'ƾ', 'ǃ', 'Ɣ', 'Ƃ', 'ɂ', '˷', 'ɧ', 't', 'P', 'L', 'I', 'T', 'A', 'm', 'K', 'h', 'a', 'e', 'd', 'é', 'œ', 'À', 'â', 'Ê', 'Ô', 'Â', 'Æ', 'Ð', 'Ĉ', '1', '2', 'Ś', 'Ț', '9']), HAUT2 = new Set(['T', 'd', 'L']);
+const HAUT1 = new Set(['ǯ', 'ǅ', 'ƽ', 'ƾ', 'ǃ', 'Ɣ', 'Ƃ', 'ɂ', '˷', 'ɧ', 't', 'P', 'L', 'I', 'T', 'A', 'm', 'K', 'h', 'a', 'e', 'd', 'é', 'œ', 'À', 'â', 'Ê', 'Ô', 'Â', 'Æ', 'Ð', 'Ĉ', '1', '2', 'Ś', 'Ț', '9']), HAUT2 = new Set(['T', 'd', 'L']);
 function caseVisee(i){
   if (O[i] || G[i] === 'k' || G[i] === 'q') return i;   // un champ de blé, un quai : on les touche eux, même juste au-dessus d'un arbre
   if (i + N < N*N && HAUT1.has(O[i + N])) return i + N;
@@ -6369,6 +6750,7 @@ function openCarnet(){
       pg.append(back, hd, ul);
       const c = envCur(w); if (c){ const b = el('div', 'boite'); b.append(el('small', '', '💭 Sa demande du moment'), el('p', '', `« ${c.e.t} »`)); pg.append(b); }
       const n = S.envN[w] || 0; if (n) pg.append(el('p', 'doux', `☀️ Tu as réalisé ${n} de ses demandes.`));
+      if (w === 'elias' && S.rico && S.rico.record) pg.append(el('p', 'doux', `🪨 Ton record de ricochets : ${S.rico.record}.`));
       const sv = (S.souvenirs || {})[w]; if (sv){ const b = el('div', 'boite souvenir'); b.append(el('small', '', '📖 Une confidence'), el('p', '', sv)); pg.append(b); }
       if (amiOk(w) && amiNiv(w) < 3) pg.append(el('p', 'doux', '🌼 Discute avec ' + (AMI_FEM.has(w) ? 'elle' : 'lui') + ', offre-lui quelque chose, réalise ses demandes : votre amitié grandira.'));
     } else {
@@ -6451,9 +6833,10 @@ $('rgClose').onclick = () => { $('reglages').hidden = true; };
 $('reglages').addEventListener('click', e => { if (e.target.id === 'reglages') e.target.hidden = true; });
 
 /* ---------- toucher un bâtiment : une petite étiquette avec son nom et des boutons (repris de l'ancien jeu) ---------- */
-const BATIMENTS = new Set([...'˿˷ĈʜʠˮhK912ËÆaWmÇɃȚŚƑueyʋʡʧʫʾĂITSAEéüèàùœɧëOjûˢˤ˶ÖYʢ']);
+const BATIMENTS = new Set([...'ǯ˿˷ĈʜʠˮhK912ËÆaWmÇɃȚŚƑueyʋʡʧʫʾĂITSAEéüèàùœɧëOjûˢˤ˶ÖYʢ']);
 function nomBat(i){
   const o = O[i], w = S.homes[i];
+  if (o === 'ǯ') return 'Chez Job';
   if (w === 'toi') return 'Ta maison'; if (w === 'toi_c') return 'Ta cabane';
   if (w && PEOPLE[w]) return (o === 'h' ? 'Maison de ' : 'Chez ') + nomDe(w);
   if (o === 'h') return 'Une maison vide';
@@ -6462,22 +6845,48 @@ function nomBat(i){
 function ecranDe(i){ const r = board.getBoundingClientRect(), k = dpr(), [x, y] = xy(i); return [((x*T + 8 - camX)*zoom)/k + r.left, ((y*T + 4 - camY)*zoom)/k + r.top]; }
 let batEl = null;
 function batPopHide(){ if (batEl) batEl.hidden = true; }
+/* les petites icônes des vignettes (12 × 12, en pixel art) */
+const VIG_PAL = {k:'#3a2c22', b:'#8a5d35', B:'#a8743f', l:'#c9935a', t:'#e3c08a', T:'#cfa46a', u:'#2e6fa8', U:'#4a8fc8', y:'#f2c14e', Y:'#d99a2b', g:'#6b7b86', G:'#46525e', w:'#f6f0e2', W:'#cbc4b8', s:'#e8b48e', S:'#c98f6a', r:'#d9677a', R:'#b8455a', c:'#f3d9a0', p:'#e04878', e:'#5aa04a', E:'#3f7a36', o:'#e8862e', n:'#5a3c28', v:'#9cc8e8'};
+const VIG = {
+  porte:['............','..kkkkkkkk..','..kbbbbbbk..','..kbuUUubk..','..kbuUUubk..','..kbuuuubk..','..kbuuuyuk..','..kbuuuubk..','..kbuUUubk..','..kbuuuubk..','..kbbbbbbk..','.kkkkkkkkkk.'],
+  cartons:['............','............','.....kkkkkk.','.....kTttTk.','.kkkkkkyykk.','.kTttTkttTk.','.kttykkttTk.','.kTtytkTTTk.','.kttytkkkkk.','.kTtytk.....','.kkkkkk.....','............'],
+  toc:['............','....kkkk....','...kssssk...','..kssssssk..','..ksSsSsSk..','..ksSsSsSk..','..kssssssk..','..kssssssk..','...kssssk...','...kSSSSk...','....kkkk....','............'],
+  oeil:['............','............','....kkkk....','..kkwwwwkk..','.kwwwnnwwwk.','kwwwnkknwwwk','kwwwnkknwwwk','.kwwwnnwwwk.','..kkwwwwkk..','....kkkk....','............','............'],
+  pain:['............','............','....kkkk....','..kkllllkk..','.kllcllclk..','.klllcllllk.','klcllllcllk.','kllllcllllk.','kTlllllllTk.','.kTTTTTTTk..','..kkkkkkk...','............'],
+  sac:['............','....kkkk....','...kwkkwk...','....kwwk....','...kwwwwk...','..kwwwwwwk..','..kwwYYwwk..','.kwwYwwYwwk.','.kwwwYYwwwk.','.kwwwwwwwwk.','..kkkkkkkk..','............'],
+  miel:['............','...kkkkkk...','...kbbbbk...','..kkkkkkkk..','..kYyyyyYk..','.kYyyyyyyYk.','.kYyywwyyYk.','.kYyyyyyyYk.','.kYYyyyyYYk.','..kYYYYYYk..','...kkkkkk...','............'],
+  carte:['............','.kkkkkkkkkk.','.kccccccvck.','.kceecvvcck.','.kceeecvcck.','.kcceecccck.','.kcvccceeck.','.kcvvcceeck.','.kccvccccrk.','.kcccccccck.','.kkkkkkkkkk.','............'],
+  canoe:['............','............','............','............','.k........k.','.kbk....kbk.','..kbbkkbbk..','..kblllllk..','...kbbbbk...','.vv.kkkk.vv.','vvvvvvvvvvvv','............'],
+  tasse:['............','....w..w....','.....w..w...','....w..w....','.kkkkkkkk...','.kwwwwwwkkk.','.kwnnnnwk.k.','.kwwwwwwkkk.','.kwwwwwwk...','..kwwwwk....','.kkkkkkkkk..','............'],
+  galet:['............','............','............','............','....kkkk....','..kkggggkk..','.kgwwggggGk.','.kgggggGGGk.','..kkGGGGkk..','....kkkk....','.vv.vvvv.vv.','vvvvvvvvvvvv'],
+  lettre:['............','............','.kkkkkkkkkk.','.kwkwwwwkwk.','.kwwkwwkwwk.','.kwwwkkwwwk.','.kwwwwwwwwk.','.kwwwwwwwrk.','.kwwwwwwrrk.','.kkkkkkkkkk.','............','............'],
+  mur:['............','.kkkkkkkkkk.','.kTlTlTlTlk.','.klwwlrTlTk.','.kTwwTlyylk.','.klTlTlyyTk.','.kTrlTlTlTk.','.klTwwwlTlk.','.kTlwwwTlTk.','.klTlTlTlTk.','.kkkkkkkkkk.','............']};
+const vigIcone = n => { const c = document.createElement('canvas'); c.width = c.height = 12; const g = c.getContext('2d'); (VIG[n] || VIG.oeil).forEach((r, y) => [...r].forEach((ch, x) => { if (VIG_PAL[ch]){ g.fillStyle = VIG_PAL[ch]; g.fillRect(x, y, 1, 1); } })); return c; };
 function batPop(i){
   if (!batEl){ batEl = document.createElement('div'); batEl.className = 'bld-pop'; batEl.hidden = true; document.body.append(batEl);
     document.addEventListener('pointerdown', e => { if (!e.target.closest || !e.target.closest('.bld-pop')) batPopHide(); }, true); }
   const o = O[i], w = S.homes[i], el = batEl; el.textContent = '';
-  const t = document.createElement('b'); t.textContent = nomBat(i); el.append(t);
+  // le titre, avec le petit dessin du bâtiment
+  const hd = document.createElement('div'); hd.className = 'bld-hd'; const ic = iconImg(o); ic.className = 'bld-ic'; hd.append(ic);
+  const tt = document.createElement('div'); const t = document.createElement('b'); t.textContent = nomBat(i); tt.append(t);
+  if (w && PEOPLE[w] && o !== 'h' && !nomBat(i).includes(nomDe(w))){ const sm = document.createElement('small'); sm.textContent = 'chez ' + nomDe(w); tt.append(sm); }
+  hd.append(tt); el.append(hd);
   const row = document.createElement('div'); row.className = 'bld-row';
-  const bouton = (lab, fn, cls) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = lab; if (cls) b.className = cls; b.onclick = e => { e.stopPropagation(); batPopHide(); fn(); }; row.append(b); };
-  if (o === 'u') bouton('Récolter le miel', () => rucheMiel(i));
-  if (o === 'ɧ' && S.done.includes('belvedere')) bouton('La carte de Margaux', () => montreCarte());
-  if (o === '˿') bouton('Fabriquer un canoë · 4 🪵', () => fabriqueCanoe(i));
-  if (o === 'm') bouton('Moudre le grain', () => moulinPop(i));   // nourrir le village
-  if (o === '1' && S.fournil) bouton('Cuire le pain', () => fournilPop(i));
-  if ((w === 'toi' || w === 'toi_c') && (o === 'h' || o === 'Ĉ')) bouton('Entrer', () => chezToi(i));
-  else if (w && PEOPLE[w]) bouton('Toquer', () => tapPerson(w, true));
-  else if (o === 'h') bouton('Regarder', () => say('carnet', 'Une maison vide… Elle attend quelqu’un.', {auto:3500}));
-  bouton('Déménager · 1 🪵', () => moveStart(i), 'bld-mv');
+  const bouton = (icone, lab, fn, prix) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'vig' + (row.children.length ? '' : ' main'); b.append(vigIcone(icone)); const s = document.createElement('span'); s.textContent = lab; b.append(s);
+    if (prix){ const p = document.createElement('i'); p.textContent = prix; b.append(p); } b.onclick = e => { e.stopPropagation(); batPopHide(); fn(); }; row.append(b); };
+  if (o === 'u') bouton('miel', 'Miel', () => rucheMiel(i));
+  if (o === 'ɧ' && S.done.includes('belvedere')) bouton('carte', 'La carte', () => montreCarte());
+  if (o === '˿') bouton('canoe', 'Canoë', () => fabriqueCanoe(i), '4 🪵');
+  if (o === 'm') bouton('sac', 'Moudre', () => moulinPop(i));
+  if (o === '1' && S.fournil) bouton('pain', 'Cuire', () => fournilPop(i));
+  if (o === 'è' && S.done.includes('factrice')) bouton('lettre', 'Courrier', () => courrierPoste(), (S.courrier || []).length ? '✉️ ×' + S.courrier.length : (S.courrierJour !== S.jour ? '✉️' : null));
+  if (o === '2'){ if (habitues().length) bouton('tasse', 'Tournée', () => cafeTournee(), '☕ ×' + habitues().length); bouton('mur', 'Le mur', () => cafeMur()); }
+  if ((w === 'toi' || w === 'toi_c') && (o === 'h' || o === 'Ĉ')) bouton('porte', 'Entrer', () => chezToi(i));
+  else if (o === 'ǯ') bouton('toc', 'Toquer', () => tapPerson('job', true));
+  else if (w && PEOPLE[w]) bouton('toc', 'Toquer', () => tapPerson(w, true));
+  if (w === 'elias' && S.done.includes('foretElias') && !S.eliasParti) bouton('galet', 'Ricochets', () => ricoJouer(), S.rico && S.rico.jour === S.jour ? 'demain' : null);
+  else if (o === 'h') bouton('oeil', 'Regarder', () => say('carnet', 'Une maison vide… Elle attend quelqu’un.', {auto:3500}));
+  if (o !== 'ǯ') bouton('cartons', 'Déménager', () => moveStart(i), '1 🪵');
   el.append(row); el.hidden = false;
   const [cx, cy] = ecranDe(i), W = el.offsetWidth, H = el.offsetHeight;
   el.style.left = Math.round(Math.max(10, Math.min(innerWidth - W - 10, cx - W/2))) + 'px';
@@ -6953,6 +7362,92 @@ function showTraversee(done){
   landing = false; next.disabled = false; t0 = performance.now(); el.hidden = false; fit(); bx = target(); show(); cancelAnimationFrame(tutoRaf); tutoRaf = requestAnimationFrame(frame);
   onresize_tuto = () => { if (!el.hidden){ const f = bx - target(); fit(); bx = target() + f; } };
 }
+/* ---------- les ricochets avec Elias (repris de l'ancien jeu) ----------
+   Sur sa cabane, une vignette « Ricochets » (après la forêt d'Elias). Un glissé du doigt vers la mer : plus il est rapide et à plat,
+   plus le galet rebondit. 5 galets, un record, une partie par jour (+1 d'amitié). */
+function ricoJouer(){
+  const histoire = false;
+  if (S.rico && S.rico.jour === S.jour) return hint('🪨 Elias a rangé ses galets plats… Reviens demain faire des ricochets !');
+  if (document.getElementById('pecheBox')) return;
+  const box = document.createElement('div'); box.id = 'pecheBox';
+  box.innerHTML = `<div class="pe-app">
+    <div class="pe-bulle"><canvas class="pe-face" width="16" height="16"></canvas><div class="pe-qui">Elias</div><p class="pe-dit"></p><div class="pe-btns"><button type="button" class="pe-go"></button></div></div>
+    <div class="pe-hud"><span class="pe-prises"></span></div>
+    <div class="pe-scene" style="flex:none;width:100%;aspect-ratio:1;max-height:62vh;align-self:center"><canvas class="pe-jeu"></canvas><div class="rc-compte" style="position:absolute;top:14%;left:0;right:0;text-align:center;font:700 54px/1 var(--f-body, sans-serif);color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.25);pointer-events:none;opacity:0;transition:opacity .2s"></div></div><button type="button" class="pe-fin" aria-label="Fermer">×</button></div>`;
+  document.body.appendChild(box);
+  try { drawPortrait(box.querySelector('.pe-face'), PEOPLE.elias); } catch(e){}
+  const cv = box.querySelector('.pe-jeu'), cx = cv.getContext('2d'), dit = box.querySelector('.pe-dit'), go = box.querySelector('.pe-go'), finB = box.querySelector('.pe-fin'), hud = box.querySelector('.pe-prises'), compte = box.querySelector('.rc-compte');
+  const st = S.rico || (S.rico = {}), GALETS = 5;
+  let LW = 72, LH = 72, Z = 3;
+  const taille = () => { const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1; Z = Math.max(2, Math.floor(r.width * dpr / LW)); LH = Math.max(60, Math.floor(r.height * dpr / Z)); cv.width = LW * Z; cv.height = LH * Z; cx.imageSmoothingEnabled = false; };
+  const px = (x, y, w, h, c) => { cx.fillStyle = c; cx.fillRect(Math.round(x) * Z, Math.round(y) * Z, Math.max(1, Math.round(w)) * Z, Math.max(1, Math.round(h)) * Z); };
+  const HORIZON = () => Math.round(LH * 0.38), EAU = () => Math.round(LH * 0.72);
+  let etat = 'attente', reste = GALETS, meilleur = 0, vol = null, ronds = [], trace = null, fini = false;
+  const dire = (html, bouton) => { dit.innerHTML = html; go.hidden = !bouton; if (bouton) go.textContent = bouton; };
+  const majHud = () => { hud.textContent = 'Galets : ' + '●'.repeat(reste) + '○'.repeat(GALETS - reste) + '   Record : ' + (st.record || 0); };
+  const montre = (t, ms) => { compte.textContent = t; compte.style.opacity = 1; clearTimeout(montre.t); montre.t = setTimeout(() => compte.style.opacity = 0, ms || 700); };
+  const fermer = () => { fini = true; box.remove(); renderCard(true); };
+  finB.onclick = fermer;
+  go.onclick = () => { reste = GALETS; meilleur = 0; etat = 'jeu'; vol = null; majHud(); if (st.jour !== S.jour){ st.jour = S.jour; save(); amiGagne('elias', 1); } dire('« Vers la mer. <b>Vite</b>, et <b>bien à plat</b>. »'); };
+  dire('« Un galet bien plat… Fais glisser ton doigt <b>vers la mer</b>, <b>vite</b> et <b>bien à plat</b>. Tu as 5 galets. »' + (st.record ? ' Ton record : <b>' + st.record + '</b>.' : ''), 'C’est parti');
+  majHud();
+  const pos = ev => { const r = cv.getBoundingClientRect(); return {x: (ev.clientX - r.left) / r.width * LW, y: (ev.clientY - r.top) / r.height * LH, cx: ev.clientX, cy: ev.clientY, t: performance.now()}; };
+  cv.addEventListener('pointerdown', ev => { if (etat !== 'jeu' || vol) return; ev.preventDefault(); try { cv.setPointerCapture(ev.pointerId); } catch(e){} trace = [pos(ev)]; });
+  cv.addEventListener('pointermove', ev => { if (!trace) return; ev.preventDefault(); trace.push(pos(ev)); if (trace.length > 12) trace.shift(); });
+  cv.addEventListener('pointerup', ev => { if (!trace) return; trace.push(pos(ev)); const t = trace; trace = null; lancer(t); });
+  cv.addEventListener('pointercancel', () => { trace = null; });
+  function lancer(t){
+    const a = t[0], b = t[t.length - 1], dx = b.cx - a.cx, dy = b.cy - a.cy, dt = Math.max(16, b.t - a.t), dist = Math.hypot(dx, dy);
+    if (dist < 25) return;
+    if (dx <= 0){ dire('« Vers la <b>mer</b> ! Elle est de l’autre côté. »'); return; }
+    const sp = Math.max(0, Math.min(1, (dist / dt - 0.4) / 2.6)), plat = Math.max(0, Math.min(1, 1 - Math.abs(Math.atan2(dy, dx)) / 0.62));
+    let n = plat < 0.12 ? 0 : Math.floor(Math.pow(sp * 0.55 + plat * 0.45, 1.4) * 16 + Math.random() * 3); n = Math.max(0, Math.min(20, n));
+    reste--; majHud();
+    const L0 = 7 + 9 * sp, sauts = []; let tot = 0; for (let k = 0; k <= n; k++){ const l = L0 * Math.pow(0.83, k); sauts.push(l); tot += l; }
+    const ech = Math.min(1, (LW - 22) / tot);
+    vol = {n, sauts: sauts.map(l => l * ech), k: 0, t0: performance.now(), x0: 18, touche: 0};
+  }
+  function finLancer(n){
+    meilleur = Math.max(meilleur, n);
+    const nouveau = n > (st.record || 0); if (nouveau){ st.record = n; save(); }
+    majHud();
+    const mot = n === 0 ? '« Plouf. Plus <b>à plat</b>, le geste. »' : n < 4 ? '« ' + n + '. Pas mal ! Un peu plus <b>vite</b>. »' : n < 8 ? '« ' + n + ' ricochets. Joli ! »' : n < 12 ? '« ' + n + ' ! Là, je suis jaloux. »' : '« ' + n + '… Tu as déjà fait ça, toi. »';
+    if (reste > 0){ dire(mot + (nouveau && n ? ' <b>Record</b> !' : '')); return; }
+    etat = 'fini';
+    dire(mot + ' Ton meilleur lancer : <b>' + meilleur + ' ricochet' + (meilleur > 1 ? 's' : '') + '</b>.' + (meilleur > 0 && meilleur >= (st.record || 0) ? ' … Je suis presque jaloux.' : ' Reviens demain !'));
+    go.hidden = false; go.textContent = 'Merci, Elias'; go.onclick = fermer;
+  }
+  function boucle(t){
+    if (fini || !box.isConnected) return;
+    if (vol){ const k = vol.k, l = vol.sauts[k], dur = 90 + l * 11, f = Math.min(1, (t - vol.t0) / dur); vol.f = f;
+      if (f >= 1){ const xT = vol.x0 + l;
+        if (k < vol.n){ vol.touche++; montre(String(vol.touche)); ronds.push({x: xT, t, r: 1}); vol.x0 = xT; vol.k++; vol.t0 = t; }
+        else { ronds.push({x: xT, t, r: 2.5}); const n = vol.n; vol = null; if (!n) montre('Plouf', 900); finLancer(n); } } }
+    ronds = ronds.filter(r => t - r.t < 1400);
+    dessiner(t); requestAnimationFrame(boucle);
+  }
+  function dessiner(t){
+    const H = HORIZON(), E = EAU();
+    for (let y = 0; y < H; y++) px(0, y, LW, 1, y < H * 0.5 ? '#a9d6f2' : '#c4e3f4');
+    px(LW - 26, H - 6, 22, 6, 'rgba(110,130,150,.22)'); px(LW - 22, H - 9, 8, 3, 'rgba(110,130,150,.2)'); px(LW - 19, H - 11, 3, 2, 'rgba(110,130,150,.18)');
+    px(LW - 32, H - 10, 32, 10, 'rgba(240,246,250,.55)');
+    px(0, H, LW, LH - H, '#4b93c9'); px(0, H, LW, 1, '#d8eef8');
+    for (let k = 0; k < 40; k++){ const x = (k * 37 + Math.floor(t / 90) * (k % 3 ? 1 : 0)) % LW, y = H + 3 + (k * 13) % (LH - H - 4); px(x, y, 3, 1, 'rgba(255,255,255,.35)'); }
+    px(0, E + 2, 26, LH - E, '#e2c98f'); px(26, E + 4, 5, LH - E, '#e2c98f'); px(31, E + 7, 4, LH - E, '#e2c98f'); px(0, E + 2, 26, 1, '#f2e2b8');
+    for (let k = 0; k < 10; k++) px((k * 7) % 26, E + 5 + (k * 5) % 9, 1, 1, '#c9ad72');
+    for (const [x, h] of [[2, 12], [7, 15], [12, 11]]){ px(x + 2, E - 1, 1, 3, '#5a3a22'); for (let i = 0; i < h; i += 3) px(x + 2 - Math.floor((h - i) / 5), E - 1 - i, 1 + 2 * Math.floor((h - i) / 5), 3, '#2e5a3e'); }
+    const ex = 16, ey = E - 9;
+    px(ex, ey, 4, 3, '#5a3a22'); px(ex, ey + 2, 4, 2, '#d8a07a'); px(ex, ey + 3, 4, 1, '#5a3a22');
+    px(ex - 1, ey + 4, 6, 5, '#3f5a3a'); px(ex, ey + 9, 1, 3, '#2b2b30'); px(ex + 3, ey + 9, 1, 3, '#2b2b30'); px(ex + 5, ey + 5, 2, 1, '#3f5a3a');
+    for (const r of ronds){ const a = (t - r.t) / 1400, w = Math.round(2 + a * 10 * r.r); px(r.x - w / 2, E + 1, w, 1, `rgba(255,255,255,${(1 - a) * 0.9})`); if (r.r > 2) px(r.x - 1, E - Math.round((1 - a) * 4), 2, Math.round((1 - a) * 4), `rgba(255,255,255,${(1 - a) * 0.8})`); }
+    if (vol){ const l = vol.sauts[vol.k], f = vol.f || 0, x = vol.x0 + l * f, base = vol.k === 0 ? (E - 5) * (1 - f) + E * f : E, h = vol.k === 0 ? 5 : l * 0.32, y = base - Math.sin(Math.PI * f) * h; px(x - 1, y - 1, 3, 1, '#9a9da0'); px(x - 1, y, 3, 1, '#5d6064'); }
+    else if (etat === 'jeu') px(ex + 7, ey + 4, 3, 1, '#9a9da0');
+    if (trace && trace.length > 1){ cx.strokeStyle = 'rgba(255,255,255,.6)'; cx.lineWidth = Z; cx.beginPath(); cx.moveTo(trace[0].x * Z, trace[0].y * Z); for (const p of trace) cx.lineTo(p.x * Z, p.y * Z); cx.stroke(); }
+  }
+  requestAnimationFrame(() => { taille(); requestAnimationFrame(boucle); });
+  window.addEventListener('resize', taille);
+}
+
 /* ---------- le démarrage : la page d'accueil, puis l'île ---------- */
 function askName(done){
   sayQ = {lines:[], k:0}; const bu = $('bulle'); bu.classList.remove('mot'); bu.classList.add('liste');
@@ -6989,7 +7484,7 @@ function accoster(){
 function boot(){
   resize();
   if (load() && S.started){
-    villRegister(); sansBouee(); tracesRepare(); if (S.moment && !MOMENTS.some(d => d.id === S.moment.id)) S.moment = null;   /* un chapitre retiré (le marché) : on le laisse tomber */ if (S.done.includes('lina')){ unlock('*', true); unlock('ƣ', true); } if (S.rPend == null && S.rVeut == null && S.done.includes('mer')) S.rVeut = 0; if (S.done.includes('tempete')) entrevoirPlaine(false); if (unlocked('c')){ if (!unlocked('g')) unlock('g', true); if (!unlocked('s')) unlock('s', true); } appliqueMeteo(); if (S.saison && SEASONS[S.saison]){ season = S.saison; PAL = SEASONS[season]; } gVer++; groundDirty = true; syncWalkers();
+    villRegister(); sansBouee(); tracesRepare(); maisonGardien(); if (S.moment && !MOMENTS.some(d => d.id === S.moment.id)) S.moment = null;   /* un chapitre retiré (le marché) : on le laisse tomber */ if (S.done.includes('lina')){ unlock('*', true); unlock('ƣ', true); } if (S.done.includes('tomas')) unlock('!', true); if (S.done.includes('falaises')) unlock('~', true); if (S.rPend == null && S.rVeut == null && S.done.includes('mer')) S.rVeut = 0; if (S.done.includes('tempete')) entrevoirPlaine(false); if (unlocked('c')){ if (!unlocked('g')) unlock('g', true); if (!unlocked('s')) unlock('s', true); } appliqueMeteo(); if (S.saison && SEASONS[S.saison]){ season = S.saison; PAL = SEASONS[season]; } gVer++; groundDirty = true; syncWalkers();
     vueLarge(); renderBar(); renderCard(true); renderRes();
     accueil('Continuer', `${tierName()} de ${S.nom} · ☀️ ${bonheur()}`, () => {
       const h = homeOf('toi') ?? homeOf('toi_c') ?? S.barque ?? 0, [x, y] = xy(h); vueProche(x, y);
