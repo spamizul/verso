@@ -5921,7 +5921,7 @@ const MOMENTS = [
     {dit:[B('carnet', 'Yuna ajuste sa lampe… et plonge sans prévenir.'), B('tomas', '« Elle n’a même pas fini sa phrase ! »')],
      debut:() => { S.tresors = S.tresors || 0; bullesRuines(); },
      tap:i => { if (O[i] !== 'ý') return false; tresorTap(i); return true; },
-     buts:[['Les trésors de l’ancien port', () => Math.min(3, S.tresors || 0), 3, null, () => O.indexOf('ý'), 'Là où ça fait des bulles, touche avec la main ✋ : Yuna plonge.']]},
+     buts:[['Les trésors de l’ancien port', () => Math.min(3, S.tresors || 0), 3, null, null, 'Là où ça fait des bulles, touche avec la main ✋ : Yuna plonge.']]},
     {dit:[B('yuna', '« Les vieux quais sont juste sous la surface ! Avec quelques pierres pour les caler, on pourrait les **remonter**. »'),
        B('kofi', '« Remonter un port entier ? … J’adore. »')],
      tap:i => { if (O[i] !== 'Ǫ' || !((S.ruines || {}).lever || []).includes(i)) return false; ruineLeve(i); return true; },
@@ -6885,7 +6885,6 @@ function batPop(i){
   else if (o === 'ǯ') bouton('toc', 'Toquer', () => tapPerson('job', true));
   else if (w && PEOPLE[w]) bouton('toc', 'Toquer', () => tapPerson(w, true));
   if (w === 'elias' && S.done.includes('foretElias') && !S.eliasParti) bouton('galet', 'Ricochets', () => ricoJouer(), S.rico && S.rico.jour === S.jour ? 'demain' : null);
-  else if (o === 'h') bouton('oeil', 'Regarder', () => say('carnet', 'Une maison vide… Elle attend quelqu’un.', {auto:3500}));
   if (o !== 'ǯ') bouton('cartons', 'Déménager', () => moveStart(i), '1 🪵');
   el.append(row); el.hidden = false;
   const [cx, cy] = ecranDe(i), W = el.offsetWidth, H = el.offsetHeight;
