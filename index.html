@@ -419,6 +419,9 @@ html.oh .oh-col .bagBtn{width:46px;height:46px;border-radius:50%;font-size:22px;
 .mur-papier{position:relative;width:52px;height:62px;border:0;border-radius:2px;background:#fbf6e9;background-image:repeating-linear-gradient(transparent 0 9px, rgba(70,110,170,.18) 9px 10px);box-shadow:0 2px 4px rgba(0,0,0,.3);transform:rotate(var(--rot,0deg));font-family:'Caveat', cursive;font-size:20px;color:#3a3a6a;padding:0;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 6px 4px 0}
 /* l'intérieur des maisons, dans la bulle */
 canvas.interieur{display:block;width:min(100%, 300px);height:auto;aspect-ratio:3/2;image-rendering:pixelated;border-radius:8px;margin:8px auto 4px;box-shadow:inset 0 0 0 3px #e3d6b8}
+/* un objectif réussi : le portrait de la mission pétille */
+@keyframes scBravo{0%{transform:scale(1)}30%{transform:scale(1.18);box-shadow:0 0 0 6px rgba(242,193,78,.55),0 4px 14px rgba(0,0,0,.18)}100%{transform:scale(1)}}
+.sc-face.bravo{animation:scBravo 1.2s ease-out}
 
 </style>
 </head>
@@ -4271,6 +4274,24 @@ function drawWeather(c2, vx, vy, s, sh){
 
 /* ---------- poser, casser, ramasser ---------- */
 const RES = {b:['🪵', 'bois', 'bois'], p:['🪨', 'pierre', 'pierres'], poisson:['🐟', 'poisson', 'poissons'], k:['🐚', 'coquillage', 'coquillages'], v:['🥕', 'carotte', 'carottes'], a:['🧱', 'brique', 'briques'], w:['🌾', 'grain de blé', 'grains de blé'], farine:['🥣', 'sac de farine', 'sacs de farine'], pain:['🥖', 'pain', 'pains'], miel:['🍯', 'pot de miel', 'pots de miel'], gateau:['🍰', 'gâteau', 'gâteaux'], 'ǰ':['🌰', 'pomme de pin', 'pommes de pin']};
+/* l'eau qui rejoint le large (depuis les bords de la carte) ; un bateau pris dans un bassin fermé ressort juste à côté */
+function eauLibre(){
+  const vu = new Uint8Array(N*N), q = [];
+  for (let k = 0; k < N; k++) for (const i of [k, (N - 1)*N + k, k*N, k*N + N - 1]) if (G[i] === 'w' && !vu[i]){ vu[i] = 1; q.push(i); }
+  while (q.length){ const i = q.pop(); for (const d of [1, -1, N, -N]){ const j = i + d; if (j < 0 || j >= N*N || vu[j] || Math.abs((j % N) - (i % N)) > 1 || G[j] !== 'w') continue; vu[j] = 1; q.push(j); } }
+  return vu;
+}
+const BATEAUX = new Set(['B', 'ǃ', 'Ȝ', 'ɏ', '˚', 'ƻ', 'Ƹ']);
+function bateauxLibres(){
+  const lib = eauLibre(); let bouge = 0;
+  for (let i = 0; i < N*N; i++){
+    if (!BATEAUX.has(O[i]) || G[i] !== 'w' || lib[i]) continue;
+    let best = -1, bd = 1e9; const [x0, y0] = xy(i);
+    for (let j = 0; j < N*N; j++){ if (!lib[j] || O[j] || G[j] !== 'w') continue; const [x, y] = xy(j), d = (x - x0)**2 + (y - y0)**2; if (d < bd){ bd = d; best = j; } }
+    if (best >= 0){ O[best] = O[i]; O[i] = null; bouge++; if (O[best] === 'Ȝ'){ const g = gasp(); if (g.at === i) g.at = best; } }
+  }
+  if (bouge){ save(); forceDraw = true; }
+}
 /* Job a déjà sa maisonnette, sur un petit rocher collé au phare */
 function maisonGardien(){
   const l = O.indexOf('L'); if (l < 0 || O.includes('ǯ')) return;
@@ -4483,7 +4504,7 @@ function handAt(i){
   const proprio = S.homes[i];
   if ((proprio === 'toi' || proprio === 'toi_c') && (O[i] === 'h' || O[i] === 'Ĉ')) return chezToi(i);
   const who = whoLivesAt(i);
-  if (who) return tapPerson(who, true);
+  if (who) return tapPerson(who, true, !!O[i] && (O[i] === 'h' || O[i] === 'Ĉ' || O[i] === 'ǯ' || BATIMENTS.has(O[i])));
   if (O[i] === 'h' && !proprio) return say('carnet', 'Une maison vide… Elle attend quelqu’un.', {auto:3500});
   if (o){ const t = toolOf(o); if (t && t.name) toast('🏷️ ' + t.name, 2000); }   // un décor : on affiche juste son nom
 }
@@ -4897,7 +4918,7 @@ const PETITS_MOTS = {
 const heureBientot = q => { const h = tday*24; return q === 'soir' ? (h >= 16 && h < 21) : (h >= 2 && h < 7.5); };
 const heureOk = q => { const h = tday*24; return q === 'soir' ? (h >= 19 || h < 5.5) :   // « ce soir » : toute la nuit, jusqu'au lever du jour
     (h >= 5.5 && h < 9.5); };
-function tapPerson(who, surPlace){
+function tapPerson(who, surPlace, maison){
   if (who === 'elias' && S.eliasParti && !S.pinsOk) return say('carnet', 'La cabane d’Elias est vide. Son canoë n’est plus là.', {auto:4000});
   if (villPresente(who)) return;
   if (courrierDonne(who)) return;   /* le courrier de la poste */
@@ -4930,7 +4951,7 @@ function tapPerson(who, surPlace){
     }
     return say(who, '« ' + c.e.t + ' »', {auto:7000});
   }
-  amiParle(who, surPlace);
+  amiParle(who, maison);
 }
 
 /* ---------- les nouveaux venus ----------
@@ -5015,9 +5036,9 @@ const DEMANDES_CONTINENT = [
 ];
 const gasp = () => S.gasp || (S.gasp = {n:0, at:null, stay:0});
 function gaspSpot(){
-  const ok = [];
+  const ok = [], lib = eauLibre();   /* jamais dans un bassin fermé */
   for (let i = 0; i < N*N; i++){
-    if (G[i] !== 'w' || O[i] || isleOf(i) || fogAt(i % N, (i / N)|0)) continue;
+    if (G[i] !== 'w' || O[i] || !lib[i] || isleOf(i) || fogAt(i % N, (i / N)|0)) continue;
     if (near4(i, j => G[j] === 'q' && !isleOf(j))) ok.push(i);
   }
   return ok.length ? ok[(Math.random()*ok.length)|0] : null;
@@ -5468,11 +5489,18 @@ function marcheDe(w){
   if (!marcheOuvert()) return null;
   const e = S.etals || {}, ps = etalsPoses();
   const mien = ps.find(i => ETAL[e[i]] && ETAL[e[i]][2] === w); if (mien != null) return mien;
-  return ps.length ? ps[(w.length + (S.jour || 0)) % ps.length] : null;
+  // 3 ou 4 visiteurs à la fois : chaque quart d'heure de jeu, d'autres viennent faire leur marché
+  const autres = S.met.filter(x => PEOPLE[x] && !Object.values(ETAL).some(t => t[2] === x)).sort(), n = autres.length; if (!n || !ps.length) return null;
+  const tour = Math.floor((tday*24 - S.marche.h0) * 4), k = autres.indexOf(w); if (k < 0) return null;
+  const d = ((k - tour*3) % n + n) % n; if (d >= Math.min(4, n)) return null;
+  return marchePlace(ps[d % ps.length]);
 }
-let marcheVu = null, marcheVente = 0;
+/* un coin de terre ferme autour du port, pour flâner (pas seulement sur les quais étroits) */
+function marchePlace(i){ let best = i, bd = 1e9; for (let j = 0; j < N*N; j++){ const g = G[j]; if (g === 'w' || O[j] || (g !== 's' && g !== 'g' && g !== 'c' && g !== 'p')) continue; const d = cheb(i, j); if (d >= 2 && d <= 4 && d < bd){ bd = d; best = j; } } return best; }
+let marcheVu = null, marcheVente = 0, marcheTour = null;
 function marcheTick(){
   const ouvert = marcheOuvert(), m = S.marche;
+  const tourN = ouvert ? Math.floor((tday*24 - m.h0) * 4) : null; if (tourN !== marcheTour){ marcheTour = tourN; if (ouvert === marcheVu) syncWalkers(); }
   if (ouvert !== marcheVu){ marcheVu = ouvert; syncWalkers();
     if (!ouvert && m && m.jour === S.jour && !m.fini){ m.fini = 1; if (m.ventes){ S.bonheur = bonheur() + 1; renderCard(true); } save();
       toast(m.ventes ? `🔔 Le marché ferme : ${m.ventes} vente${m.ventes > 1 ? 's' : ''}, +${m.gain} 🐚 et +1 ☀️` : '🔔 Le marché ferme. Rien à vendre aujourd’hui… Pense à garnir ton panier !', 3600); } }
@@ -5481,7 +5509,7 @@ function marcheTick(){
   const e = S.etals || {};
   for (const i of shuffle(etalsPoses())){
     const k = e[i]; if (!ETAL[k] || (m.faits[i] || 0) >= 3 || (S.res[k] || 0) <= 0) continue;
-    S.res[k]--; m.faits[i] = (m.faits[i] || 0) + 1; m.ventes++; m.gain += ETAL[k][3]; gain({k:ETAL[k][3]}, i); renderRes(); save(); break;
+    S.res[k]--; m.faits[i] = (m.faits[i] || 0) + 1; m.ventes++; m.gain += ETAL[k][3]; S.res.k = (S.res.k || 0) + ETAL[k][3]; renderRes(); save(); break;   /* sans petit saut : le bilan arrive à la fermeture */
   }
 }
 const MARCHE_MOTS = {
@@ -5621,7 +5649,10 @@ function interieurCanvas(w){
 }
 /* une fois sur trois environ, quand on toque chez quelqu'un : on entre un instant */
 function interieurVisite(w){
-  if (!PEOPLE[w] || w === 'gaspard' || Math.random() > 0.34) return false;
+  if (!PEOPLE[w] || w === 'gaspard') return false;
+  const vu = S.intJour || (S.intJour = {}), premier = vu[w] !== S.jour;   /* la première visite du jour : on entre à coup sûr */
+  if (!premier && Math.random() > 0.34) return false;
+  vu[w] = S.jour; save();
   const l = INT_MOTS[w] || INT_TOUS; say(w, l[(Math.random()*l.length)|0]);
   const box = $('bExtra'); box.innerHTML = ''; box.append(interieurCanvas(w));
   return true;
@@ -6340,7 +6371,7 @@ function tresorTap(i){
 }
 function ruineLeve(i){
   if (!canPay({p:2})) return hint('🪨 Il te faut 2 pierres pour caler chaque vieille pierre.');
-  pay({p:2}); O[i] = null; G[i] = 'p'; groundDirty = true; gVer++; floatTxt(i, '🪨'); sound('pose'); save(); forceDraw = true; renderCard(true);
+  pay({p:2}); O[i] = null; G[i] = 'p'; groundDirty = true; gVer++; floatTxt(i, '🪨'); sound('pose'); bateauxLibres(); save(); forceDraw = true; renderCard(true);
 }
 /* ---------- saison 2 : petits outils ---------- */
 /* après la tempête : la brume s'éclaircit un peu à l'est, on devine la plaine (elle se lève vraiment au chapitre suivant) */
@@ -6492,25 +6523,34 @@ function momentTick(){
   }
   if (!S.moment.read){ if ($('bulle').hidden && !dialogOpen()) startEtape(); return; }
   const bs = butsOf(m);
+  // un objectif vient d'être atteint : on le dit
+  const vus = S.moment.okVus || (S.moment.okVus = []);
+  for (const b of bs) if (b.ok && !vus.includes(b.lab)){ vus.push(b.lab); save(); if (bs.length > 1 && !bs.every(x => x.ok)){ toast('✅ ' + b.lab, 2400); sound('merci'); pulseFace(); } }
   if (!bs.every(b => b.ok)) return;
+  // l'étape est finie : un petit « Bravo ! » avant la suite
+  if (bs.length && !S.moment.bravo){ S.moment.bravo = Date.now(); save(); toast(bs.length > 1 ? '✨ Bravo ! Tout est fait.' : '✅ ' + bs[0].lab, 2400); sound('merci'); pulseFace(); return; }
+  if (bs.length && Date.now() - S.moment.bravo < 1600) return;
+  S.moment.bravo = 0; S.moment.okVus = [];
   if (m.k < m.def.etapes.length - 1){ S.moment.k++; S.moment.didDebut = 0; S.moment.read = false; save(); heartsAt(homeOf(m.def.who) ?? homeOf('toi') ?? 0); if ($('bulle').hidden && !dialogOpen()) startEtape(); return; }   // (si quelqu'un parle encore, la suite attend qu'on ait fini de lire)
   // le moment est fini
   const def = m.def;
   aLHeure(def.finHeure, () => sayList(def.fin || [], () => {
     S.done.push(def.id); S.journal.push(def.id); S.moment = null; S.momentAt = Date.now() + 15000; if (S.done.includes('kofi')) S.attente = 60000;   // après Kofi : 1 minute de jeu libre avant le chapitre suivant
     S.envAt = Date.now() + 10000;   // entre deux missions, une demande arrive vite
-    if (def.kind === 'envie'){ S.bonheur = bonheur() + 1; const a = homeOf(def.who); if (a != null) heartsAt(a); setTimeout(() => toast(`☀️ Bonheur du village : ${bonheur()}`, 3000), 800); }
+    toast(`🎉 Chapitre terminé : ${def.journal}`, 3200); pulseFace();
+    if (def.kind === 'envie'){ S.bonheur = bonheur() + 1; const a = homeOf(def.who); if (a != null) heartsAt(a); setTimeout(() => toast(`☀️ Bonheur du village : ${bonheur()}`, 3000), 3400); }
     try { if (def.apres) def.apres(); } catch(e){ console.warn(e); }
     save(); renderCard(true);
   }));
 }
+/* le portrait de la mission pétille un instant */
+function pulseFace(){ const f = $('scFace'); if (!f) return; f.classList.remove('bravo'); void f.offsetWidth; f.classList.add('bravo'); setTimeout(() => f.classList.remove('bravo'), 1300); }
 /* toucher la personne : elle redit juste ce qu'elle voudrait, en une phrase (la bulle ne sert qu'à parler) */
 function showGoals(){
   const m = momentNow(); if (!m) return;
   if (!S.moment.read){ startEtape(); return; }
   const next = butsOf(m).find(b => !b.ok); if (!next) return;
   say(m.def.who === 'toi' ? 'carnet' : m.def.who, next.dit, {auto:5000});
-  if (next.ou != null){ const [x, y] = xy(next.ou); glideTo(x, y); }
 }
 /* au début, on ne peut pas rester sans bois : si la plage est vide et qu'il en manque pour la cabane ou le feu, la marée en redépose */
 function boisSecours(){
@@ -7019,8 +7059,8 @@ function batPop(i){
   if (o === 'è' && S.done.includes('factrice')) bouton('lettre', 'Courrier', () => courrierPoste(), (S.courrier || []).length ? '✉️ ×' + S.courrier.length : (S.courrierJour !== S.jour ? '✉️' : null));
   if (o === '2'){ if (habitues().length) bouton('tasse', 'Tournée', () => cafeTournee(), '☕ ×' + habitues().length); bouton('mur', 'Le mur', () => cafeMur()); }
   if ((w === 'toi' || w === 'toi_c') && (o === 'h' || o === 'Ĉ')) bouton('porte', 'Entrer', () => chezToi(i));
-  else if (o === 'ǯ') bouton('toc', 'Toquer', () => tapPerson('job', true));
-  else if (w && PEOPLE[w]) bouton('toc', 'Toquer', () => tapPerson(w, true));
+  else if (o === 'ǯ') bouton('toc', 'Toquer', () => tapPerson('job', true, true));
+  else if (w && PEOPLE[w]) bouton('toc', 'Toquer', () => tapPerson(w, true, true));
   if (w === 'elias' && S.done.includes('foretElias') && !S.eliasParti) bouton('galet', 'Ricochets', () => ricoJouer(), S.rico && S.rico.jour === S.jour ? 'demain' : null);
   if (o !== 'ǯ') bouton('cartons', 'Déménager', () => moveStart(i), '1 🪵');
   el.append(row); el.hidden = false;
@@ -7125,8 +7165,7 @@ function coachStep(){
     return null;
   }
   // plus tard : juste l'anneau, là où quelqu'un attend quelque chose
-  const nx = butsOf(m).find(b => !b.ok);
-  if (nx && nx.ou != null) return ['lieu-' + m.def.id + m.k + nx.ou, '', cellRect(nx.ou), true];
+  // (plus d'anneau d'indice ici : Lucie préfère chercher elle-même, et l'écran ne doit pas bouger tout seul)
   return null;
 }
 let coachSig = '';
@@ -7620,7 +7659,7 @@ function accoster(){
 function boot(){
   resize();
   if (load() && S.started){
-    villRegister(); sansBouee(); tracesRepare(); maisonGardien(); if (S.moment && !MOMENTS.some(d => d.id === S.moment.id)) S.moment = null;   /* un chapitre retiré (le marché) : on le laisse tomber */ if (S.done.includes('lina')){ unlock('*', true); unlock('ƣ', true); } if (S.done.includes('tomas')) unlock('!', true); if (S.done.includes('falaises')) unlock('~', true); if (S.rPend == null && S.rVeut == null && S.done.includes('mer')) S.rVeut = 0; if (S.done.includes('tempete')) entrevoirPlaine(false); if (unlocked('c')){ if (!unlocked('g')) unlock('g', true); if (!unlocked('s')) unlock('s', true); } appliqueMeteo(); if (S.saison && SEASONS[S.saison]){ season = S.saison; PAL = SEASONS[season]; } gVer++; groundDirty = true; syncWalkers();
+    villRegister(); sansBouee(); tracesRepare(); maisonGardien(); bateauxLibres(); if (S.moment && !MOMENTS.some(d => d.id === S.moment.id)) S.moment = null;   /* un chapitre retiré (le marché) : on le laisse tomber */ if (S.done.includes('lina')){ unlock('*', true); unlock('ƣ', true); } if (S.done.includes('tomas')) unlock('!', true); if (S.done.includes('falaises')) unlock('~', true); if (S.rPend == null && S.rVeut == null && S.done.includes('mer')) S.rVeut = 0; if (S.done.includes('tempete')) entrevoirPlaine(false); if (unlocked('c')){ if (!unlocked('g')) unlock('g', true); if (!unlocked('s')) unlock('s', true); } appliqueMeteo(); if (S.saison && SEASONS[S.saison]){ season = S.saison; PAL = SEASONS[season]; } gVer++; groundDirty = true; syncWalkers();
     vueLarge(); renderBar(); renderCard(true); renderRes();
     accueil('Continuer', `${tierName()} de ${S.nom} · ☀️ ${bonheur()}`, () => {
       const h = homeOf('toi') ?? homeOf('toi_c') ?? S.barque ?? 0, [x, y] = xy(h); vueProche(x, y);
